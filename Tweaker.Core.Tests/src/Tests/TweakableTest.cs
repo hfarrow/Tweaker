@@ -4,15 +4,15 @@ using System;
 
 using NUnit.Framework;
 
-using Simtastic.Tweaker.Core;
-using Simtastic.Tweaker.Core.TweakableAttributes;
+using Ghostbit.Tweaker.Core;
+using Ghostbit.Tweaker.Core.TweakableAttributes;
 
 #if UNITY_EDITOR
 using UnityEngine;
 using UnityTest;
 #endif
 
-namespace Simtastic.Tweaker.Core.Tests
+namespace Ghostbit.Tweaker.Core.Tests
 {
     [TestFixture]
     public class TweakableTest

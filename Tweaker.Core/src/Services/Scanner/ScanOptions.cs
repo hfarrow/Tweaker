@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using System;
 
-namespace Simtastic.Tweaker.Core
+namespace Ghostbit.Tweaker.Core
 {
     public class ScanOption<T>
     {

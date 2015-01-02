@@ -2,7 +2,7 @@
 using System.Reflection;
 using System;
 
-namespace Simtastic.Tweaker.Core
+namespace Ghostbit.Tweaker.Core
 {
     public interface ITweakerObject
     {
@@ -68,93 +68,33 @@ namespace Simtastic.Tweaker.Core
     public enum TweakerOptions
     {
         Default = 0,
-        Invokables = 1,
-        Tweakables = 2,
-        Watchables = 4,
-        ScanEverything = 8,
-        ScanEntryAssembly = 16,
-        ScanExecutingAssembly = 32,
-        ScanNonSystemAssemblies = 64
+        ScanForInvokables = 1,
+        ScanForTweakables = 2,
+        ScanForWatchables = 4,
+        ScanInEverything = 8,
+        ScanInEntryAssembly = 16,
+        ScanInExecutingAssembly = 32,
+        ScanInNonSystemAssemblies = 64,
+        NoServer = 128,
+        NoRemoteClients = 256
     }
 
-    public static class Tweaker
+    public class Tweaker
     {
-        public static IInvokableManager Invokables { get; private set; }
-        public static ITweakableManager Tweakables { get; private set; }
-        public static IWatchableManager Watchables { get; private set; }
+        TweakerContext context;
+        private Scanner scanner;
 
-        public static void Init(TweakerOptions options = TweakerOptions.Default)
+        public void Init(TweakerOptions options = TweakerOptions.Default, Scanner scanner = null)
         {
+            this.scanner = scanner != null ? scanner : Scanner.Global;
+
             if((options & TweakerOptions.Default) != 0)
             {
                 options = (TweakerOptions)int.MaxValue;
-                options &= ~TweakerOptions.ScanEverything;
+                options &= ~TweakerOptions.ScanInEverything;
             }
 
-            if((options & TweakerOptions.Invokables) != 0)
-            {
-                Invokables = new InvokableManager(Scanner.Global);
-            }
-
-            if((options & TweakerOptions.Tweakables) != 0)
-            {
-                Tweakables = new TweakableManager(Scanner.Global);
-            }
-
-            if((options & TweakerOptions.Watchables) != 0)
-            {
-                //Watchables = new WatchableManager(Scanner.Global);
-            }
-
-            if ((options & TweakerOptions.ScanEverything) != 0)
-            {
-                ScanEverything();
-            }
-            else if ((options & TweakerOptions.ScanNonSystemAssemblies) != 0)
-            {
-                ScanNonSystemAssemblies();
-            }
-            else
-            {
-                List<Assembly> assemblies = new List<Assembly>();
-                if ((options & TweakerOptions.ScanExecutingAssembly) != 0)
-                {
-                    assemblies.Add(Assembly.GetCallingAssembly());
-                }
-
-                if ((options & TweakerOptions.ScanEntryAssembly) != 0)
-                {
-                    assemblies.Add(Assembly.GetEntryAssembly());
-                }
-
-                ScanOptions scanOptions = new ScanOptions();
-                scanOptions.Assemblies.ScannableRefs = assemblies.ToArray();
-                ScanWithOptions(scanOptions);
-            }
-        }
-
-        public static void ScanWithOptions(ScanOptions options)
-        {
-            Scanner.Global.Scan(options);
-        }
-
-        public static void ScanEverything()
-        {
-            ScanWithOptions(null);
-        }
-
-        public static void ScanEntryAssembly()
-        {
-            ScanOptions options = new ScanOptions();
-            options.Assemblies.ScannableRefs = new Assembly[] { Assembly.GetEntryAssembly() };
-            ScanWithOptions(options);
-        }
-
-        public static void ScanNonSystemAssemblies()
-        {
-            ScanOptions options = new ScanOptions();
-            options.Assemblies.NameRegex = @"^(?!(System\.)|System$).+";
-            ScanWithOptions(options);
+            context = new TweakerContext(options, this.scanner);
         }
     }
 }

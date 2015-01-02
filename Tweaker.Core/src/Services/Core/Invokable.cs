@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System;
-using Simtastic.Tweaker.Core.InvokableAttributes;
+using Ghostbit.Tweaker.Core.InvokableAttributes;
 
-namespace Simtastic.Tweaker.Core
+namespace Ghostbit.Tweaker.Core
 {
     public interface IInvokable : ITweakerObject
     {

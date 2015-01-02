@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System;
 
-namespace Simtastic.Tweaker.Core
+namespace Ghostbit.Tweaker.Core
 {
     public class TweakerDictionary<T> : Dictionary<string, T> {}
 

@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityTest;
 #endif
 
-namespace Simtastic.Tweaker.Core
+namespace Ghostbit.Tweaker.Core
 {
     public interface IScanner
     {

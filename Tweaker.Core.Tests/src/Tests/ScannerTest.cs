@@ -9,10 +9,10 @@ using UnityEngine;
 using UnityTest;
 #endif
 
-using Simtastic.Tweaker.Core;
+using Ghostbit.Tweaker.Core;
 using System.Collections.Generic;
 
-namespace Simtastic.Tweaker.Core.Tests
+namespace Ghostbit.Tweaker.Core.Tests
 {
     [TestFixture]
     public class ScannerTest
@@ -300,9 +300,6 @@ namespace Simtastic.Tweaker.Core.Tests
             Assert.AreEqual(1, count);
             scanner.Scan(options);
             Assert.AreEqual(1, count);
-
-            Tweaker.Init(TweakerOptions.ScanEverything | TweakerOptions.Tweakables);
-            var tweakables = Tweaker.Tweakables.GetTweakables(null);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Simtastic.Tweaker.Core
+namespace Ghostbit.Tweaker.Core
 {
     public interface IWatchable : ITweakerObject
     {

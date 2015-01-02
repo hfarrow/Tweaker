@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System;
-using Simtastic.Tweaker.Core;
+using Ghostbit.Tweaker.Core;
 
-namespace Simtastic.Tweaker.Core.Tests
+namespace Ghostbit.Tweaker.Core.Tests
 {
     public class PlaceHolderAttribute : Attribute
     {

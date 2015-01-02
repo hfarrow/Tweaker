@@ -2,10 +2,10 @@
 using System.Reflection;
 using System.Linq;
 using System;
-using Simtastic.Tweaker.Core.TweakableAttributes;
+using Ghostbit.Tweaker.Core.TweakableAttributes;
 
 
-namespace Simtastic.Tweaker.Core
+namespace Ghostbit.Tweaker.Core
 {
     public interface ITweakable : ITweakerObject
     {
