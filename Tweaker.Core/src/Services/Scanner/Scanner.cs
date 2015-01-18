@@ -4,11 +4,6 @@ using System.Runtime.Serialization;
 using System;
 using System.Text.RegularExpressions;
 
-#if UNITY_EDITOR
-using UnityEngine;
-using UnityTest;
-#endif
-
 namespace Ghostbit.Tweaker.Core
 {
     public interface IScanner

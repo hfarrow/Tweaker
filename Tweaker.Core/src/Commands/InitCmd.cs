@@ -5,10 +5,11 @@ using System.Reflection;
 using System.Collections.Generic;
 using strange.extensions.dispatcher.eventdispatcher.api;
 using Ghostbit.Tweaker.Core.Events;
+using NLog;
 
 namespace Ghostbit.Tweaker.Core.Commands
 {
-    public class InitCmd : EventCommand
+    public class InitCmd : TweakerCmd
     {
         [Inject]
         public TweakerOptions options { get; set; }
@@ -16,25 +17,28 @@ namespace Ghostbit.Tweaker.Core.Commands
         [Inject]
         public Scanner scanner { get; set; }
 
-        public override void Execute()
+        public InitCmd() : base(LogManager.GetCurrentClassLogger()) { }
+
+        protected override void DoExecute()
         {
-            if ((options & TweakerOptions.ScanInEverything) != 0)
+            TweakerOptionFlags flags = options.Flags;
+            if ((flags & TweakerOptionFlags.ScanInEverything) != 0)
             {
                 ScanEverything();
             }
-            else if ((options & TweakerOptions.ScanInNonSystemAssemblies) != 0)
+            else if ((flags & TweakerOptionFlags.ScanInNonSystemAssemblies) != 0)
             {
                 ScanNonSystemAssemblies();
             }
             else
             {
                 List<Assembly> assemblies = new List<Assembly>();
-                if ((options & TweakerOptions.ScanInExecutingAssembly) != 0)
+                if ((flags & TweakerOptionFlags.ScanInExecutingAssembly) != 0)
                 {
                     assemblies.Add(Assembly.GetCallingAssembly());
                 }
 
-                if ((options & TweakerOptions.ScanInEntryAssembly) != 0)
+                if ((flags & TweakerOptionFlags.ScanInEntryAssembly) != 0)
                 {
                     assemblies.Add(Assembly.GetEntryAssembly());
                 }
@@ -44,7 +48,7 @@ namespace Ghostbit.Tweaker.Core.Commands
                 ScanWithOptions(scanOptions);
             }
 
-            if ((options & TweakerOptions.NoServer) == 0)
+            if ((flags & TweakerOptionFlags.NoServer) == 0)
             {
                 dispatcher.AddListener(CoreEvent.SERVER_STARTED, OnServerStarted);
                 dispatcher.Dispatch(CoreEvent.START_SERVER, null);
@@ -75,7 +79,7 @@ namespace Ghostbit.Tweaker.Core.Commands
         private void ScanNonSystemAssemblies()
         {
             ScanOptions options = new ScanOptions();
-            options.Assemblies.NameRegex = @"^(?!(System\.)|System$).+";
+            options.Assemblies.NameRegex = @"^(?!(System\.)|System$|mscorlib$|Microsoft\.|vshost).+";
             ScanWithOptions(options);
         }
 

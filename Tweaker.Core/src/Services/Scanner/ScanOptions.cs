@@ -117,7 +117,8 @@ namespace Ghostbit.Tweaker.Core
                     break;
                 case MemberTypes.Event:
                     var reflectedType = member.ReflectedType;
-                    isPublic = reflectedType.GetField(member.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static).IsPublic;
+                    var field = reflectedType.GetField(member.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+                    isPublic = field != null ? field.IsPublic : true;
                     break;
                 case MemberTypes.Field:
                     isPublic = ((FieldInfo)member).IsPublic;

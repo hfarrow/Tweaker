@@ -1,4 +1,5 @@
 ﻿using Ghostbit.Tweaker.Core.Events;
+using NLog;
 using strange.extensions.command.impl;
 using strange.extensions.dispatcher.eventdispatcher.api;
 using System;
@@ -8,17 +9,20 @@ using System.Text;
 
 namespace Ghostbit.Tweaker.Core.Commands
 {
-    class StartServerCmd : EventCommand
+    class StartServerCmd : TweakerCmd
     {
+        public StartServerCmd() : base(LogManager.GetCurrentClassLogger()) {}
+
         [Inject]
         public TweakerOptions options { get; set; }
+
         [Inject]
         public IServer server { get; set; }
 
-        public override void Execute()
+        protected override void DoExecute()
         {
             server.Start();
-            dispatcher.Dispatch(CoreEvent.SERVER_STARTED, null);
+            dispatcher.Dispatch(CoreEvent.SERVER_STARTED);
         }
     }
 }

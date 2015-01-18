@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System;
+using Ghostbit.Tweaker.Core.Events;
 
 namespace Ghostbit.Tweaker.Core
 {
@@ -65,36 +66,74 @@ namespace Ghostbit.Tweaker.Core
     }
 
     [Flags]
-    public enum TweakerOptions
+    public enum TweakerOptionFlags
     {
-        Default = 0,
-        ScanForInvokables = 1,
-        ScanForTweakables = 2,
-        ScanForWatchables = 4,
-        ScanInEverything = 8,
-        ScanInEntryAssembly = 16,
-        ScanInExecutingAssembly = 32,
-        ScanInNonSystemAssemblies = 64,
-        NoServer = 128,
-        NoRemoteClients = 256
+        None = 0,
+        Default = 1,
+        ScanForInvokables = 2,
+        ScanForTweakables = 4,
+        ScanForWatchables = 8,
+        ScanInEverything = 16,
+        ScanInEntryAssembly = 32,
+        ScanInExecutingAssembly = 64,
+        ScanInNonSystemAssemblies = 128,
+        NoServer = 256,
+        NoRemoteClients = 512
+    }
+
+    public class TweakerOptions
+    {
+        public TweakerOptionFlags Flags = TweakerOptionFlags.Default;
     }
 
     public class Tweaker
     {
-        TweakerContext context;
+        public event Action Initialized;
+
+        private TweakerContext context;
         private Scanner scanner;
 
-        public void Init(TweakerOptions options = TweakerOptions.Default, Scanner scanner = null)
+        public bool IsRunning { get { return context != null; } }
+
+        public void Init(TweakerOptions options = null, Scanner scanner = null)
         {
+            if(options == null)
+            {
+                options = new TweakerOptions();
+            }
+
             this.scanner = scanner != null ? scanner : Scanner.Global;
 
-            if((options & TweakerOptions.Default) != 0)
+            if (options.Flags == TweakerOptionFlags.None || (options.Flags & TweakerOptionFlags.Default) != 0)
             {
-                options = (TweakerOptions)int.MaxValue;
-                options &= ~TweakerOptions.ScanInEverything;
+                options.Flags = (TweakerOptionFlags)int.MaxValue;
+                options.Flags &= ~TweakerOptionFlags.ScanInEverything;
+                options.Flags &= ~TweakerOptionFlags.NoServer;
+                options.Flags &= ~TweakerOptionFlags.NoRemoteClients;
             }
 
             context = new TweakerContext(options, this.scanner);
+            context.autoStartup = false;
+            context.Start();
+            context.dispatcher.AddListener(CoreEvent.INITIALIZED, () => { if (Initialized != null) Initialized(); });
+            context.Launch();
+        }
+
+        public void ConnectClient(IClient client)
+        {
+            context.dispatcher.Dispatch(CoreEvent.CONNECT_CLIENT, client);
+        }
+
+        public void DisconnectClient(IClient client)
+        {
+            context.dispatcher.Dispatch(CoreEvent.DICONNECT_CLIENT, client);
+        }
+
+        public void Shutdown()
+        {
+            context.dispatcher.Dispatch(CoreEvent.SHUTDOWN);
+            context = null;
+            scanner = null;
         }
     }
 }
