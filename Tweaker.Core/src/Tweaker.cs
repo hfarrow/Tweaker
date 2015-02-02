@@ -1,139 +1,222 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System;
-using Ghostbit.Tweaker.Core.Events;
+using Ghostbit.Tweaker.AssemblyScanner;
+using Ghostbit.Tweaker.Core;
 
-namespace Ghostbit.Tweaker.Core
+namespace Ghostbit.Tweaker
 {
-    public interface ITweakerObject
-    {
-        string Name { get; }
-        bool IsPublic { get; }
-        Assembly Assembly { get; }
-    }
-
-    public interface ITweakerAttribute
-    {
-        string Name { get; }
-        Guid Guid { get; }
-    }
-
-    public class TweakerObjectInfo
-    {
-        public string Name { get; private set; }
-
-        public TweakerObjectInfo(string name)
-        {
-            Name = name;
-        }
-    }
-
-    public class TweakerObject : ITweakerObject
-    {
-        private TweakerObjectInfo Info { get; set; }
-
-        private readonly bool isPublic;
-        private readonly object instance;
-        private readonly Assembly assembly;
-
-        public string Name
-        {
-            get { return Info.Name; }
-        }
-
-        public bool IsPublic
-        {
-            get { return isPublic; }
-        }
-
-        public Assembly Assembly
-        {
-            get { return assembly; }
-        }
-
-        public object Instance
-        {
-            get { return instance; }
-        }
-
-        public TweakerObject(TweakerObjectInfo info, Assembly assembly, object instance, bool isPublic)
-        {
-            Info = info;
-            this.assembly = assembly;
-            this.instance = instance;
-            this.isPublic = isPublic;
-        }
-    }
-
-    [Flags]
-    public enum TweakerOptionFlags
-    {
-        None = 0,
-        Default = 1,
-        ScanForInvokables = 2,
-        ScanForTweakables = 4,
-        ScanForWatchables = 8,
-        ScanInEverything = 16,
-        ScanInEntryAssembly = 32,
-        ScanInExecutingAssembly = 64,
-        ScanInNonSystemAssemblies = 128,
-        NoServer = 256,
-        NoRemoteClients = 512
-    }
-
-    public class TweakerOptions
-    {
-        public TweakerOptionFlags Flags = TweakerOptionFlags.Default;
-    }
-
     public class Tweaker
     {
-        public event Action Initialized;
+        /// <summary>
+        /// Get the invokable manager created during initialization.
+        /// </summary>
+        public IInvokableManager Invokables { get; private set; }
 
-        private TweakerContext context;
-        private Scanner scanner;
+        /// <summary>
+        /// Get the tweakable manager created during initialization.
+        /// </summary>
+        public ITweakableManager Tweakables { get; private set; }
 
-        public bool IsRunning { get { return context != null; } }
+        /// <summary>
+        /// Get the watchable manager created during initialization.
+        /// </summary>
+        public IWatchableManager Watchables { get; private set; }
 
-        public void Init(TweakerOptions options = null, Scanner scanner = null)
+        /// <summary>
+        /// Get the options that were used during initialization.
+        /// </summary>
+        public TweakerOptions Options { get; private set; }
+
+        private IScanner scanner;
+
+        /// <summary>
+        /// Initialize Tweaker with the provided options and scanner.
+        /// </summary>
+        /// <param name="options">Options to initialize Tweaker with. Default options will be used if null.</param>
+        /// <param name="scanner">Scanner to use for automatically registering Tweaker objects. Scanner.Global will be used if null.</param>
+        public void Init(TweakerOptions options = null, IScanner scanner = null)
         {
             if(options == null)
             {
                 options = new TweakerOptions();
             }
+            Options = options;
 
+            TweakerOptionFlags flags = Options.Flags;
             this.scanner = scanner != null ? scanner : Scanner.Global;
 
-            if (options.Flags == TweakerOptionFlags.None || (options.Flags & TweakerOptionFlags.Default) != 0)
+            if (flags == TweakerOptionFlags.None || (flags & TweakerOptionFlags.Default) != 0)
             {
-                options.Flags = (TweakerOptionFlags)int.MaxValue;
-                options.Flags &= ~TweakerOptionFlags.ScanInEverything;
-                options.Flags &= ~TweakerOptionFlags.NoServer;
-                options.Flags &= ~TweakerOptionFlags.NoRemoteClients;
+                flags = (TweakerOptionFlags)int.MaxValue;
+                flags &= ~TweakerOptionFlags.ScanInEverything;
+                flags &= ~TweakerOptionFlags.DoNotScan;
+                Options.Flags = flags;
             }
 
-            context = new TweakerContext(options, this.scanner);
-            context.autoStartup = false;
-            context.Start();
-            context.dispatcher.AddListener(CoreEvent.INITIALIZED, () => { if (Initialized != null) Initialized(); });
-            context.Launch();
+            CreateManagers();
+
+            if ((flags & TweakerOptionFlags.DoNotScan) == 0)
+            {
+                PerformScan();
+            }
         }
 
-        public void ConnectClient(IClient client)
+        private void CreateManagers()
         {
-            context.dispatcher.Dispatch(CoreEvent.CONNECT_CLIENT, client);
+            TweakerOptionFlags flags = Options.Flags;
+
+            if ((flags & TweakerOptionFlags.ScanForInvokables) != 0)
+            {
+                Invokables = new InvokableManager(this.scanner);
+            }
+            else
+            {
+                Invokables = new InvokableManager(null);
+            }
+
+            if ((flags & TweakerOptionFlags.ScanForTweakables) != 0)
+            {
+                Tweakables = new TweakableManager(this.scanner);
+            }
+            else
+            {
+                Tweakables = new TweakableManager(null);
+            }
+
+            if ((flags & TweakerOptionFlags.ScanForWatchables) != 0)
+            {
+                Watchables = new WatchableManager(this.scanner);
+            }
+            else
+            {
+                Watchables = new WatchableManager();
+            }
         }
 
-        public void DisconnectClient(IClient client)
+        private void PerformScan()
         {
-            context.dispatcher.Dispatch(CoreEvent.DICONNECT_CLIENT, client);
+            TweakerOptionFlags flags = Options.Flags;
+
+            if ((flags & TweakerOptionFlags.ScanInEverything) != 0)
+            {
+                ScanEverything();
+            }
+            else if ((flags & TweakerOptionFlags.ScanInNonSystemAssemblies) != 0)
+            {
+                ScanNonSystemAssemblies();
+            }
+            else
+            {
+                List<Assembly> assemblies = new List<Assembly>();
+                if ((flags & TweakerOptionFlags.ScanInExecutingAssembly) != 0)
+                {
+                    assemblies.Add(Assembly.GetCallingAssembly());
+                }
+
+                if ((flags & TweakerOptionFlags.ScanInEntryAssembly) != 0)
+                {
+                    assemblies.Add(Assembly.GetEntryAssembly());
+                }
+
+                ScanOptions scanOptions = new ScanOptions();
+                scanOptions.Assemblies.ScannableRefs = assemblies.ToArray();
+                ScanWithOptions(scanOptions);
+            }
         }
 
-        public void Shutdown()
+        private void ScanWithOptions(ScanOptions options)
         {
-            context.dispatcher.Dispatch(CoreEvent.SHUTDOWN);
-            context = null;
-            scanner = null;
+            scanner.Scan(options);
         }
+
+        private void ScanEverything()
+        {
+            ScanWithOptions(null);
+        }
+
+        private void ScanEntryAssembly()
+        {
+            ScanOptions options = new ScanOptions();
+            options.Assemblies.ScannableRefs = new Assembly[] { Assembly.GetEntryAssembly() };
+            ScanWithOptions(options);
+        }
+
+        private void ScanNonSystemAssemblies()
+        {
+            ScanOptions options = new ScanOptions();
+            options.Assemblies.NameRegex = @"^(?!(System\.)|System$|mscorlib$|Microsoft\.|vshost|Unity|Accessibility|Mono\.).+";
+            ScanWithOptions(options);
+        }
+    }
+
+    /// <summary>
+    /// Flags used to configure and initialize Tweaker.
+    /// </summary>
+    [Flags]
+    public enum TweakerOptionFlags
+    {
+        /// <summary>
+        /// None will result in the same behaivor as Default.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// All flags will be turned on except for ScanInEverything and DoNotScan.
+        /// </summary>
+        Default = 1,
+
+        /// <summary>
+        /// Invokables will automatically be registered with the invokable manager.
+        /// </summary>
+        ScanForInvokables = 2,
+
+        /// <summary>
+        /// Tweakables will automatically be registered with the tweakable manager.
+        /// </summary>
+        ScanForTweakables = 4,
+
+        /// <summary>
+        /// Watchables will automatically be registered with the watchable manager.
+        /// </summary>
+        ScanForWatchables = 8,
+
+        /// <summary>
+        /// Scan all loaded assemblies.
+        /// </summary>
+        /// <remarks>
+        /// Takes precedence over ScanInNonSystemAssemblies, ScanInEntryAssembly, and ScanInExecutingAssembly.
+        /// </remarks>
+        ScanInEverything = 16,
+
+        /// <summary>
+        /// Scan the entry assembly. Can be combined with ScanInExecutingAssembly.
+        /// </summary>
+        ScanInEntryAssembly = 32,
+
+        /// <summary>
+        /// Scan the executing assembly. Can be combined with ScanInEntryAssembly.
+        /// </summary>
+        ScanInExecutingAssembly = 64,
+
+        /// <summary>
+        /// Only scan in non system assemblies.
+        /// </summary>
+        /// <remarks>See ScanNonSystemAssemblies for what is considered a system assembly.</remarks>
+        ScanInNonSystemAssemblies = 128,
+
+        /// <summary>
+        /// Do not perform a scan. All tweaker objects must be registered manually.
+        /// </summary>
+        /// <remarks>Takes precedence oper ScanInEntryAssembly and ScanInExecutingAssembly</remarks>
+        DoNotScan = 256
+    }
+
+    /// <summary>
+    /// Options for configuring Tweaker.
+    /// </summary>
+    public class TweakerOptions
+    {
+        public TweakerOptionFlags Flags = TweakerOptionFlags.Default;
     }
 }
