@@ -37,7 +37,7 @@ namespace Ghostbit.Tweaker.AssemblyScanner
     /// <summary>
     /// Processes any object that inherits TInput.
     /// </summary>
-    /// <typeparam name="TInput">The type that the input type inherit from.</typeparam>
+    /// <typeparam name="TInput">The type that the processed type inherits from.</typeparam>
     /// <typeparam name="TResult">The type of the result object that is created.</typeparam>
     public interface ITypeScanProcessor<TInput, TResult> :
         IScanProcessor<TInput, TResult>
