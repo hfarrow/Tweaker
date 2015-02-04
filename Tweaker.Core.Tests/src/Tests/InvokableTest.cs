@@ -5,7 +5,7 @@ using System;
 using NUnit.Framework;
 
 using Ghostbit.Tweaker.Core;
-using Ghostbit.Tweaker.Core.InvokableAttributes;
+using Ghostbit.Tweaker.AssemblyScanner;
 
 #if UNITY_EDITOR
 using UnityEngine;

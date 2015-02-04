@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tweaker.Core", "Tweaker.Core\Tweaker.Core.csproj", "{F11A0752-126F-4904-BA1F-277AE63180B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tweaker.Tests", "Tweaker.Tests\Tweaker.Tests.csproj", "{6AC97313-AB91-4B63-8E82-2CD40E1BB1B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tweaker.Core.Tests", "Tweaker.Core.Tests\Tweaker.Core.Tests.csproj", "{6AC97313-AB91-4B63-8E82-2CD40E1BB1B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

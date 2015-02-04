@@ -290,22 +290,38 @@ namespace Ghostbit.Tweaker.AssemblyScanner
 
             protected override void DoProcessAttribute(Attribute attribute, MemberInfo memberInfo)
             {
-                ((IAttributeScanProcessor<TInput, TResult>)Processor).ProcessAttribute(attribute as TInput, memberInfo);
+                var attributeProcessor = Processor as IAttributeScanProcessor<TInput, TResult>;
+                if (attributeProcessor != null)
+                {
+                    attributeProcessor.ProcessAttribute(attribute as TInput, memberInfo);
+                }
             }
 
             protected override void DoProcessAttribute(Attribute attribute, Type type)
             {
-                ((IAttributeScanProcessor<TInput, TResult>)Processor).ProcessAttribute(attribute as TInput, type);
+                var attributeProcessor = Processor as IAttributeScanProcessor<TInput, TResult>;
+                if (attributeProcessor != null)
+                {
+                    attributeProcessor.ProcessAttribute(attribute as TInput, type);
+                }
             }
 
             protected override void DoProcessType()
             {
-                ((ITypeScanProcessor<TInput, TResult>)Processor).ProcessType();
+                var typeProcessor = Processor as ITypeScanProcessor<TInput, TResult>;
+                if (typeProcessor != null)
+                {
+                    typeProcessor.ProcessType();
+                }
             }
 
             protected override void DoProcessMember(MemberInfo memberInfo, Type type)
             {
-                ((IMemberScanProcessor<TInput, TResult>)Processor).ProcessMember(memberInfo as TInput, type);
+                var memberProcessor = Processor as IMemberScanProcessor<TInput, TResult>;
+                if (memberProcessor != null)
+                {
+                    memberProcessor.ProcessMember(memberInfo as TInput, type);
+                }
             }
         }
 

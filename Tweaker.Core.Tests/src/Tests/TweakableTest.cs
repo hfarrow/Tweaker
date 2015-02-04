@@ -5,7 +5,7 @@ using System;
 using NUnit.Framework;
 
 using Ghostbit.Tweaker.Core;
-using Ghostbit.Tweaker.Core.TweakableAttributes;
+using Ghostbit.Tweaker.AssemblyScanner;
 
 #if UNITY_EDITOR
 using UnityEngine;
@@ -22,7 +22,7 @@ namespace Ghostbit.Tweaker.Core.Tests
             [Tweakable("IntProperty")]
             public static int IntProperty { get; set; }
 
-            [Tweakable("IntPropertyRange"), TweakableAttributes.Range(0, 100)]
+            [Tweakable("IntPropertyRange"), Core.Range(0, 100)]
             public static int IntPropertyRange { get; set; }
 
             [Tweakable("IntPropertyToggle"),
@@ -34,7 +34,7 @@ namespace Ghostbit.Tweaker.Core.Tests
             [Tweakable("intField")]
             public static int intField;
 
-            [Tweakable("intFieldRange"), TweakableAttributes.Range(0, 100)]
+            [Tweakable("intFieldRange"), Core.Range(0, 100)]
             public static int intFieldRange;
 
             [Tweakable("intFieldToggle"),

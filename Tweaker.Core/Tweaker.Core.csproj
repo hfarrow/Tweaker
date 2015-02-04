@@ -36,9 +36,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NLog">
-      <HintPath>..\..\..\..\packages\NLog.3.2.0.0\lib\net45\NLog.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -48,51 +45,42 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\Commands\ConnectClientCmd.cs" />
-    <Compile Include="src\Commands\DisconnectClientCmd.cs" />
-    <Compile Include="src\Commands\ListenForRemoteClientsCmd.cs" />
-    <Compile Include="src\Commands\ShutdownCmd.cs" />
-    <Compile Include="src\Commands\TweakerCmd.cs" />
-    <Compile Include="src\Services\Core\BaseTweakerManager.cs" />
-    <Compile Include="src\Commands\InitCmd.cs" />
-    <Compile Include="src\Commands\StartServerCmd.cs" />
-    <Compile Include="src\Events\CoreEvent.cs" />
-    <Compile Include="src\Services\Server\IClient.cs" />
-    <Compile Include="src\Services\Core\Invokable.cs" />
-    <Compile Include="src\Services\Core\InvokableManager.cs" />
-    <Compile Include="src\Services\Server\IServer.cs" />
-    <Compile Include="src\Services\Core\ITweaker.cs" />
-    <Compile Include="src\Services\Scanner\Scanner.cs" />
-    <Compile Include="src\Services\Scanner\ScanOptions.cs" />
-    <Compile Include="src\Services\Core\SearchOptions.cs" />
-    <Compile Include="src\Services\Server\Server.cs" />
-    <Compile Include="src\Services\Core\Tweakable.cs" />
-    <Compile Include="src\Services\Core\TweakableManager.cs" />
+    <Compile Include="src\AssemblyScanner\Interfaces\IScanner.cs" />
+    <Compile Include="src\AssemblyScanner\Interfaces\IScanProcessor.cs" />
+    <Compile Include="src\AssemblyScanner\Interfaces\IScanResultProvider.cs" />
+    <Compile Include="src\AssemblyScanner\Scanner.cs" />
+    <Compile Include="src\AssemblyScanner\ScannerException.cs" />
+    <Compile Include="src\AssemblyScanner\ScanOptions.cs" />
+    <Compile Include="src\Core\Attributes\BaseTweakerAttribute.cs" />
+    <Compile Include="src\Core\Attributes\InvokableAttributes.cs" />
+    <Compile Include="src\Core\Attributes\TweakableAttributes.cs" />
+    <Compile Include="src\Core\Attributes\WatchableAttributes.cs" />
+    <Compile Include="src\Core\BaseTweakerManager.cs" />
+    <Compile Include="src\Core\Exceptions.cs" />
+    <Compile Include="src\Core\Interfaces\IInvokable.cs" />
+    <Compile Include="src\Core\Interfaces\IInvokableManager.cs" />
+    <Compile Include="src\Core\Interfaces\ITweakable.cs" />
+    <Compile Include="src\Core\Interfaces\ITweakableManager.cs" />
+    <Compile Include="src\Core\Interfaces\ITweakerAttribute.cs" />
+    <Compile Include="src\Core\Interfaces\ITweakerObject.cs" />
+    <Compile Include="src\Core\Interfaces\IWatchable.cs" />
+    <Compile Include="src\Core\Interfaces\IWatchableManager.cs" />
+    <Compile Include="src\Core\Invokable.cs" />
+    <Compile Include="src\Core\InvokableManager.cs" />
+    <Compile Include="src\Core\Processors\InvokableProcessor.cs" />
+    <Compile Include="src\Core\Processors\TweakableProcessor.cs" />
+    <Compile Include="src\Core\Processors\WatchableProcessor.cs" />
+    <Compile Include="src\Core\SearchOptions.cs" />
+    <Compile Include="src\Core\Tweakable.cs" />
+    <Compile Include="src\Core\TweakableFactory.cs" />
+    <Compile Include="src\Core\TweakableManager.cs" />
+    <Compile Include="src\Core\TweakerDictionary.cs" />
+    <Compile Include="src\Core\TweakerObject.cs" />
+    <Compile Include="src\Core\Watchable.cs" />
+    <Compile Include="src\Core\WatchableManager.cs" />
     <Compile Include="src\Tweaker.cs" />
-    <Compile Include="src\TweakerContext.cs" />
-    <Compile Include="src\Services\Core\Watchable.cs" />
-    <Compile Include="src\Services\Core\WatchableManager.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\strangeioc\strange-no-unity.csproj">
-      <Project>{0f249861-1d65-4008-b5f7-99892080e316}</Project>
-      <Name>strange-no-unity</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="NLog.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

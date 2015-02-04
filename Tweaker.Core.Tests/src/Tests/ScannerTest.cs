@@ -11,6 +11,7 @@ using UnityTest;
 
 using Ghostbit.Tweaker.Core;
 using System.Collections.Generic;
+using Ghostbit.Tweaker.AssemblyScanner;
 
 namespace Ghostbit.Tweaker.Core.Tests
 {
