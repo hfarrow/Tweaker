@@ -24,5 +24,11 @@ namespace Ghostbit.Tweaker.Core
         /// The assembly of the type or member that this tweaker objects binds to.
         /// </summary>
         Assembly Assembly { get; }
+
+        /// <summary>
+        /// The instance this tweaker object is bound to.
+        /// Null if bound to a static tweaker object.
+        /// </summary>
+        object Instance { get; }
     }
 }

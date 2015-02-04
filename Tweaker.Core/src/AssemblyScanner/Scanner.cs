@@ -70,16 +70,51 @@ namespace Ghostbit.Tweaker.AssemblyScanner
 
         public void ScanType(Type type, ScanOptions options = null)
         {
-            MemberInfo[] members = type.GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            ScanType(type, null, options);
+        }
+
+        public void ScanGenericType(Type type, ScanOptions options = null)
+        {
+            ScanGenericType(type, null, options);
+        }
+
+        public void ScanMember(MemberInfo member, ScanOptions options = null)
+        {
+            ScanMember(member, null, options);
+        }
+
+        public void ScanAttribute(Attribute attribute, object reflectedObject, ScanOptions options = null)
+        {
+            ScanAttribute(attribute, reflectedObject, options, null);
+        }
+
+        public void ScanInstance(object instance)
+        {
+            ScanType(instance.GetType(), instance);
+        }
+
+        private void ScanType(Type type, object instance, ScanOptions options = null)
+        {
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic;
+            if(instance == null)
+            {
+                flags |= BindingFlags.Static;
+            }
+            else
+            {
+                flags |= BindingFlags.Instance;
+            }
+
+            MemberInfo[] members = type.GetMembers(flags);
             foreach (var member in members)
             {
                 if (options == null || options.CheckMatch(member))
                 {
-                    ScanMember(member, options);
+                    ScanMember(member, instance, options);
                 }
             }
 
-            if (options != null || options.CheckMatch(type))
+            if (options == null || options.CheckMatch(type))
             {
                 foreach (Type typeKey in processors.Keys)
                 {
@@ -88,19 +123,19 @@ namespace Ghostbit.Tweaker.AssemblyScanner
                         var list = processors[typeKey];
                         foreach (var processor in list)
                         {
-                            processor.ProcessType(type);
+                            processor.ProcessType(type, instance);
                         }
                     }
                 }
             }
         }
 
-        public void ScanGenericType(Type type, ScanOptions options = null)
+        private void ScanGenericType(Type type, object instance, ScanOptions options = null)
         {
             //throw new NotImplementedException("Not currently supported.");
         }
 
-        public void ScanMember(MemberInfo member, ScanOptions options = null)
+        private void ScanMember(MemberInfo member, object instance, ScanOptions options = null)
         {
             foreach (var attribute in Attribute.GetCustomAttributes(member, false))
             {
@@ -109,7 +144,9 @@ namespace Ghostbit.Tweaker.AssemblyScanner
                     // The nested member type will be scanned by Assembly.GetTypes() so there
                     // is no need to scan it twice.
                     if (member.MemberType != MemberTypes.NestedType)
-                        ScanAttribute(attribute, member, options);
+                    {
+                        ScanAttribute(attribute, member, instance, options);
+                    }
                 }
             }
 
@@ -119,12 +156,12 @@ namespace Ghostbit.Tweaker.AssemblyScanner
                 var list = processors[type];
                 foreach (var processor in list)
                 {
-                    processor.ProcessMember(member, member.ReflectedType);
+                    processor.ProcessMember(member, member.ReflectedType, instance);
                 }
             }
         }
 
-        public void ScanAttribute(Attribute attribute, object reflectedObject, ScanOptions options = null)
+        private void ScanAttribute(Attribute attribute, object reflectedObject, object instance, ScanOptions options = null)
         {
             Type type = attribute.GetType();
             if (processors.ContainsKey(type))
@@ -132,10 +169,10 @@ namespace Ghostbit.Tweaker.AssemblyScanner
                 var list = processors[type];
                 foreach (var processor in list)
                 {
-                        if (reflectedObject is MemberInfo)
-                            processor.ProcessAttribute(attribute, (MemberInfo)reflectedObject);
-                        else if (reflectedObject is Type)
-                            processor.ProcessAttribute(attribute, (Type)reflectedObject);
+                    if (reflectedObject is MemberInfo)
+                        processor.ProcessAttribute(attribute, (MemberInfo)reflectedObject, instance);
+                    else if (reflectedObject is Type)
+                        processor.ProcessAttribute(attribute, (Type)reflectedObject, instance);
                 }
             }
         }
@@ -224,6 +261,12 @@ namespace Ghostbit.Tweaker.AssemblyScanner
         private class BaseProcessorWrapper
         {
             public readonly object Processor;
+
+            // Only types and static members are tracked.
+            // We can not safely track the instances of the user.
+            // Last thing we want to do is add instances to a HashSet
+            // because we would have no way of knowing when those objects
+            // are garbage collected.
             private HashSet<object> processedObjects;
 
             protected BaseProcessorWrapper(object processor)
@@ -232,44 +275,53 @@ namespace Ghostbit.Tweaker.AssemblyScanner
                 processedObjects = new HashSet<object>();
             }
 
-            private bool CheckAlreadyProcessed(object obj)
+            private bool CheckAlreadyProcessed(object obj, object instance)
             {
-                if (!processedObjects.Contains(obj))
+                if (instance != null)
                 {
-                    processedObjects.Add(obj);
+                    // We will process an instance every time ScanInstance is called by
+                    // the user.
                     return false;
+                }
+                else
+                {
+                    if (!processedObjects.Contains(obj))
+                    {
+                        processedObjects.Add(obj);
+                        return false;
+                    }
                 }
                 return true;
             }
 
-            public void ProcessAttribute(Attribute attribute, Type type)
+            public void ProcessAttribute(Attribute attribute, Type type, object instance = null)
             {
-                if (!CheckAlreadyProcessed(attribute.GetType().FullName + type.FullName))
-                    DoProcessAttribute(attribute, type);
+                if (!CheckAlreadyProcessed(attribute.GetType().FullName + type.FullName, instance))
+                    DoProcessAttribute(attribute, type, instance);
             }
 
-            public void ProcessAttribute(Attribute attribute, MemberInfo memberInfo)
+            public void ProcessAttribute(Attribute attribute, MemberInfo memberInfo, object instance = null)
             {
-                if (!CheckAlreadyProcessed(attribute.GetType().FullName + memberInfo.ReflectedType.FullName + memberInfo.Name))
-                    DoProcessAttribute(attribute, memberInfo);
+                if (!CheckAlreadyProcessed(attribute.GetType().FullName + memberInfo.ReflectedType.FullName + memberInfo.Name, instance))
+                    DoProcessAttribute(attribute, memberInfo, instance);
             }
 
-            public void ProcessType(Type type)
+            public void ProcessType(Type type, object instance = null)
             {
-                if (!CheckAlreadyProcessed(type))
-                    DoProcessType(type);
+                if (!CheckAlreadyProcessed(type.FullName, instance))
+                    DoProcessType(type, instance);
             }
 
-            public void ProcessMember(MemberInfo memberInfo, Type type)
+            public void ProcessMember(MemberInfo memberInfo, Type type, object instance = null)
             {
-                if (!CheckAlreadyProcessed(memberInfo))
-                    DoProcessMember(memberInfo, type);
+                if (!CheckAlreadyProcessed(memberInfo.ReflectedType.FullName, instance))
+                    DoProcessMember(memberInfo, type, instance);
             }
 
-            protected virtual void DoProcessAttribute(Attribute attribute, Type type) { }
-            protected virtual void DoProcessAttribute(Attribute attribute, MemberInfo memberInfo) { }
-            protected virtual void DoProcessType(Type type) { }
-            protected virtual void DoProcessMember(MemberInfo memberInfo, Type type) { }
+            protected virtual void DoProcessAttribute(Attribute attribute, Type type, object instance = null) { }
+            protected virtual void DoProcessAttribute(Attribute attribute, MemberInfo memberInfo, object instance = null) { }
+            protected virtual void DoProcessType(Type type, object instance = null) { }
+            protected virtual void DoProcessMember(MemberInfo memberInfo, Type type, object instance = null) { }
         }
 
         private class ProcessorWrapper<TInput, TResult> :
@@ -291,39 +343,39 @@ namespace Ghostbit.Tweaker.AssemblyScanner
             {
             }
 
-            protected override void DoProcessAttribute(Attribute attribute, MemberInfo memberInfo)
+            protected override void DoProcessAttribute(Attribute attribute, MemberInfo memberInfo, object instance = null)
             {
                 var attributeProcessor = Processor as IAttributeScanProcessor<TInput, TResult>;
                 if (attributeProcessor != null)
                 {
-                    attributeProcessor.ProcessAttribute(attribute as TInput, memberInfo);
+                    attributeProcessor.ProcessAttribute(attribute as TInput, memberInfo, instance);
                 }
             }
 
-            protected override void DoProcessAttribute(Attribute attribute, Type type)
+            protected override void DoProcessAttribute(Attribute attribute, Type type, object instance = null)
             {
                 var attributeProcessor = Processor as IAttributeScanProcessor<TInput, TResult>;
                 if (attributeProcessor != null)
                 {
-                    attributeProcessor.ProcessAttribute(attribute as TInput, type);
+                    attributeProcessor.ProcessAttribute(attribute as TInput, type, instance);
                 }
             }
 
-            protected override void DoProcessType(Type type)
+            protected override void DoProcessType(Type type, object instance = null)
             {
                 var typeProcessor = Processor as ITypeScanProcessor<TInput, TResult>;
                 if (typeProcessor != null)
                 {
-                    typeProcessor.ProcessType(type);
+                    typeProcessor.ProcessType(type, instance);
                 }
             }
 
-            protected override void DoProcessMember(MemberInfo memberInfo, Type type)
+            protected override void DoProcessMember(MemberInfo memberInfo, Type type, object instance = null)
             {
                 var memberProcessor = Processor as IMemberScanProcessor<TInput, TResult>;
                 if (memberProcessor != null)
                 {
-                    memberProcessor.ProcessMember(memberInfo as TInput, type);
+                    memberProcessor.ProcessMember(memberInfo as TInput, type, instance);
                 }
             }
         }

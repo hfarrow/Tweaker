@@ -6,26 +6,30 @@ using System.Threading.Tasks;
 
 using Ghostbit.Tweaker.Core;
 using System.Threading;
-using NLog;
+using Ghostbit.Tweaker.AssemblyScanner;
+using System.Diagnostics;
 
 namespace Ghostbit.Tweaker.Core.Testbed
 {
+    public class TestClass
+    {
+        [Invokable("TestClass")]
+        public void TestMethod()
+        {
+            Debug.WriteLine("TestMethod");
+        }
+    }
+
     class Program
     {
-        private static Logger logger = LogManager.GetCurrentClassLogger();
-
         static Tweaker tweaker;
         static void Main(string[] args)
         {
             tweaker = new Tweaker();
-            tweaker.Initialized += OnInitialized;
             tweaker.Init();
-        }
 
-        private static void OnInitialized()
-        {
-            logger.Info("OnInitialized");
-            tweaker.Shutdown();
+            var instance = new TestClass();
+            Scanner.Global.ScanInstance(instance);
         }
     }
 }

@@ -17,9 +17,9 @@ namespace Ghostbit.Tweaker.Core
     /// </remarks>
     public class InvokableProcessor : IAttributeScanProcessor<Invokable, IInvokable>
     {
-        public void ProcessAttribute(Invokable input, Type type)
+        public void ProcessAttribute(Invokable input, Type type, object instance = null)
         {
-            foreach (MemberInfo memberInfo in type.GetMembers(BindingFlags.Public | BindingFlags.Static))
+            foreach (MemberInfo memberInfo in type.GetMembers(GetFlags(instance)))
             {
                 if (memberInfo.MemberType == MemberTypes.Method ||
                     memberInfo.MemberType == MemberTypes.Event)
@@ -27,18 +27,18 @@ namespace Ghostbit.Tweaker.Core
                     if (memberInfo.GetCustomAttributes(typeof(Invokable), false).Length == 0)
                     {
                         Invokable inner = new Invokable(input.Name + "." + memberInfo.Name);
-                        ProcessAttribute(inner, memberInfo);
+                        ProcessAttribute(inner, memberInfo, instance);
                     }
                 }
             }
         }
 
-        public void ProcessAttribute(Invokable input, MemberInfo memberInfo)
+        public void ProcessAttribute(Invokable input, MemberInfo memberInfo, object instance = null)
         {
             if (memberInfo.MemberType == MemberTypes.Method)
             {
                 var methodInfo = (MethodInfo)memberInfo;
-                var invokable = new InvokableMethod(new InvokableInfo(input.Name), methodInfo, null);
+                var invokable = new InvokableMethod(new InvokableInfo(input.Name), methodInfo, instance);
                 ProvideResult(invokable);
             }
             else if (memberInfo.MemberType == MemberTypes.Event)
@@ -46,8 +46,8 @@ namespace Ghostbit.Tweaker.Core
                 var eventInfo = (EventInfo)memberInfo;
                 var type = eventInfo.ReflectedType;
 
-                var fieldInfo = type.GetField(eventInfo.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-                var invokable = new InvokableEvent(new InvokableInfo(input.Name), fieldInfo, null);
+                var fieldInfo = type.GetField(eventInfo.Name, GetFlags(instance) | BindingFlags.NonPublic);
+                var invokable = new InvokableEvent(new InvokableInfo(input.Name), fieldInfo, instance);
                 ProvideResult(invokable);
             }
             else
@@ -62,6 +62,20 @@ namespace Ghostbit.Tweaker.Core
         {
             if (ResultProvided != null)
                 ResultProvided(this, new ScanResultArgs<IInvokable>(invokable));
+        }
+
+        private BindingFlags GetFlags(object instance)
+        {
+            BindingFlags flags = BindingFlags.Public;
+            if (instance == null)
+            {
+                flags |= BindingFlags.Static;
+            }
+            else
+            {
+                flags |= BindingFlags.Instance;
+            }
+            return flags;
         }
     }
 }
