@@ -43,16 +43,18 @@ namespace Ghostbit.Tweaker.Core.Tests
 
     public class TypeProcessorResult
     {
-        public Type Type;
+        public Type ProcessedType;
+        public Type InputType;
     }
 
     public class TypeProcessor<TInput> : ITypeScanProcessor<TInput, TypeProcessorResult>
         where TInput : class
     {
-        public void ProcessType()
+        public void ProcessType(Type type)
         {
             var result = new TypeProcessorResult();
-            result.Type = typeof(TInput);
+            result.ProcessedType = type;
+            result.InputType = typeof(TInput);
 
             if (ResultProvided != null)
                 ResultProvided(this, new ScanResultArgs<TypeProcessorResult>(result));

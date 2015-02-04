@@ -79,14 +79,17 @@ namespace Ghostbit.Tweaker.AssemblyScanner
                 }
             }
 
-            if (processors.ContainsKey(type))
+            if (options != null || options.CheckMatch(type))
             {
-                var list = processors[type];
-                foreach (var processor in list)
+                foreach (Type typeKey in processors.Keys)
                 {
-                    if (options == null || options.CheckMatch(type))
+                    if (type.IsSubclassOf(typeKey))
                     {
-                        processor.ProcessType(type);
+                        var list = processors[typeKey];
+                        foreach (var processor in list)
+                        {
+                            processor.ProcessType(type);
+                        }
                     }
                 }
             }
@@ -254,7 +257,7 @@ namespace Ghostbit.Tweaker.AssemblyScanner
             public void ProcessType(Type type)
             {
                 if (!CheckAlreadyProcessed(type))
-                    DoProcessType();
+                    DoProcessType(type);
             }
 
             public void ProcessMember(MemberInfo memberInfo, Type type)
@@ -265,7 +268,7 @@ namespace Ghostbit.Tweaker.AssemblyScanner
 
             protected virtual void DoProcessAttribute(Attribute attribute, Type type) { }
             protected virtual void DoProcessAttribute(Attribute attribute, MemberInfo memberInfo) { }
-            protected virtual void DoProcessType() { }
+            protected virtual void DoProcessType(Type type) { }
             protected virtual void DoProcessMember(MemberInfo memberInfo, Type type) { }
         }
 
@@ -306,12 +309,12 @@ namespace Ghostbit.Tweaker.AssemblyScanner
                 }
             }
 
-            protected override void DoProcessType()
+            protected override void DoProcessType(Type type)
             {
                 var typeProcessor = Processor as ITypeScanProcessor<TInput, TResult>;
                 if (typeProcessor != null)
                 {
-                    typeProcessor.ProcessType();
+                    typeProcessor.ProcessType(type);
                 }
             }
 

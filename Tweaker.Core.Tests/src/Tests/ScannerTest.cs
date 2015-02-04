@@ -34,6 +34,11 @@ namespace Ghostbit.Tweaker.Core.Tests
             public static int IntProperty { get; set; }
         }
 
+        private class SubTestClass : TestClass
+        {
+
+        }
+
         private TestClass testClass;
 
         private ScanOptions MakeScanOptions()
@@ -106,7 +111,8 @@ namespace Ghostbit.Tweaker.Core.Tests
             scanner.GetResultProvider<AttributeProcessorResult>().ResultProvided +=
                 (s, a) =>
                 {
-                    if (a.result.Name == "TestClass" && ((MemberInfo)a.result.Obj) == typeof(TestClass))
+                    if (a.result.Name == "TestClass" && 
+                        ((MemberInfo)a.result.Obj) == typeof(TestClass))
                         found = true;
                 };
             scanner.Scan(MakeScanOptions());
@@ -122,7 +128,8 @@ namespace Ghostbit.Tweaker.Core.Tests
             scanner.GetResultProvider<TypeProcessorResult>().ResultProvided +=
                 (s, a) =>
                 {
-                    if (a.result.Type == typeof(TestClass))
+                    if (a.result.InputType == typeof(TestClass)
+                        && a.result.ProcessedType == typeof(SubTestClass))
                         found = true;
                 };
             scanner.Scan(MakeScanOptions());
@@ -208,12 +215,13 @@ namespace Ghostbit.Tweaker.Core.Tests
             scanner.GetResultProvider<TypeProcessorResult>().ResultProvided +=
                 (s, a) =>
                 {
-                    if (a.result.Type == typeof(TestClass))
+                    if (a.result.InputType == typeof(TestClass)
+                         && a.result.ProcessedType == typeof(SubTestClass))
                         found = true;
                 };
             ScanOptions options = MakeScanOptions();
             options.Types.NameRegex = @"TestClass";
-            options.Types.ScannableRefs = new Type[] { typeof(TestClass) };
+            options.Types.ScannableRefs = new Type[] { typeof(TestClass), typeof(SubTestClass) };
             scanner.Scan(options);
             Assert.IsTrue(found);
         }
@@ -254,7 +262,8 @@ namespace Ghostbit.Tweaker.Core.Tests
             scanner.GetResultProvider<TypeProcessorResult>().ResultProvided +=
                 (s, a) =>
                 {
-                    if (a.result.Type == typeof(TestClass))
+                    if (a.result.InputType == typeof(TestClass)
+                        && a.result.ProcessedType == typeof(SubTestClass))
                         count++;
                 };
             var options = MakeScanOptions();
