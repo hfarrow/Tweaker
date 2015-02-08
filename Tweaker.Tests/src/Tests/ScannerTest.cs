@@ -349,5 +349,27 @@ namespace Ghostbit.Tweaker.Core.Tests
             scanner.ScanInstance(instance);
             Assert.IsTrue(found);
         }
+
+        public class TestTweakerClass
+        {
+            [Invokable("TestMethod")]
+            public void TestMethod()
+            {
+
+            }
+        }
+
+        [Test]
+        public void TweakerFactoryScanInstance()
+        {
+            Scanner scanner = new Scanner();
+            Tweaker tweaker = new Tweaker();
+            tweaker.Init(null, scanner);
+            TweakerFactory factory = new TweakerFactory(scanner);
+
+            var instance = factory.Create<TestTweakerClass>();
+            Assert.IsNotNull(tweaker.Invokables.GetInvokable("TestMethod"));
+            Assert.IsNotNull(instance);
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace Ghostbit.Tweaker.Core
     {
         public void ProcessAttribute(Invokable input, Type type, object instance = null)
         {
-            foreach (MemberInfo memberInfo in type.GetMembers(GetFlags(instance)))
+            foreach (MemberInfo memberInfo in type.GetMembers(ReflectionUtil.GetBindingFlags(instance)))
             {
                 if (memberInfo.MemberType == MemberTypes.Method ||
                     memberInfo.MemberType == MemberTypes.Event)
@@ -35,24 +35,25 @@ namespace Ghostbit.Tweaker.Core
 
         public void ProcessAttribute(Invokable input, MemberInfo memberInfo, object instance = null)
         {
+            IInvokable invokable = null;
             if (memberInfo.MemberType == MemberTypes.Method)
             {
                 var methodInfo = (MethodInfo)memberInfo;
-                var invokable = new InvokableMethod(new InvokableInfo(input.Name), methodInfo, instance);
-                ProvideResult(invokable);
+                invokable = InvokableFactory.MakeInvokable(input, methodInfo, instance);
             }
             else if (memberInfo.MemberType == MemberTypes.Event)
             {
                 var eventInfo = (EventInfo)memberInfo;
-                var type = eventInfo.ReflectedType;
-
-                var fieldInfo = type.GetField(eventInfo.Name, GetFlags(instance) | BindingFlags.NonPublic);
-                var invokable = new InvokableEvent(new InvokableInfo(input.Name), fieldInfo, instance);
-                ProvideResult(invokable);
+                invokable = InvokableFactory.MakeInvokable(input, eventInfo, instance);
             }
             else
             {
-                throw new ScannerException("InvokableProcessor cannot process non MethodInfo or EventInfo types");
+                throw new ProcessorException("InvokableProcessor cannot process non MethodInfo or EventInfo types");
+            }
+
+            if (invokable != null)
+            {
+                ProvideResult(invokable);
             }
         }
 
@@ -62,20 +63,6 @@ namespace Ghostbit.Tweaker.Core
         {
             if (ResultProvided != null)
                 ResultProvided(this, new ScanResultArgs<IInvokable>(invokable));
-        }
-
-        private BindingFlags GetFlags(object instance)
-        {
-            BindingFlags flags = BindingFlags.Public;
-            if (instance == null)
-            {
-                flags |= BindingFlags.Static;
-            }
-            else
-            {
-                flags |= BindingFlags.Instance;
-            }
-            return flags;
         }
     }
 }

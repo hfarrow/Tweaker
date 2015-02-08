@@ -56,22 +56,26 @@
     <Compile Include="Source\Interfaces\ITweakable.cs" />
     <Compile Include="Source\Interfaces\ITweakableManager.cs" />
     <Compile Include="Source\Interfaces\ITweakerAttribute.cs" />
+    <Compile Include="Source\Interfaces\ITweakerFactory.cs" />
     <Compile Include="Source\Interfaces\ITweakerObject.cs" />
     <Compile Include="Source\Interfaces\IWatchable.cs" />
     <Compile Include="Source\Interfaces\IWatchableManager.cs" />
-    <Compile Include="Source\Invokable.cs" />
-    <Compile Include="Source\InvokableManager.cs" />
+    <Compile Include="Source\Invokable\Invokable.cs" />
+    <Compile Include="Source\Invokable\InvokableFactory.cs" />
+    <Compile Include="Source\Invokable\InvokableManager.cs" />
     <Compile Include="Source\Processors\InvokableProcessor.cs" />
     <Compile Include="Source\Processors\TweakableProcessor.cs" />
     <Compile Include="Source\Processors\WatchableProcessor.cs" />
+    <Compile Include="Source\Utils\ReflectionUtil.cs" />
     <Compile Include="Source\SearchOptions.cs" />
-    <Compile Include="Source\Tweakable.cs" />
-    <Compile Include="Source\TweakableFactory.cs" />
-    <Compile Include="Source\TweakableManager.cs" />
+    <Compile Include="Source\Tweakable\Tweakable.cs" />
+    <Compile Include="Source\Tweakable\TweakableFactory.cs" />
+    <Compile Include="Source\Tweakable\TweakableManager.cs" />
     <Compile Include="Source\TweakerDictionary.cs" />
     <Compile Include="Source\TweakerObject.cs" />
-    <Compile Include="Source\Watchable.cs" />
-    <Compile Include="Source\WatchableManager.cs" />
+    <Compile Include="Source\Utils\TweakerFactory.cs" />
+    <Compile Include="Source\Watchable\Watchable.cs" />
+    <Compile Include="Source\Watchable\WatchableManager.cs" />
     <Compile Include="Source\Tweaker.cs" />
   </ItemGroup>
   <ItemGroup>

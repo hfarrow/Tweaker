@@ -20,15 +20,23 @@ namespace Ghostbit.Tweaker.Core
 
         public IInvokable RegisterInvokable(InvokableInfo info, Delegate del)
         {
-            var invokable = new InvokableMethod(info, del);
+            var invokable = InvokableFactory.MakeInvokable(info, del);
             RegisterInvokable(invokable);
             return invokable;
         }
 
-        public IInvokable RegisterInvokable(InvokableInfo info, MethodInfo invokable, object instance = null)
+        public IInvokable RegisterInvokable(InvokableInfo info, MethodInfo methodInfo, object instance = null)
         {
-            // TODO: shouldn't be too much work to implement this.
-            throw new NotImplementedException();
+            var invokable = InvokableFactory.MakeInvokable(info, methodInfo, instance);
+            RegisterInvokable(invokable);
+            return invokable;
+        }
+
+        public IInvokable RegisterInvokable(InvokableInfo info, EventInfo eventInfo, object instance = null)
+        {
+            var invokable = InvokableFactory.MakeInvokable(info, eventInfo, instance);
+            RegisterInvokable(invokable);
+            return invokable;
         }
 
         public void RegisterInvokable(IInvokable invokable)

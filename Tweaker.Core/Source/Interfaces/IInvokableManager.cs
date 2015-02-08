@@ -25,10 +25,19 @@ namespace Ghostbit.Tweaker.Core
         /// Register and bind a MethodInfo to an IInvokable.
         /// </summary>
         /// <param name="info">Info about the invokable.</param>
-        /// <param name="invokable">The MethodInfo to bind the invokable to.</param>
+        /// <param name="methodInfo">The MethodInfo to bind the invokable to.</param>
         /// <param name="instance">The instance to bind the MethodInfo to. Pass null if static method.</param>
-        /// <returns>An bound IInvokable instance.</returns>
-        IInvokable RegisterInvokable(InvokableInfo info, MethodInfo invokable, object instance = null);
+        /// <returns>A bound IInvokable instance.</returns>
+        IInvokable RegisterInvokable(InvokableInfo info, MethodInfo methodInfo, object instance = null);
+
+        /// <summary>
+        /// Register and bind an EventInfo to an IInvokable.
+        /// </summary>
+        /// <param name="info">Info about the invokable.</param>
+        /// <param name="eventInfo">The EventInfo to bind the invokable to.</param>
+        /// <param name="instance">The instance to bind the EventInfo to. Pass null if static event.</param>
+        /// <returns>A bound IInvokable instance.</returns>
+        IInvokable RegisterInvokable(InvokableInfo info, EventInfo eventInfo, object instance = null);
 
         /// <summary>
         /// Register an externally created invokable.

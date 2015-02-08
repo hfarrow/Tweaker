@@ -54,4 +54,12 @@ namespace Ghostbit.Tweaker.Core
         {
         }
     }
+
+    public class ProcessorException : Exception, ISerializable
+    {
+        public ProcessorException(string msg)
+            : base(msg)
+        {
+        }
+    }
 }

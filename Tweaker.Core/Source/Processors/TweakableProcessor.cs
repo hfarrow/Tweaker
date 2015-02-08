@@ -19,7 +19,7 @@ namespace Ghostbit.Tweaker.Core
     {
         public void ProcessAttribute(Tweakable input, Type type, object instance = null)
         {
-            foreach (MemberInfo memberInfo in type.GetMembers(GetFlags(instance)))
+            foreach (MemberInfo memberInfo in type.GetMembers(ReflectionUtil.GetBindingFlags(instance)))
             {
                 if (memberInfo.MemberType == MemberTypes.Property ||
                     memberInfo.MemberType == MemberTypes.Field)
@@ -35,16 +35,24 @@ namespace Ghostbit.Tweaker.Core
 
         public void ProcessAttribute(Tweakable input, MemberInfo memberInfo, object instance = null)
         {
+            ITweakable tweakable = null;
             if (memberInfo.MemberType == MemberTypes.Property)
             {
                 var propertyInfo = (PropertyInfo)memberInfo;
-                var tweakable = TweakableFactory.MakeTweakable(input, propertyInfo, instance);
-                ProvideResult(tweakable);
+                tweakable = TweakableFactory.MakeTweakable(input, propertyInfo, instance);
             }
             else if (memberInfo.MemberType == MemberTypes.Field)
             {
                 var fieldInfo = (FieldInfo)memberInfo;
-                var tweakable = TweakableFactory.MakeTweakable(input, fieldInfo, instance);
+                tweakable = TweakableFactory.MakeTweakable(input, fieldInfo, instance);
+            }
+            else
+            {
+                throw new ProcessorException("TweakableProcessor cannot process non MethodInfo or EventInfo types");
+            }
+
+            if(tweakable != null)
+            {
                 ProvideResult(tweakable);
             }
         }
@@ -55,20 +63,6 @@ namespace Ghostbit.Tweaker.Core
         {
             if (ResultProvided != null)
                 ResultProvided(this, new ScanResultArgs<ITweakable>(tweakable));
-        }
-
-        private BindingFlags GetFlags(object instance)
-        {
-            BindingFlags flags = BindingFlags.Public;
-            if (instance == null)
-            {
-                flags |= BindingFlags.Static;
-            }
-            else
-            {
-                flags |= BindingFlags.Instance;
-            }
-            return flags;
         }
     }
 }

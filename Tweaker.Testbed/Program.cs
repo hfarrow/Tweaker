@@ -3,20 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using Ghostbit.Tweaker.Core;
 using System.Threading;
-using Ghostbit.Tweaker.AssemblyScanner;
 using System.Diagnostics;
+using Ghostbit.Tweaker.Core;
+using Ghostbit.Tweaker.AssemblyScanner;
+
 
 namespace Ghostbit.Tweaker.Core.Testbed
 {
     public class TestClass
     {
-        [Invokable("TestClass")]
+        [Invokable("TestMethod")]
         public void TestMethod()
         {
             Debug.WriteLine("TestMethod");
+        }
+
+        [Invokable("TestMethodStatic")]
+        public static void TestMethodStatic()
+        {
+            Debug.WriteLine("TestMethodStatic");
         }
     }
 
@@ -28,8 +34,11 @@ namespace Ghostbit.Tweaker.Core.Testbed
             tweaker = new Tweaker();
             tweaker.Init();
 
-            var instance = new TestClass();
-            Scanner.Global.ScanInstance(instance);
+            //var instance = new TestClass();
+            //Scanner.Global.ScanInstance(instance);
+            //tweaker.Invokables.Invoke("TestMethod", null);
+
+
         }
     }
 }
