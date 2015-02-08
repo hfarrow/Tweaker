@@ -17,6 +17,7 @@ namespace Ghostbit.Tweaker.Core.Tests
     [TestFixture]
     public class InvokableTest
     {
+#pragma warning disable 0067,0649
         private class TestClass
         {
             public bool didRunMethod = false;
@@ -46,6 +47,7 @@ namespace Ghostbit.Tweaker.Core.Tests
             [Invokable("TestEventStaticVoidVoid")]
             public static event Action TestEventStaticVoidVoid;
         }
+#pragma warning restore 0067,0649
 
         private TestClass testClass;
 

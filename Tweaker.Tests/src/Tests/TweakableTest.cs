@@ -17,6 +17,7 @@ namespace Ghostbit.Tweaker.Core.Tests
     [TestFixture]
     public class TweakableTest
     {
+#pragma warning disable 0067,0649
         private class TestClass
         {
             [Tweakable("IntProperty")]
@@ -43,6 +44,7 @@ namespace Ghostbit.Tweaker.Core.Tests
              NamedToggleValue("hundred", 100, 2)]
             public static int intFieldToggle;
         }
+#pragma warning restore 0067,0649
 
         private TestClass testClass;
 

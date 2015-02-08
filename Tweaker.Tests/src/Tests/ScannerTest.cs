@@ -18,6 +18,7 @@ namespace Ghostbit.Tweaker.Core.Tests
     [TestFixture]
     public class ScannerTest
     {
+#pragma warning disable 0067,0649
         [PlaceHolderAttribute(Name = "TestClass")]
         private class TestClass
         {
@@ -56,6 +57,7 @@ namespace Ghostbit.Tweaker.Core.Tests
         {
 
         }
+#pragma warning restore 0067,0649
 
         private TestClass testClass;
 
