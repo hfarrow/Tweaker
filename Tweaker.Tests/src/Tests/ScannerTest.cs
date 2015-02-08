@@ -75,53 +75,28 @@ namespace Ghostbit.Tweaker.Core.Tests
         [Test]
         public void ScanForStaticMethodAttribute()
         {
-            var found = false;
-            Scanner scanner = new Scanner();
-            scanner.AddProcessor(new AttributeProcessor());
-            scanner.GetResultProvider<AttributeProcessorResult>().ResultProvided +=
-                (s, a) =>
-                {
-                    if (a.result.Name == "TestClass.MethodVoidVoid" && ((MemberInfo)a.result.Obj).ReflectedType == typeof(TestClass))
-                        found = true;
-                };
-            scanner.Scan(MakeScanOptions());
-            Assert.IsTrue(found);
+            ScanForStaticMemberAttribute("TestClass.MethodVoidVoid");
         }
 
         [Test]
         public void ScanForStaticEventAttribute()
         {
-            var found = false;
-            Scanner scanner = new Scanner();
-            scanner.AddProcessor(new AttributeProcessor());
-            scanner.GetResultProvider<AttributeProcessorResult>().ResultProvided +=
-                (s, a) =>
-                {
-                    if (a.result.Name == "TestClass.ActionVoid" && ((MemberInfo)a.result.Obj).ReflectedType == typeof(TestClass))
-                        found = true;
-                };
-            scanner.Scan(MakeScanOptions());
-            Assert.IsTrue(found);
+            ScanForStaticMemberAttribute("TestClass.ActionVoid");
         }
 
         [Test]
         public void ScanForStaticPropertyAttribute()
         {
-            var found = false;
-            Scanner scanner = new Scanner();
-            scanner.AddProcessor(new AttributeProcessor());
-            scanner.GetResultProvider<AttributeProcessorResult>().ResultProvided +=
-                (s, a) =>
-                {
-                    if (a.result.Name == "TestClass.IntProperty" && ((MemberInfo)a.result.Obj).ReflectedType == typeof(TestClass))
-                        found = true;
-                };
-            scanner.Scan(MakeScanOptions());
-            Assert.IsTrue(found);
+            ScanForStaticMemberAttribute("TestClass.IntProperty");
         }
 
         [Test]
         public void ScanForStaticFieldAttribute()
+        {
+            ScanForStaticMemberAttribute("TestClass.IntField");
+        }
+
+        private void ScanForStaticMemberAttribute(string name)
         {
             var found = false;
             Scanner scanner = new Scanner();
@@ -129,7 +104,7 @@ namespace Ghostbit.Tweaker.Core.Tests
             scanner.GetResultProvider<AttributeProcessorResult>().ResultProvided +=
                 (s, a) =>
                 {
-                    if (a.result.Name == "TestClass.IntField" && ((MemberInfo)a.result.Obj).ReflectedType == typeof(TestClass))
+                    if (a.result.Name == name && ((MemberInfo)a.result.Obj).ReflectedType == typeof(TestClass))
                         found = true;
                 };
             scanner.Scan(MakeScanOptions());
@@ -171,50 +146,34 @@ namespace Ghostbit.Tweaker.Core.Tests
         }
 
         [Test]
-        public void ScanForStaticMember()
+        public void ScanForStaticMethod()
         {
-            var found = false;
-            Scanner scanner = new Scanner();
-            scanner.AddProcessor(new MemberProcessor<MethodInfo>());
-            scanner.GetResultProvider<MemberProcessorResult>().ResultProvided +=
-                (s, a) =>
-                {
-                    if (a.result.Type == typeof(TestClass) && 
-                        a.result.memberInfo.Name == "MethodVoidVoid")
-                        found = true;
-                };
-            scanner.Scan(MakeScanOptions());
-            Assert.IsTrue(found);
+            ScanForStaticMember<MethodInfo>("MethodVoidVoid");
         }
 
         [Test]
         public void ScanForStaticEvent()
         {
-            var found = false;
-            Scanner scanner = new Scanner();
-            scanner.AddProcessor(new MemberProcessor<EventInfo>());
-            scanner.GetResultProvider<MemberProcessorResult>().ResultProvided +=
-                (s, a) =>
-                {
-                    if (a.result.Type == typeof(TestClass) &&
-                        a.result.memberInfo.Name == "ActionVoid")
-                        found = true;
-                };
-            scanner.Scan(MakeScanOptions());
-            Assert.IsTrue(found);
+            ScanForStaticMember<EventInfo>("ActionVoid");
         }
 
         [Test]
         public void ScanForStaticProperty()
         {
+            ScanForStaticMember<PropertyInfo>("IntProperty");
+        }
+
+        private void ScanForStaticMember<TInput>(string name)
+            where TInput : MemberInfo
+        {
             var found = false;
             Scanner scanner = new Scanner();
-            scanner.AddProcessor(new MemberProcessor<PropertyInfo>());
+            scanner.AddProcessor(new MemberProcessor<TInput>());
             scanner.GetResultProvider<MemberProcessorResult>().ResultProvided +=
                 (s, a) =>
                 {
                     if (a.result.Type == typeof(TestClass) &&
-                        a.result.memberInfo.Name == "IntProperty")
+                        a.result.memberInfo.Name == name)
                         found = true;
                 };
             scanner.Scan(MakeScanOptions());
@@ -349,6 +308,29 @@ namespace Ghostbit.Tweaker.Core.Tests
         [Test]
         public void ScanForInstanceMethodAttribute()
         {
+            ScanForInstanceMember("TestClass.MethodVoidVoidInstance");
+        }
+
+        [Test]
+        public void ScanForInstanceEventAttribute()
+        {
+            ScanForInstanceMember("TestClass.ActionVoidInstance");
+        }
+
+        [Test]
+        public void ScanForInstancePropertyAttribute()
+        {
+            ScanForInstanceMember("TestClass.IntPropertyInstance");
+        }
+
+        [Test]
+        public void ScanForInstanceFieldAttribute()
+        {
+            ScanForInstanceMember("TestClass.IntFieldInstance");
+        }
+
+        private void ScanForInstanceMember(string name)
+        {
             var found = false;
             var instance = new TestClass();
             Scanner scanner = new Scanner();
@@ -356,34 +338,16 @@ namespace Ghostbit.Tweaker.Core.Tests
             scanner.GetResultProvider<AttributeProcessorResult>().ResultProvided +=
                 (s, a) =>
                 {
-                    if (a.result.Name == "TestClass.MethodVoidVoidInstance" &&
+                    if (a.result.Name == name &&
                         ((MemberInfo)a.result.Obj).ReflectedType == typeof(TestClass) &&
                         a.result.Instance == instance)
                     {
                         found = true;
                     }
                 };
-            
+
             scanner.ScanInstance(instance);
             Assert.IsTrue(found);
-        }
-
-        [Test]
-        public void ScanForInstanceEventAttribute()
-        {
-            Assert.Fail("TODO: implement this test");
-        }
-
-        [Test]
-        public void ScanForInstancePropertyAttribute()
-        {
-            Assert.Fail("TODO: implement this test");
-        }
-
-        [Test]
-        public void ScanForInstanceFieldAttribute()
-        {
-            Assert.Fail("TODO: implement this test");
         }
     }
 }

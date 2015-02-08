@@ -20,7 +20,6 @@ namespace Ghostbit.Tweaker.Core.Tests
 
     public class AttributeProcessor : IAttributeScanProcessor<PlaceHolderAttribute, AttributeProcessorResult>
     {
-
         public void ProcessAttribute(PlaceHolderAttribute input, Type type, object instance = null)
         {
             var result = new AttributeProcessorResult();
