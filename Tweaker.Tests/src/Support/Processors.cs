@@ -20,23 +20,23 @@ namespace Ghostbit.Tweaker.Core.Tests
 
     public class AttributeProcessor : IAttributeScanProcessor<PlaceHolderAttribute, AttributeProcessorResult>
     {
-        public void ProcessAttribute(PlaceHolderAttribute input, Type type, object instance = null)
+        public void ProcessAttribute(PlaceHolderAttribute input, Type type, IBoundInstance instance = null)
         {
             var result = new AttributeProcessorResult();
             result.Name = input.Name;
             result.Obj = type;
-            result.Instance = instance;
+            result.Instance = instance != null ? instance.Instance : null;
 
             if (ResultProvided != null)
                 ResultProvided(this, new ScanResultArgs<AttributeProcessorResult>(result));
         }
 
-        public void ProcessAttribute(PlaceHolderAttribute input, MemberInfo memberInfo, object instance = null)
+        public void ProcessAttribute(PlaceHolderAttribute input, MemberInfo memberInfo, IBoundInstance instance = null)
         {
             var result = new AttributeProcessorResult();
             result.Name = input.Name;
             result.Obj = memberInfo;
-            result.Instance = instance;
+            result.Instance = instance != null ? instance.Instance : null;
 
             if (ResultProvided != null)
                 ResultProvided(this, new ScanResultArgs<AttributeProcessorResult>(result));
@@ -55,12 +55,12 @@ namespace Ghostbit.Tweaker.Core.Tests
     public class TypeProcessor<TInput> : ITypeScanProcessor<TInput, TypeProcessorResult>
         where TInput : class
     {
-        public void ProcessType(Type type, object instance = null)
+        public void ProcessType(Type type, IBoundInstance instance = null)
         {
             var result = new TypeProcessorResult();
             result.ProcessedType = type;
             result.InputType = typeof(TInput);
-            result.Instance = instance;
+            result.Instance = instance != null ? instance.Instance : null;
 
             if (ResultProvided != null)
                 ResultProvided(this, new ScanResultArgs<TypeProcessorResult>(result));
@@ -81,12 +81,12 @@ namespace Ghostbit.Tweaker.Core.Tests
     {
         public event EventHandler<ScanResultArgs<MemberProcessorResult>> ResultProvided;
 
-        public void ProcessMember(TInput input, Type type, object instance = null)
+        public void ProcessMember(TInput input, Type type, IBoundInstance instance = null)
         {
             var result = new MemberProcessorResult();
             result.memberInfo = input;
             result.Type = input.ReflectedType;
-            result.Instance = instance;
+            result.Instance = instance != null ? instance.Instance : null;
 
             if (ResultProvided != null)
                 ResultProvided(this, new ScanResultArgs<MemberProcessorResult>(result));

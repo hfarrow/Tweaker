@@ -85,15 +85,20 @@ namespace Ghostbit.Tweaker.AssemblyScanner
 
         public void ScanAttribute(Attribute attribute, object reflectedObject, ScanOptions options = null)
         {
-            ScanAttribute(attribute, reflectedObject, options, null);
+            ScanAttribute(attribute, reflectedObject, null, options);
         }
 
         public void ScanInstance(object instance)
         {
-            ScanType(instance.GetType(), instance);
+            if(instance == null)
+            {
+                throw new ArgumentNullException("instance", "Cannot scan null instance.");
+            }
+
+            ScanType(instance.GetType(), BoundInstanceFactory.Create(instance));
         }
 
-        private void ScanType(Type type, object instance, ScanOptions options = null)
+        private void ScanType(Type type, IBoundInstance instance, ScanOptions options = null)
         {
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic;
             if(instance == null)
@@ -130,12 +135,12 @@ namespace Ghostbit.Tweaker.AssemblyScanner
             }
         }
 
-        private void ScanGenericType(Type type, object instance, ScanOptions options = null)
+        private void ScanGenericType(Type type, IBoundInstance instance, ScanOptions options = null)
         {
             //throw new NotImplementedException("Not currently supported.");
         }
 
-        private void ScanMember(MemberInfo member, object instance, ScanOptions options = null)
+        private void ScanMember(MemberInfo member, IBoundInstance instance, ScanOptions options = null)
         {
             foreach (var attribute in Attribute.GetCustomAttributes(member, false))
             {
@@ -161,7 +166,7 @@ namespace Ghostbit.Tweaker.AssemblyScanner
             }
         }
 
-        private void ScanAttribute(Attribute attribute, object reflectedObject, object instance, ScanOptions options = null)
+        private void ScanAttribute(Attribute attribute, object reflectedObject, IBoundInstance instance, ScanOptions options = null)
         {
             Type type = attribute.GetType();
             if (processors.ContainsKey(type))
@@ -275,7 +280,7 @@ namespace Ghostbit.Tweaker.AssemblyScanner
                 processedObjects = new HashSet<object>();
             }
 
-            private bool CheckAlreadyProcessed(object obj, object instance)
+            private bool CheckAlreadyProcessed(object obj, IBoundInstance instance)
             {
                 if (instance != null)
                 {
@@ -294,34 +299,34 @@ namespace Ghostbit.Tweaker.AssemblyScanner
                 return true;
             }
 
-            public void ProcessAttribute(Attribute attribute, Type type, object instance = null)
+            public void ProcessAttribute(Attribute attribute, Type type, IBoundInstance instance = null)
             {
                 if (!CheckAlreadyProcessed(attribute.GetType().FullName + type.FullName, instance))
                     DoProcessAttribute(attribute, type, instance);
             }
 
-            public void ProcessAttribute(Attribute attribute, MemberInfo memberInfo, object instance = null)
+            public void ProcessAttribute(Attribute attribute, MemberInfo memberInfo, IBoundInstance instance = null)
             {
                 if (!CheckAlreadyProcessed(attribute.GetType().FullName + memberInfo.ReflectedType.FullName + memberInfo.Name, instance))
                     DoProcessAttribute(attribute, memberInfo, instance);
             }
 
-            public void ProcessType(Type type, object instance = null)
+            public void ProcessType(Type type, IBoundInstance instance = null)
             {
                 if (!CheckAlreadyProcessed(type.FullName, instance))
                     DoProcessType(type, instance);
             }
 
-            public void ProcessMember(MemberInfo memberInfo, Type type, object instance = null)
+            public void ProcessMember(MemberInfo memberInfo, Type type, IBoundInstance instance = null)
             {
                 if (!CheckAlreadyProcessed(memberInfo.ReflectedType.FullName, instance))
                     DoProcessMember(memberInfo, type, instance);
             }
 
-            protected virtual void DoProcessAttribute(Attribute attribute, Type type, object instance = null) { }
-            protected virtual void DoProcessAttribute(Attribute attribute, MemberInfo memberInfo, object instance = null) { }
-            protected virtual void DoProcessType(Type type, object instance = null) { }
-            protected virtual void DoProcessMember(MemberInfo memberInfo, Type type, object instance = null) { }
+            protected virtual void DoProcessAttribute(Attribute attribute, Type type, IBoundInstance instance = null) { }
+            protected virtual void DoProcessAttribute(Attribute attribute, MemberInfo memberInfo, IBoundInstance instance = null) { }
+            protected virtual void DoProcessType(Type type, IBoundInstance instance = null) { }
+            protected virtual void DoProcessMember(MemberInfo memberInfo, Type type, IBoundInstance instance = null) { }
         }
 
         private class ProcessorWrapper<TInput, TResult> :
@@ -343,7 +348,7 @@ namespace Ghostbit.Tweaker.AssemblyScanner
             {
             }
 
-            protected override void DoProcessAttribute(Attribute attribute, MemberInfo memberInfo, object instance = null)
+            protected override void DoProcessAttribute(Attribute attribute, MemberInfo memberInfo, IBoundInstance instance = null)
             {
                 var attributeProcessor = Processor as IAttributeScanProcessor<TInput, TResult>;
                 if (attributeProcessor != null)
@@ -352,7 +357,7 @@ namespace Ghostbit.Tweaker.AssemblyScanner
                 }
             }
 
-            protected override void DoProcessAttribute(Attribute attribute, Type type, object instance = null)
+            protected override void DoProcessAttribute(Attribute attribute, Type type, IBoundInstance instance = null)
             {
                 var attributeProcessor = Processor as IAttributeScanProcessor<TInput, TResult>;
                 if (attributeProcessor != null)
@@ -361,7 +366,7 @@ namespace Ghostbit.Tweaker.AssemblyScanner
                 }
             }
 
-            protected override void DoProcessType(Type type, object instance = null)
+            protected override void DoProcessType(Type type, IBoundInstance instance = null)
             {
                 var typeProcessor = Processor as ITypeScanProcessor<TInput, TResult>;
                 if (typeProcessor != null)
@@ -370,7 +375,7 @@ namespace Ghostbit.Tweaker.AssemblyScanner
                 }
             }
 
-            protected override void DoProcessMember(MemberInfo memberInfo, Type type, object instance = null)
+            protected override void DoProcessMember(MemberInfo memberInfo, Type type, IBoundInstance instance = null)
             {
                 var memberProcessor = Processor as IMemberScanProcessor<TInput, TResult>;
                 if (memberProcessor != null)

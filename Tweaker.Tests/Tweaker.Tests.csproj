@@ -45,6 +45,7 @@
     <Compile Include="src\Tests\InvokableTest.cs" />
     <Compile Include="src\Tests\ScannerTest.cs" />
     <Compile Include="src\Tests\TweakableTest.cs" />
+    <Compile Include="src\Tests\TweakerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tweaker.AssemblyScanner\Tweaker.AssemblyScanner.csproj">

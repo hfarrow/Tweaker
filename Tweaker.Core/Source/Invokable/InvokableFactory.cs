@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ghostbit.Tweaker.AssemblyScanner;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,14 +10,18 @@ namespace Ghostbit.Tweaker.Core
 {
     public static class InvokableFactory
     {
-        public static IInvokable MakeInvokable(Invokable attribute, MethodInfo methodInfo, object instance)
+        private static Dictionary<string, uint> nextIdMap = new Dictionary<string,uint>();
+
+        public static IInvokable MakeInvokable(Invokable attribute, MethodInfo methodInfo, IBoundInstance instance)
         {
-            return MakeInvokable(new InvokableInfo(attribute.Name), methodInfo, instance);
+            string name = GetFinalName(attribute.Name, instance);
+            return MakeInvokable(new InvokableInfo(name), methodInfo, instance != null ? instance.Instance : null);
         }
 
-        public static IInvokable MakeInvokable(Invokable attribute, EventInfo eventInfo, object instance)
+        public static IInvokable MakeInvokable(Invokable attribute, EventInfo eventInfo, IBoundInstance instance)
         {
-            return MakeInvokable(new InvokableInfo(attribute.Name), eventInfo, instance);
+            string name = GetFinalName(attribute.Name, instance);
+            return MakeInvokable(new InvokableInfo(name), eventInfo, instance != null ? instance.Instance : null);
         }
 
         public static IInvokable MakeInvokable(InvokableInfo info, Delegate del)
@@ -40,6 +45,18 @@ namespace Ghostbit.Tweaker.Core
                 throw new ProcessorException("Could not find backing field for event.");
             }
             return new InvokableEvent(info, fieldInfo, instance);
+        }
+
+        private static string GetFinalName(string name, IBoundInstance instance)
+        {
+            if (instance == null)
+            {
+                return name;
+            }
+            else
+            {
+                return string.Format("{0}#{1}", name, instance.UniqueId);
+            }
         }
     }
 }

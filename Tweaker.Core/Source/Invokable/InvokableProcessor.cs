@@ -17,7 +17,7 @@ namespace Ghostbit.Tweaker.Core
     /// </remarks>
     public class InvokableProcessor : IAttributeScanProcessor<Invokable, IInvokable>
     {
-        public void ProcessAttribute(Invokable input, Type type, object instance = null)
+        public void ProcessAttribute(Invokable input, Type type, IBoundInstance instance = null)
         {
             foreach (MemberInfo memberInfo in type.GetMembers(ReflectionUtil.GetBindingFlags(instance)))
             {
@@ -33,7 +33,7 @@ namespace Ghostbit.Tweaker.Core
             }
         }
 
-        public void ProcessAttribute(Invokable input, MemberInfo memberInfo, object instance = null)
+        public void ProcessAttribute(Invokable input, MemberInfo memberInfo, IBoundInstance instance = null)
         {
             IInvokable invokable = null;
             if (memberInfo.MemberType == MemberTypes.Method)

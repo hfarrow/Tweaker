@@ -30,8 +30,8 @@ namespace Ghostbit.Tweaker.AssemblyScanner
         IScanProcessor<TInput, TResult>
         where TInput : class
     {
-        void ProcessAttribute(TInput input, Type type, object instance = null);
-        void ProcessAttribute(TInput input, MemberInfo memberInfo, object instance = null);
+        void ProcessAttribute(TInput input, Type type, IBoundInstance instance = null);
+        void ProcessAttribute(TInput input, MemberInfo memberInfo, IBoundInstance instance = null);
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ namespace Ghostbit.Tweaker.AssemblyScanner
         IScanProcessor<TInput, TResult>
         where TInput : class
     {
-        void ProcessType(Type type, object instance = null);
+        void ProcessType(Type type, IBoundInstance instance = null);
     }
 
     /// <summary>
@@ -55,6 +55,6 @@ namespace Ghostbit.Tweaker.AssemblyScanner
         IScanProcessor<TInput, TResult>
         where TInput : class
     {
-        void ProcessMember(TInput input, Type type, object instance = null);
+        void ProcessMember(TInput input, Type type, IBoundInstance instance = null);
     }
 }

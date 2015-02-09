@@ -2,6 +2,7 @@
 using System;
 using Ghostbit.Tweaker.AssemblyScanner;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace Ghostbit.Tweaker.Core
 {

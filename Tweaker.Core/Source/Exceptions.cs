@@ -5,10 +5,18 @@ using System.Text;
 
 namespace Ghostbit.Tweaker.Core
 {
-    public class NameAlreadyUsedException : Exception, ISerializable
+    public class NameAlreadyRegisteredException : Exception, ISerializable
     {
-        public NameAlreadyUsedException(string name)
-            : base("The name '" + name + "' is already in use.")
+        public NameAlreadyRegisteredException(string name)
+            : base("The name '" + name + "' is already registered.")
+        {
+        }
+    }
+
+    public class InstanceAlreadyRegisteredException : Exception, ISerializable
+    {
+        public InstanceAlreadyRegisteredException(ITweakerObject obj)
+            : base("The instance of type '" + obj.GetType().Name + "' with name '" + obj.Name + "' is already registered.")
         {
         }
     }

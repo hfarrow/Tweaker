@@ -20,7 +20,7 @@ namespace Ghostbit.Tweaker.AssemblyScanner
     /// <summary>
     /// The args sent with IScanResultProvider.ResultProvided.
     /// </summary>
-    /// <typeparam name="TResult">The typ eof the result that is provided.</typeparam>
+    /// <typeparam name="TResult">The type of the result that is provided.</typeparam>
     public class ScanResultArgs<TResult> : EventArgs
     {
         public ScanResultArgs(TResult result)

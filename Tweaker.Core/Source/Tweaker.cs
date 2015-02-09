@@ -28,7 +28,7 @@ namespace Ghostbit.Tweaker
         /// </summary>
         public TweakerOptions Options { get; private set; }
 
-        private IScanner scanner;
+        public IScanner Scanner { get; private set; }
 
         /// <summary>
         /// Initialize Tweaker with the provided options and scanner.
@@ -44,7 +44,7 @@ namespace Ghostbit.Tweaker
             Options = options;
 
             TweakerOptionFlags flags = Options.Flags;
-            this.scanner = scanner != null ? scanner : Scanner.Global;
+            this.Scanner = scanner != null ? scanner : AssemblyScanner.Scanner.Global;
 
             if (flags == TweakerOptionFlags.None || (flags & TweakerOptionFlags.Default) != 0)
             {
@@ -68,7 +68,7 @@ namespace Ghostbit.Tweaker
 
             if ((flags & TweakerOptionFlags.ScanForInvokables) != 0)
             {
-                Invokables = new InvokableManager(this.scanner);
+                Invokables = new InvokableManager(this.Scanner);
             }
             else
             {
@@ -77,7 +77,7 @@ namespace Ghostbit.Tweaker
 
             if ((flags & TweakerOptionFlags.ScanForTweakables) != 0)
             {
-                Tweakables = new TweakableManager(this.scanner);
+                Tweakables = new TweakableManager(this.Scanner);
             }
             else
             {
@@ -86,7 +86,7 @@ namespace Ghostbit.Tweaker
 
             if ((flags & TweakerOptionFlags.ScanForWatchables) != 0)
             {
-                Watchables = new WatchableManager(this.scanner);
+                Watchables = new WatchableManager(this.Scanner);
             }
             else
             {
@@ -127,7 +127,7 @@ namespace Ghostbit.Tweaker
 
         private void ScanWithOptions(ScanOptions options)
         {
-            scanner.Scan(options);
+            Scanner.Scan(options);
         }
 
         private void ScanEverything()

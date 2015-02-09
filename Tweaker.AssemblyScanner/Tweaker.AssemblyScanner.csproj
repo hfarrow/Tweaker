@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\BoundInstance.cs" />
     <Compile Include="Source\Interfaces\IScanner.cs" />
     <Compile Include="Source\Interfaces\IScanProcessor.cs" />
     <Compile Include="Source\Interfaces\IScanResultProvider.cs" />

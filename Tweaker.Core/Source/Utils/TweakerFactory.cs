@@ -10,9 +10,9 @@ namespace Ghostbit.Tweaker.Core
 {
     public class TweakerFactory : ITweakerFactory
     {
-        private Scanner scanner;
+        private IScanner scanner;
 
-        public TweakerFactory(Scanner scanner)
+        public TweakerFactory(IScanner scanner)
         {
             this.scanner = scanner;
         }

@@ -30,8 +30,21 @@ namespace Ghostbit.Tweaker.Core
         {
             if (objects.ContainsKey(t.Name))
             {
-                throw new NameAlreadyUsedException(t.Name);
+                throw new NameAlreadyRegisteredException(t.Name);
             }
+
+            if (t.Instance != null)
+            {
+                foreach (T obj in objects.Values)
+                {
+                    if(obj.Instance != null &&
+                       obj.Instance == t.Instance)
+                    {
+                        throw new InstanceAlreadyRegisteredException(obj);
+                    }
+                }
+            }
+
             objects.Add(t.Name, t);
         }
 

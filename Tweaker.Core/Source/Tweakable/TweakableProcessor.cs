@@ -17,7 +17,7 @@ namespace Ghostbit.Tweaker.Core
     /// </remarks>
     public class TweakableProcessor : IAttributeScanProcessor<Tweakable, ITweakable>
     {
-        public void ProcessAttribute(Tweakable input, Type type, object instance = null)
+        public void ProcessAttribute(Tweakable input, Type type, IBoundInstance instance = null)
         {
             foreach (MemberInfo memberInfo in type.GetMembers(ReflectionUtil.GetBindingFlags(instance)))
             {
@@ -33,7 +33,7 @@ namespace Ghostbit.Tweaker.Core
             }
         }
 
-        public void ProcessAttribute(Tweakable input, MemberInfo memberInfo, object instance = null)
+        public void ProcessAttribute(Tweakable input, MemberInfo memberInfo, IBoundInstance instance = null)
         {
             ITweakable tweakable = null;
             if (memberInfo.MemberType == MemberTypes.Property)
