@@ -32,7 +32,15 @@ namespace Ghostbit.Tweaker.Core
     public class InvokeException : Exception, ISerializable
     {
         public InvokeException(string name, object[] args, Exception inner)
-            : base("Invocation of '" + name + "(" + args.ToString() + ")' failed. See inner exception.", inner)
+            : base("Invocation of '" + name + "(" + args + ")' failed. See inner exception.", inner)
+        {
+        }
+    }
+
+    public class TweakerObjectInvalidException : Exception, ISerializable
+    {
+        public TweakerObjectInvalidException(ITweakerObject obj)
+            : base("The invokable named '" + obj.Name + "' is no longer valid and should be unregistered or uncached.")
         {
         }
     }

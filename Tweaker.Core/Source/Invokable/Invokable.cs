@@ -16,7 +16,7 @@ namespace Ghostbit.Tweaker.Core
     {
         private InvokableInfo InvokableInfo { get; set; }
 
-        public BaseInvokable(InvokableInfo info, Assembly assembly, object instance, bool isPublic) :
+        public BaseInvokable(InvokableInfo info, Assembly assembly, WeakReference<object> instance, bool isPublic) :
             base(info, assembly, instance, isPublic)
         {
             InvokableInfo = info;
@@ -24,6 +24,8 @@ namespace Ghostbit.Tweaker.Core
 
         public object Invoke(object[] args = null)
         {
+            CheckInstanceIsValid();
+
             try
             {
                 return DoInvoke(args);
@@ -46,21 +48,23 @@ namespace Ghostbit.Tweaker.Core
             get { return methodInfo; }
         }
 
-        public InvokableMethod(InvokableInfo info, MethodInfo methodInfo, object instance)
+        public InvokableMethod(InvokableInfo info, MethodInfo methodInfo, WeakReference<object> instance)
             : base(info, methodInfo.ReflectedType.Assembly, instance, methodInfo.IsPublic)
         {
             this.methodInfo = methodInfo;
         }
 
         public InvokableMethod(InvokableInfo info, Delegate methodDelegate)
-            : base(info, methodDelegate.Method.ReflectedType.Assembly, methodDelegate.Target, methodDelegate.Method.IsPublic)
+            : base(info, methodDelegate.Method.ReflectedType.Assembly, 
+                    methodDelegate.Target == null ? null : new WeakReference<object>(methodDelegate.Target),
+                    methodDelegate.Method.IsPublic)
         {
             this.methodInfo = methodDelegate.Method;
         }
 
         protected override object DoInvoke(object[] args)
         {
-            return MethodInfo.Invoke(Instance, args);
+            return MethodInfo.Invoke(StrongInstance, args);
         }
     }
 
@@ -73,7 +77,7 @@ namespace Ghostbit.Tweaker.Core
             get { return fieldInfo; }
         }
 
-        public InvokableEvent(InvokableInfo info, FieldInfo fieldInfo, object instance)
+        public InvokableEvent(InvokableInfo info, FieldInfo fieldInfo, WeakReference<object> instance)
             : base(info, fieldInfo.ReflectedType.Assembly, instance, fieldInfo.IsPublic)
         {
             this.fieldInfo = fieldInfo;
@@ -82,7 +86,7 @@ namespace Ghostbit.Tweaker.Core
         protected override object DoInvoke(object[] args)
         {
             object ret = default(object);
-            var value = fieldInfo.GetValue(Instance);
+            var value = fieldInfo.GetValue(StrongInstance);
             // value will be null if no listeners added.
             if (value != null)
             {

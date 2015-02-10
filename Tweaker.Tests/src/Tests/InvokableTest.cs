@@ -56,7 +56,8 @@ namespace Ghostbit.Tweaker.Core.Tests
             var name = "TestClass." + methodName;
             var methodInfo = instance.GetType().GetMethod(methodName);
             var assembly = methodInfo.GetType().Assembly;
-            return new InvokableMethod(new InvokableInfo(name), methodInfo, instance);
+            var weakRef = instance == null ? null : new WeakReference<object>(instance);
+            return new InvokableMethod(new InvokableInfo(name), methodInfo, weakRef);
         }
 
         private IInvokable CreateInvokableDelegate(string methodName, Delegate del)
@@ -112,12 +113,12 @@ namespace Ghostbit.Tweaker.Core.Tests
             var name = "TestClass.VoidVoid";
             var assembly = typeof(TestClass).Assembly;
             var methodInfo = typeof(TestClass).GetMethod("TestMethodVoidVoid");
-            var invokable = new InvokableMethod(new InvokableInfo(name), methodInfo, testClass);
+            var invokable = new InvokableMethod(new InvokableInfo(name), methodInfo, new WeakReference<object>(testClass));
 
             Assert.AreEqual(name, invokable.Name);
             Assert.AreEqual(assembly, invokable.Assembly);
             Assert.AreEqual(methodInfo, invokable.MethodInfo);
-            Assert.AreEqual(testClass, invokable.Instance);
+            Assert.AreEqual(testClass, invokable.StrongInstance);
         }
 
         [Test]
@@ -133,7 +134,7 @@ namespace Ghostbit.Tweaker.Core.Tests
             Assert.AreEqual(name, invokable.Name);
             Assert.AreEqual(assembly, invokable.Assembly);
             Assert.AreEqual(methodInfo, invokable.MethodInfo);
-            Assert.AreEqual(testClass, invokable.Instance);
+            Assert.AreEqual(testClass, invokable.StrongInstance);
         }
 
         [Test]
@@ -157,12 +158,12 @@ namespace Ghostbit.Tweaker.Core.Tests
             var assembly = testClass.GetType().Assembly;
             var fieldInfo = testClass.GetType().GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             Assert.IsNotNull(fieldInfo);
-            var invokable = new InvokableEvent(new InvokableInfo(name), fieldInfo, testClass);
+            var invokable = new InvokableEvent(new InvokableInfo(name), fieldInfo, new WeakReference<object>(testClass));
 
             Assert.AreEqual(name, invokable.Name);
             Assert.AreEqual(assembly, invokable.Assembly);
             Assert.AreEqual(fieldInfo, invokable.FieldInfo);
-            Assert.AreEqual(testClass, invokable.Instance);
+            Assert.AreEqual(testClass, invokable.StrongInstance);
         }
 
         [Test]
@@ -175,7 +176,7 @@ namespace Ghostbit.Tweaker.Core.Tests
             var name = "TestEventVoidVoid";
             var assembly = testClass.GetType().Assembly;
             var fieldInfo = testClass.GetType().GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            var invokable = new InvokableEvent(new InvokableInfo(name), fieldInfo, testClass);
+            var invokable = new InvokableEvent(new InvokableInfo(name), fieldInfo, new WeakReference<object>(testClass));
 
             invokable.Invoke(null);
             Assert.IsTrue(lambdaDidRun);

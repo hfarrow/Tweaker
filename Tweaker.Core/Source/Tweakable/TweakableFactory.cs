@@ -79,17 +79,27 @@ namespace Ghostbit.Tweaker.Core
             if (typeof(T) != propertyInfo.PropertyType)
                 return null; // T must match type of property
 
-            if (info.Range != null)
+            WeakReference<object> weakRef;
+            if(instance == null)
             {
-                return new TweakableRange<T>(info, propertyInfo, instance);
-            }
-            else if (info.ToggleValues != null)
-            {
-                return new TweakableToggle<T>(info, propertyInfo, instance);
+                weakRef = null;
             }
             else
             {
-                return new BaseTweakable<T>(info, propertyInfo, instance);
+                weakRef = new WeakReference<object>(instance);
+            }
+
+            if (info.Range != null)
+            {
+                return new TweakableRange<T>(info, propertyInfo, weakRef);
+            }
+            else if (info.ToggleValues != null)
+            {
+                return new TweakableToggle<T>(info, propertyInfo, weakRef);
+            }
+            else
+            {
+                return new BaseTweakable<T>(info, propertyInfo, weakRef);
             }
         }
 
@@ -98,17 +108,27 @@ namespace Ghostbit.Tweaker.Core
             if (typeof(T) != fieldInfo.FieldType)
                 return null; // T must match type of property
 
-            if (info.Range != null)
+            WeakReference<object> weakRef;
+            if (instance == null)
             {
-                return new TweakableRange<T>(info, fieldInfo, instance);
-            }
-            else if (info.ToggleValues != null)
-            {
-                return new TweakableToggle<T>(info, fieldInfo, instance);
+                weakRef = null;
             }
             else
             {
-                return new BaseTweakable<T>(info, fieldInfo, instance);
+                weakRef = new WeakReference<object>(instance);
+            }
+
+            if (info.Range != null)
+            {
+                return new TweakableRange<T>(info, fieldInfo, weakRef);
+            }
+            else if (info.ToggleValues != null)
+            {
+                return new TweakableToggle<T>(info, fieldInfo, weakRef);
+            }
+            else
+            {
+                return new BaseTweakable<T>(info, fieldInfo, weakRef);
             }
         }
     }

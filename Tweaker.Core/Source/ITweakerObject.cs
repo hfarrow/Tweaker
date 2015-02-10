@@ -26,9 +26,15 @@ namespace Ghostbit.Tweaker.Core
         Assembly Assembly { get; }
 
         /// <summary>
-        /// The instance this tweaker object is bound to.
+        /// The weak reference to the instance this tweaker object is bound to.
         /// Null if bound to a static tweaker object.
         /// </summary>
-        object Instance { get; }
+        WeakReference<object> WeakInstance { get; }
+
+        /// <summary>
+        /// The strong reference to the instance this tweaker object is bound to.
+        /// Null if bound to a static tweaker object.
+        /// </summary>
+        object StrongInstance { get; }
     }
 }

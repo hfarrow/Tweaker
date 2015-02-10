@@ -91,6 +91,7 @@ namespace Ghostbit.Tweaker.Core.Tests
             Assert.AreEqual(2, invokables.Count);
         }
 
+
         [Test]
         public void ScanSameInstanceTwice()
         {

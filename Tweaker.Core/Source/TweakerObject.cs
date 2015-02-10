@@ -30,7 +30,7 @@ namespace Ghostbit.Tweaker.Core
         private TweakerObjectInfo Info { get; set; }
 
         private readonly bool isPublic;
-        private readonly object instance;
+        private readonly WeakReference<object> instance;
         private readonly Assembly assembly;
 
         /// <summary>
@@ -59,19 +59,50 @@ namespace Ghostbit.Tweaker.Core
         }
 
         /// <summary>
-        /// The instance that this tweaker object binds to. null if static type or member.
+        /// The weak reference to the instance this tweaker object is bound to.
+        /// Null if bound to a static tweaker object.
         /// </summary>
-        public object Instance
+        public WeakReference<object> WeakInstance
         {
             get { return instance; }
         }
 
-        public TweakerObject(TweakerObjectInfo info, Assembly assembly, object instance, bool isPublic)
+        /// <summary>
+        /// The strong reference to the instance this tweaker object is bound to.
+        /// Null if bound to a static tweaker object.
+        /// </summary>
+        public object StrongInstance
+        {
+            get
+            {
+                if(WeakInstance == null)
+                {
+                    return null;
+                }
+
+                object strongRef = null;
+                instance.TryGetTarget(out strongRef);
+                return strongRef;
+            }
+        }
+
+        public TweakerObject(TweakerObjectInfo info, Assembly assembly, WeakReference<object> instance, bool isPublic)
         {
             Info = info;
             this.assembly = assembly;
             this.instance = instance;
             this.isPublic = isPublic;
+        }
+
+        protected void CheckInstanceIsValid()
+        {
+            if (WeakInstance != null && StrongInstance == null)
+            {
+                // The instance that this invokable was bound to has been destroyed.
+                // Somewhere else in the code should catch this exception and
+                // unregister the invokable.
+                throw new TweakerObjectInvalidException(this);
+            }
         }
     }
 }

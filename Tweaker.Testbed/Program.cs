@@ -29,7 +29,6 @@ namespace Ghostbit.Tweaker.Core.Testbed
             }
         }
 
-        static Tweaker tweaker;
         static void Main(string[] args)
         {
 
@@ -38,19 +37,16 @@ namespace Ghostbit.Tweaker.Core.Testbed
             //Scanner.Global.ScanInstance(instance);
             //tweaker.Invokables.Invoke("TestMethod", null);
 
-            Scanner scanner = new Scanner();
-            Tweaker tweaker = new Tweaker();
-            var options = new TweakerOptions();
-            options.Flags =
-                TweakerOptionFlags.DoNotScan |
-                TweakerOptionFlags.ScanForInvokables |
-                TweakerOptionFlags.ScanForTweakables |
-                TweakerOptionFlags.ScanForWatchables;
-            tweaker.Init(options, scanner);
-            ITweakerFactory factory = new TweakerFactory(tweaker.Scanner);
+            var testClass = new TestClass();
+            var name = "TestMethodStatic";
+            var assembly = typeof(TestClass).Assembly;
+            var methodInfo = typeof(TestClass).GetMethod("TestMethodVoidVoid");
+            var invokable = new InvokableMethod(new InvokableInfo(name), methodInfo, new WeakReference<object>(testClass));
 
-            TestClass instance = factory.Create<TestClass>();
-            IInvokable invokable = tweaker.Invokables.GetInvokable("TestMethod#1");
+            //Assert.AreEqual(name, invokable.Name);
+            //Assert.AreEqual(assembly, invokable.Assembly);
+            //Assert.AreEqual(methodInfo, invokable.MethodInfo);
+            //Assert.AreEqual(testClass, invokable.Instance);
 
         }
     }

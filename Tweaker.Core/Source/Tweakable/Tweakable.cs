@@ -70,14 +70,14 @@ namespace Ghostbit.Tweaker.Core
 
         public Type TweakableType { get; private set; }
 
-        private BaseTweakable(TweakableInfo<T> info, Assembly assembly, object instance, bool isPublic) :
+        private BaseTweakable(TweakableInfo<T> info, Assembly assembly, WeakReference<object> instance, bool isPublic) :
             base(info, assembly, instance, isPublic)
         {
             TweakableInfo = info;
             TweakableType = typeof(T);
         }
 
-        private BaseTweakable(TweakableInfo<T> info, MethodInfo setter, MethodInfo getter, Assembly assembly, object instance, bool isPublic) :
+        private BaseTweakable(TweakableInfo<T> info, MethodInfo setter, MethodInfo getter, Assembly assembly, WeakReference<object> instance, bool isPublic) :
             this(info, assembly, instance, isPublic)
         {
             Setter = setter;
@@ -86,28 +86,28 @@ namespace Ghostbit.Tweaker.Core
         }
 
         private BaseTweakable(TweakableInfo<T> info, TweakableVirtualProperty<T> property, Assembly assembly, bool isPublic) :
-            this(info, assembly, property, isPublic)
+            this(info, assembly, new WeakReference<object>(property), isPublic)
         {
             Setter = property.Setter.Method;
             Getter = property.Getter.Method;
             ValidateTweakableType();
         }
 
-        public BaseTweakable(TweakableInfo<T> info, PropertyInfo property, object instance) :
+        public BaseTweakable(TweakableInfo<T> info, PropertyInfo property, WeakReference<object> instance) :
             this(info, property.GetSetMethod(true), property.GetGetMethod(true),
                  property.ReflectedType.Assembly, instance, property.GetAccessors().Length > 0)
         {
 
         }
 
-        public BaseTweakable(TweakableInfo<T> info, MethodInfo setter, MethodInfo getter, object instance) :
+        public BaseTweakable(TweakableInfo<T> info, MethodInfo setter, MethodInfo getter, WeakReference<object> instance) :
             this(info, setter, getter,
                  setter.ReflectedType.Assembly, instance, setter.IsPublic || getter.IsPublic)
         {
 
         }
 
-        public BaseTweakable(TweakableInfo<T> info, FieldInfo field, object instance) :
+        public BaseTweakable(TweakableInfo<T> info, FieldInfo field, WeakReference<object> instance) :
             this(info, new TweakableVirtualProperty<T>(field, instance), field.ReflectedType.Assembly, field.IsPublic)
         {
 
@@ -135,9 +135,10 @@ namespace Ghostbit.Tweaker.Core
 
         public virtual object GetValue()
         {
+            CheckInstanceIsValid();
             try
             {
-                return Getter.Invoke(Instance, null);
+                return Getter.Invoke(StrongInstance, null);
             }
             catch (Exception e)
             {
@@ -147,9 +148,10 @@ namespace Ghostbit.Tweaker.Core
 
         public virtual void SetValue(object value)
         {
+            CheckInstanceIsValid();
             try
             {
-                Setter.Invoke(Instance, new object[] { value });
+                Setter.Invoke(StrongInstance, new object[] { value });
             }
             catch (Exception e)
             {
@@ -160,19 +162,19 @@ namespace Ghostbit.Tweaker.Core
 
     public class TweakableRange<T> : BaseTweakable<T>
     {
-        public TweakableRange(TweakableInfo<T> info, PropertyInfo property, object instance) :
+        public TweakableRange(TweakableInfo<T> info, PropertyInfo property, WeakReference<object> instance) :
             base(info, property, instance)
         {
 
         }
 
-        public TweakableRange(TweakableInfo<T> info, MethodInfo setter, MethodInfo getter, object instance) :
+        public TweakableRange(TweakableInfo<T> info, MethodInfo setter, MethodInfo getter, WeakReference<object> instance) :
             base(info, setter, getter, instance)
         {
 
         }
 
-        public TweakableRange(TweakableInfo<T> info, FieldInfo field, object instance) :
+        public TweakableRange(TweakableInfo<T> info, FieldInfo field, WeakReference<object> instance) :
             base(info, field, instance)
         {
 
@@ -180,6 +182,8 @@ namespace Ghostbit.Tweaker.Core
 
         public override void SetValue(object value)
         {
+            CheckInstanceIsValid();
+
             var comparable = value as IComparable;
             if (comparable == null)
                 throw new TweakableSetException(Name, "TweakableRange<" + typeof(T).FullName + "> does not implement IComparable");
@@ -197,19 +201,19 @@ namespace Ghostbit.Tweaker.Core
     {
         private int currentIndex = -1;
 
-        public TweakableToggle(TweakableInfo<T> info, PropertyInfo property, object instance) :
+        public TweakableToggle(TweakableInfo<T> info, PropertyInfo property, WeakReference<object> instance) :
             base(info, property, instance)
         {
 
         }
 
-        public TweakableToggle(TweakableInfo<T> info, MethodInfo setter, MethodInfo getter, object instance) :
+        public TweakableToggle(TweakableInfo<T> info, MethodInfo setter, MethodInfo getter, WeakReference<object> instance) :
             base(info, setter, getter, instance)
         {
 
         }
 
-        public TweakableToggle(TweakableInfo<T> info, FieldInfo field, object instance) :
+        public TweakableToggle(TweakableInfo<T> info, FieldInfo field, WeakReference<object> instance) :
             base(info, field, instance)
         {
 
@@ -295,27 +299,46 @@ namespace Ghostbit.Tweaker.Core
 
     public class TweakableVirtualProperty<T>
     {
-        private readonly FieldInfo fieldInfo;
-        public object Instance { get; private set; }
-        public Action<T> Setter { get; private set; }
-        public Func<T> Getter { get; private set; }
+        public WeakReference<object> WeakInstance { get { return weakReference; } }
+        public Action<T> Setter { get { return setter; } }
+        public Func<T> Getter { get { return getter; } }
 
-        public TweakableVirtualProperty(FieldInfo field, object instance)
+        private readonly FieldInfo fieldInfo;
+        private readonly WeakReference<object> weakReference;
+        private readonly Action<T> setter;
+        private readonly Func<T> getter;
+
+        public object StrongInstance
+        {
+            get
+            {
+                if(weakReference == null)
+                {
+                    return null;
+                }
+
+                object strongRef = null;
+                WeakInstance.TryGetTarget(out strongRef);
+                return strongRef;
+            }
+        }
+
+        public TweakableVirtualProperty(FieldInfo field, WeakReference<object> instance)
         {
             fieldInfo = field;
-            Instance = instance;
-            Setter = SetValue;
-            Getter = GetValue;
+            weakReference = instance;
+            setter = SetValue;
+            getter = GetValue;
         }
 
         private void SetValue(T value)
         {
-            fieldInfo.SetValue(Instance, value);
+            fieldInfo.SetValue(StrongInstance, value);
         }
 
         private T GetValue()
         {
-            return (T)fieldInfo.GetValue(Instance);
+            return (T)fieldInfo.GetValue(StrongInstance);
         }
     }
 }

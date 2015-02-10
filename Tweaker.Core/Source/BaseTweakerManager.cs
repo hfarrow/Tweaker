@@ -33,12 +33,12 @@ namespace Ghostbit.Tweaker.Core
                 throw new NameAlreadyRegisteredException(t.Name);
             }
 
-            if (t.Instance != null)
+            if (t.StrongInstance != null)
             {
                 foreach (T obj in objects.Values)
                 {
-                    if(obj.Instance != null &&
-                       obj.Instance == t.Instance)
+                    if (obj.StrongInstance != null &&
+                       obj.StrongInstance == t.StrongInstance)
                     {
                         throw new InstanceAlreadyRegisteredException(obj);
                     }

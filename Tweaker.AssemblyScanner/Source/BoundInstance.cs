@@ -14,18 +14,30 @@ namespace Ghostbit.Tweaker.AssemblyScanner
     }
 
     public class BoundInstance<T> : IBoundInstance
+        where T : class
     {
-        public object Instance { get; private set; }
-        public uint UniqueId { get; private set; }
+        public object Instance 
+        {
+            get 
+            {
+                T instance = default(T);
+                weakReference.TryGetTarget(out instance);
+                return instance;
+            }
+        }
+        public uint UniqueId { get { return uniqueId; } }
         public Type Type { get { return typeof(T); } }
 
-        private static uint nextId = 1;
+        private readonly uint uniqueId;
+        private readonly WeakReference<T> weakReference;
 
-        public BoundInstance(object instance)
+        private static uint s_nextId = 1;
+
+        public BoundInstance(T instance)
         {
-            Instance = instance;
-            UniqueId = nextId;
-            nextId++;
+            weakReference = new WeakReference<T>(instance);
+            uniqueId = s_nextId;
+            s_nextId++;
         }
     }
 
