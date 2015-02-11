@@ -70,7 +70,7 @@ namespace Ghostbit.Tweaker.Core
             {
                 var scope = obj.IsPublic ?
                     SearchOptions.ScopeType.Public : SearchOptions.ScopeType.NonPublic;
-                if (options == null || options.CheckMatch(obj.Name, obj.Assembly, scope))
+                if (options == null || options.CheckMatch(obj))
                 {
                     filteredObjects.Add(obj.Name, obj);
                 }
@@ -84,7 +84,7 @@ namespace Ghostbit.Tweaker.Core
             {
                 var scope = obj.IsPublic ?
                     SearchOptions.ScopeType.Public : SearchOptions.ScopeType.NonPublic;
-                if (options != null && options.CheckMatch(obj.Name, obj.Assembly, scope))
+                if (options != null && options.CheckMatch(obj))
                 {
                     return obj;
                 }
