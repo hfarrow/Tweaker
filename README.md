@@ -1,8 +1,8 @@
 # About Tweaker
-The intention of Tweaker is to provide a system that discovers and processes custom attributes (annotations) into a collection of intermediate objects. Tweaker was created with the intention of being used as the "back end" of a debug console/gui for games. Tweaker itself does not include a console or gui but simply provides a data model exposing Invokables, Tweakables, and Watchables for consumption by a debug console. It is up to the consuming console to present and manipulate the Invokables, Tweakables, and Watchables provided by Tweaker.
+The intention of Tweaker is to provide a system that discovers and processes custom attributes (annotations) into a collection of intermediate objects. Tweaker was created with the intention of being used as the "back end" of a debug console/gui for games. Tweaker itself does not include a console or gui but simply provides a data model exposing **Invokables**, **Tweakables**, and **Watchables** for use by a debug console. It is up to the console to present and manipulate the Invokables, Tweakables, and Watchables provided by Tweaker.
 
 # Description
-Tweaker can be broken down into 2 main components. A Core collection of classes and an AssemblyScanner (referred to as Scanner)
+Tweaker can be broken down into 2 main components. The **Core** and **AssemblyScanner** (referred to as Scanner)
 
 ## Core
 The meat and potatoes of Tweaker. Users of Tweaker interact with the Core and need not know about the Scanner.
@@ -10,16 +10,15 @@ There are 3 types of objects that Tweaker can expose:
 
 1. **Invokables**
   * AKA: Command
-  * Invokables are defined by annotating a static Method or C# event.
-  * Invokables are given a unique name. To group multiple invokables into groups and sub groups you could use dots or slashes in the name. It is up to the consuming console to display these as groups if it wants to.
+  * Are defined by annotating Method or C# event.
+  * Methods and events can be static or instance members.
+  * Are given a unique name. To group multiple invokables into groups and sub groups you could use dots or slashes in the name. It is up to the consuming console to parse and display these as groups if desired.
     * For Example: GameplayTuning.Player.Speed or GameplayTuning/Player/Speed 
-  * Can have any number of arguments. Currently it is the responsibility of the consuming console to inspect the argument types and ensure it passes the correct number and type of arguments when invoking.
-    *Exceptions thrown if arguments mismatch. Invoking is wrapped in try catch.
-  * Instance member methods or events can be added to Tweaker manually through Tweaker's interface.
-    * Don't think there is much practical use for this. Maybe if you had a several player objects and want to tune or control them separately through the console.
-  * You can annotate a type as Invokable and all public methods will be registered. Useful if you wanted to group many debug commands into a single class. Easy to then exclude the entire class from a production build.
+  * Can have any number of arguments. Descriptive exceptions will be thrown if arguments are of the incorrect type.
+    * The invocation of the method or event is wrapped in Try/Catch.
+  * You can annotate a type as Invokable and all public methods will be registered. Useful if you wanted to group many debug commands into a single class. It is then easy to then exclude the entire class from a production build.
 2. **Tweakables**
-  * Tweakables are defined by annotating a static property or field
+  * Are defined by annotating a property or field
   * Additional annotations can optionally be added to specify a min and max value or a list of valid named toggle values.
     * Values outside min and max are automatically clamped.
     * API is exposed that allows you to go forward or backwards through toggle values. Will wrap at the end values.
@@ -35,6 +34,13 @@ There are 3 types of objects that Tweaker can expose:
   * A console could group multiple Watchables into the same graph.
   * Bar graphs, line graphs, piechart, etc
   * For custom types (non integral) a plugin system could be devised that allows other objects to be graphed or allow textures / render targets to be displayed. Basically add plugins for rendering/watching custom types
+
+There are 4 ways to get annotated members registered into their respective managers. Each provides a different tradeoff between performance and convenience.
+
+1. The most convenient and performant way of using Tweaker is to annotate static members. When the Scanner scans your assemblies at startup, the static Invokables, Tweakables, and Watchables will automatically be created an registered within the corrosponding managers. 
+2. There are also cases where you need to register instance members. These cannot be automatically detected and registered. It is recommended that you use TweakerFactory (or your own factory) to create objects. The factory calls Scanner.ScanInstance(object instance) to get all annoted members registered. 
+3. You can also manually create instances of IInvokable, ITweakable, and IWatchable via the provided factory classes, InvokableFactory, TweakableFactory, and WatchableFactory. Those instance can then be manually registered into the managers without using the scanner and heavy reflection.
+4. (not implemented yet) A generic container type can wrap a member and automatically register and unregister itself with the managers. The downside to this approach is that it requires more than just annotated members. Even with functionality stripped out in release builds it still has a small perfomance hit each time the members is accessed. It also makes your code more cumbersome. For example: `TweakableContainer<int> myIntTweakable; myIntTweakable.SetValue(999); int myInt = myIntTweakable.GetValue()`. At release, you could consider converting these containers back to regular ints.
 
 The best description of the Core would simply be an example demonstrating how to use Tweaker which you can see below. The unit test source can be found here: https://github.com/Ghostbit/Tweaker/blob/master/Tweaker.Core.Tests/src/Tests/TweakableTest.cs. The tests also demonstrate how to use Tweaker.
 
