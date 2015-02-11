@@ -70,6 +70,69 @@ namespace Ghostbit.Tweaker.Core
 
         public Type TweakableType { get; private set; }
 
+        public override bool IsValid
+        {
+            get
+            {
+                var virtualProperty = TryGetVirtualProperty();
+                if (virtualProperty != null)
+                {
+                    return virtualProperty.IsValid;
+                }
+                return base.IsValid;
+            }
+        }
+
+        public override WeakReference<object> WeakInstance
+        {
+            get
+            {
+                var virtualProperty = TryGetVirtualProperty();
+                if (virtualProperty != null)
+                {
+                    return virtualProperty.WeakInstance;
+                }
+                return base.WeakInstance;
+            }
+        }
+
+        public override object StrongInstance
+        {
+            get
+            {
+                var virtualProperty = TryGetVirtualProperty();
+                if (virtualProperty != null)
+                {
+                    return virtualProperty.StrongInstance;
+                }
+                return base.StrongInstance;
+            }
+        }
+
+        private object GetInternalStrongInstance()
+        {
+            if (instance == null)
+            {
+                return null;
+            }
+
+            object strongRef = null;
+            instance.TryGetTarget(out strongRef);
+            return strongRef;
+        }
+
+        private TweakableVirtualProperty<T> TryGetVirtualProperty()
+        {
+            if(instance == null)
+            {
+                return null;
+            }
+
+            object strongRef = null;
+            instance.TryGetTarget(out strongRef);
+            return strongRef as TweakableVirtualProperty<T>;
+        }
+
         private BaseTweakable(TweakableInfo<T> info, Assembly assembly, WeakReference<object> instance, bool isPublic) :
             base(info, assembly, instance, isPublic)
         {
@@ -138,7 +201,7 @@ namespace Ghostbit.Tweaker.Core
             CheckInstanceIsValid();
             try
             {
-                return Getter.Invoke(StrongInstance, null);
+                return Getter.Invoke(GetInternalStrongInstance(), null);
             }
             catch (Exception e)
             {
@@ -151,7 +214,7 @@ namespace Ghostbit.Tweaker.Core
             CheckInstanceIsValid();
             try
             {
-                Setter.Invoke(StrongInstance, new object[] { value });
+                Setter.Invoke(GetInternalStrongInstance(), new object[] { value });
             }
             catch (Exception e)
             {
@@ -320,6 +383,14 @@ namespace Ghostbit.Tweaker.Core
                 object strongRef = null;
                 WeakInstance.TryGetTarget(out strongRef);
                 return strongRef;
+            }
+        }
+
+        public bool IsValid
+        {
+            get
+            {
+                return WeakInstance == null || StrongInstance != null;
             }
         }
 

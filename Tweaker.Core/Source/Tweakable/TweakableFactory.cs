@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Ghostbit.Tweaker.AssemblyScanner;
 
 namespace Ghostbit.Tweaker.Core
 {
     public static class TweakableFactory
     {
 
-        public static ITweakable MakeTweakable(Tweakable attribute, PropertyInfo propertyInfo, object instance)
+        public static ITweakable MakeTweakable(Tweakable attribute, PropertyInfo propertyInfo, IBoundInstance instance)
         {
             return MakeTweakable(attribute, propertyInfo.PropertyType, propertyInfo, instance);
         }
 
-        public static ITweakable MakeTweakable(Tweakable attribute, FieldInfo fieldInfo, object instance)
+        public static ITweakable MakeTweakable(Tweakable attribute, FieldInfo fieldInfo, IBoundInstance instance)
         {
             return MakeTweakable(attribute, fieldInfo.FieldType, fieldInfo, instance);
         }
 
-        public static ITweakable MakeTweakable(Tweakable attribute, Type type, MemberInfo memberInfo, object instance)
+        public static ITweakable MakeTweakable(Tweakable attribute, Type type, MemberInfo memberInfo, IBoundInstance instance)
         {
             Type infoType = typeof(TweakableInfo<>).MakeGenericType(new Type[] { type });
 
@@ -56,21 +57,27 @@ namespace Ghostbit.Tweaker.Core
                 }
             }
 
+            WeakReference<object> weakRef = null;
+            if(instance != null)
+            {
+                weakRef = new WeakReference<object>(instance.Instance);
+            }
+
             object info = Activator.CreateInstance(infoType, new object[] { attribute.Name, range, stepSize, toggleValues });
             if (range != null)
             {
                 Type tweakableType = typeof(TweakableRange<>).MakeGenericType(new Type[] { type });
-                return Activator.CreateInstance(tweakableType, new object[] { info, memberInfo, instance }) as ITweakable;
+                return Activator.CreateInstance(tweakableType, new object[] { info, memberInfo, weakRef }) as ITweakable;
             }
             else if (toggleValues != null)
             {
                 Type tweakableType = typeof(TweakableToggle<>).MakeGenericType(new Type[] { type });
-                return Activator.CreateInstance(tweakableType, new object[] { info, memberInfo, instance }) as ITweakable;
+                return Activator.CreateInstance(tweakableType, new object[] { info, memberInfo, weakRef }) as ITweakable;
             }
             else
             {
                 Type tweakableType = typeof(BaseTweakable<>).MakeGenericType(new Type[] { type });
-                return Activator.CreateInstance(tweakableType, new object[] { info, memberInfo, instance }) as ITweakable;
+                return Activator.CreateInstance(tweakableType, new object[] { info, memberInfo, weakRef }) as ITweakable;
             }
         }
 

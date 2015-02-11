@@ -65,6 +65,7 @@ namespace Ghostbit.Tweaker.Core
 
         public TweakerDictionary<T> GetObjects(SearchOptions options = null)
         {
+            PruneDeadInstances();
             TweakerDictionary<T> filteredObjects = new TweakerDictionary<T>();
             foreach (var obj in objects.Values)
             {
@@ -97,6 +98,23 @@ namespace Ghostbit.Tweaker.Core
             T obj = default(T);
             objects.TryGetValue(name, out obj);
             return obj;
+        }
+
+        public void PruneDeadInstances()
+        {
+            List<string> keysToRemove = new List<string>();
+            foreach (string name in objects.Keys)
+            {
+                T obj = objects[name];
+                if (!obj.IsValid)
+                {
+                    keysToRemove.Add(name);
+                }
+            }
+            foreach (string name in keysToRemove)
+            {
+                objects.Remove(name);
+            }
         }
     }
 }

@@ -14,6 +14,7 @@ namespace Ghostbit.Tweaker.Core.Testbed
 {
     class Program
     {
+#pragma warning disable 0067,0649
         public class TestClass
         {
             [Invokable("TestMethod")]
@@ -27,21 +28,26 @@ namespace Ghostbit.Tweaker.Core.Testbed
             {
                 Debug.WriteLine("TestMethodStatic");
             }
+
+            [Tweakable("TestFieldStatic")]
+            public static int TestFieldStatic;
+
+            [Tweakable("TestPropertyStatic")]
+            public static int TestPropertyStatic { get; set; }
         }
+#pragma warning restore 0067,0649
 
         static void Main(string[] args)
         {
 
             //////////////////////////////////////////
-            //var instance = new TestClass();
-            //Scanner.Global.ScanInstance(instance);
-            //tweaker.Invokables.Invoke("TestMethod", null);
+            Tweaker tweaker = new Tweaker();
+            tweaker.Init();
 
-            var testClass = new TestClass();
-            var name = "TestMethodStatic";
-            var assembly = typeof(TestClass).Assembly;
-            var methodInfo = typeof(TestClass).GetMethod("TestMethodVoidVoid");
-            var invokable = new InvokableMethod(new InvokableInfo(name), methodInfo, new WeakReference<object>(testClass));
+            var tweakable = tweaker.Tweakables.GetTweakable("TestPropertyStatic");
+            var t1 = tweakable.IsValid;
+            var t2 = tweakable.WeakInstance;
+            var t3 = tweakable.StrongInstance;
 
             //Assert.AreEqual(name, invokable.Name);
             //Assert.AreEqual(assembly, invokable.Assembly);

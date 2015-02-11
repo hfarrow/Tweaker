@@ -269,5 +269,23 @@ namespace Ghostbit.Tweaker.Core.Tests
             Assert.IsNotNull(tweakable);
             ValidateTweakableToggle(tweakable as TweakableToggle<int>, () => { return TestClass.intFieldToggle; });
         }
+
+        [Test]
+        public void StaticTweakableAlwaysValid()
+        {
+            Scanner scanner = new Scanner();
+            ScanOptions options = new ScanOptions();
+            options.Assemblies.ScannableRefs = new Assembly[] { Assembly.GetExecutingAssembly() };
+            options.Types.ScannableRefs = new Type[] { typeof(TestClass) };
+
+            TweakableManager manager = new TweakableManager(scanner);
+            scanner.Scan(options);
+
+            var tweakable = manager.GetTweakable("intFieldToggle");
+            Assert.IsTrue(tweakable.IsValid);
+            Assert.IsNull(tweakable.WeakInstance);
+            Assert.IsNull(tweakable.StrongInstance);
+        }
+
     }
 }

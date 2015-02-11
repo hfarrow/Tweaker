@@ -32,7 +32,10 @@ namespace Ghostbit.Tweaker.Core
         
         public static IInvokable MakeInvokable(InvokableInfo info, MethodInfo methodInfo, object instance)
         {
-            var invokable = new InvokableMethod(info, methodInfo, new WeakReference<object>(instance));
+            var invokable = new InvokableMethod(
+                info, 
+                methodInfo, 
+                instance == null ? null : new WeakReference<object>(instance));
             return invokable;
         }
 
@@ -44,7 +47,10 @@ namespace Ghostbit.Tweaker.Core
             {
                 throw new ProcessorException("Could not find backing field for event.");
             }
-            return new InvokableEvent(info, fieldInfo, new WeakReference<object>(instance));
+            return new InvokableEvent(
+                info, 
+                fieldInfo,
+                instance == null ? null : new WeakReference<object>(instance));
         }
 
         private static string GetFinalName(string name, IBoundInstance instance)

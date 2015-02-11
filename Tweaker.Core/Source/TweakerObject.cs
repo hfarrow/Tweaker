@@ -27,11 +27,11 @@ namespace Ghostbit.Tweaker.Core
     /// </summary>
     public abstract class TweakerObject : ITweakerObject
     {
-        private TweakerObjectInfo Info { get; set; }
+        protected TweakerObjectInfo Info { get; set; }
 
-        private readonly bool isPublic;
-        private readonly WeakReference<object> instance;
-        private readonly Assembly assembly;
+        protected readonly bool isPublic;
+        protected readonly WeakReference<object> instance;
+        protected readonly Assembly assembly;
 
         /// <summary>
         /// The name of the tweaker object. This name is used to register
@@ -62,16 +62,19 @@ namespace Ghostbit.Tweaker.Core
         /// The weak reference to the instance this tweaker object is bound to.
         /// Null if bound to a static tweaker object.
         /// </summary>
-        public WeakReference<object> WeakInstance
+        public virtual WeakReference<object> WeakInstance
         {
-            get { return instance; }
+            get
+            {
+                return instance;
+            }
         }
 
         /// <summary>
         /// The strong reference to the instance this tweaker object is bound to.
         /// Null if bound to a static tweaker object.
         /// </summary>
-        public object StrongInstance
+        public virtual object StrongInstance
         {
             get
             {
@@ -86,6 +89,19 @@ namespace Ghostbit.Tweaker.Core
             }
         }
 
+        /// <summary>
+        /// Indicates that the weak reference is still bound to a non-destroyed object and
+        /// is in a valid state. All invalid tweaker object references should be nulled
+        /// by objects holding a reference.
+        /// </summary>
+        public virtual bool IsValid
+        {
+            get
+            {
+                return WeakInstance == null || StrongInstance != null;
+            }
+        }
+
         public TweakerObject(TweakerObjectInfo info, Assembly assembly, WeakReference<object> instance, bool isPublic)
         {
             Info = info;
@@ -96,7 +112,7 @@ namespace Ghostbit.Tweaker.Core
 
         protected void CheckInstanceIsValid()
         {
-            if (WeakInstance != null && StrongInstance == null)
+            if (!IsValid)
             {
                 // The instance that this invokable was bound to has been destroyed.
                 // Somewhere else in the code should catch this exception and

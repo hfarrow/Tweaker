@@ -36,5 +36,12 @@ namespace Ghostbit.Tweaker.Core
         /// Null if bound to a static tweaker object.
         /// </summary>
         object StrongInstance { get; }
+
+        /// <summary>
+        /// Indicates that the weak reference is still bound to a non-destroyed object and
+        /// is in a valid state. All invalid tweaker object references should be nulled
+        /// by objects holding a reference.
+        /// </summary>
+        bool IsValid { get; }
     }
 }

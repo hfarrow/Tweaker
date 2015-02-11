@@ -205,5 +205,24 @@ namespace Ghostbit.Tweaker.Core.Tests
             invokable = manager.GetInvokable("TestMethodStaticVoidVoid");
             Assert.IsNotNull(invokable);
         }
+
+        [Test]
+        public void StaticInvokableAlwaysValid()
+        {
+            Scanner scanner = new Scanner();
+            ScanOptions options = new ScanOptions();
+            options.Assemblies.ScannableRefs = new Assembly[] { Assembly.GetExecutingAssembly() };
+            options.Types.ScannableRefs = new Type[] { typeof(TestClass) };
+
+            InvokableManager manager = new InvokableManager(scanner);
+            scanner.Scan(options);
+
+            var invokable = manager.GetInvokable("TestMethodStaticVoidVoid");
+            Assert.IsTrue(invokable.IsValid);
+            Assert.IsNull(invokable.WeakInstance);
+            Assert.IsNull(invokable.StrongInstance);
+        }
+
+        
     }
 }
