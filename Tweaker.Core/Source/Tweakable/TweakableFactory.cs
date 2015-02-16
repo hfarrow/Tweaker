@@ -42,7 +42,15 @@ namespace Ghostbit.Tweaker.Core
             {
                 Type stepSizeType = typeof(TweakableInfo<>.TweakableStepSize);
                 stepSizeType = stepSizeType.MakeGenericType(new Type[] { type });
-                stepSize = Activator.CreateInstance(stepSizeType, new object[] { stepSizeAttribute.Size });
+                if (type.IsPrimitive)
+                {
+                    stepSize = Activator.CreateInstance(stepSizeType, new object[] { stepSizeAttribute.Size });
+                }
+                else
+                {
+                    var custom = Activator.CreateInstance(type, new object[] { stepSizeAttribute.Size });
+                    stepSize = Activator.CreateInstance(stepSizeType, new object[] { custom });
+                }
             }
 
             Array toggleValues = null;
@@ -64,21 +72,8 @@ namespace Ghostbit.Tweaker.Core
             }
 
             object info = Activator.CreateInstance(infoType, new object[] { attribute.Name, range, stepSize, toggleValues });
-            if (range != null)
-            {
-                Type tweakableType = typeof(TweakableRange<>).MakeGenericType(new Type[] { type });
-                return Activator.CreateInstance(tweakableType, new object[] { info, memberInfo, weakRef }) as ITweakable;
-            }
-            else if (toggleValues != null)
-            {
-                Type tweakableType = typeof(TweakableToggle<>).MakeGenericType(new Type[] { type });
-                return Activator.CreateInstance(tweakableType, new object[] { info, memberInfo, weakRef }) as ITweakable;
-            }
-            else
-            {
-                Type tweakableType = typeof(BaseTweakable<>).MakeGenericType(new Type[] { type });
-                return Activator.CreateInstance(tweakableType, new object[] { info, memberInfo, weakRef }) as ITweakable;
-            }
+            Type tweakableType = typeof(BaseTweakable<>).MakeGenericType(new Type[] { type });
+            return Activator.CreateInstance(tweakableType, new object[] { info, memberInfo, weakRef }) as ITweakable;
         }
 
         public static ITweakable MakeTweakableFromInfo<T>(TweakableInfo<T> info, PropertyInfo propertyInfo, object instance)
@@ -96,18 +91,7 @@ namespace Ghostbit.Tweaker.Core
                 weakRef = new WeakReference<object>(instance);
             }
 
-            if (info.Range != null)
-            {
-                return new TweakableRange<T>(info, propertyInfo, weakRef);
-            }
-            else if (info.ToggleValues != null)
-            {
-                return new TweakableToggle<T>(info, propertyInfo, weakRef);
-            }
-            else
-            {
-                return new BaseTweakable<T>(info, propertyInfo, weakRef);
-            }
+            return new BaseTweakable<T>(info, propertyInfo, weakRef);
         }
 
         public static ITweakable MakeTweakableFromInfo<T>(TweakableInfo<T> info, FieldInfo fieldInfo, object instance)
@@ -125,18 +109,7 @@ namespace Ghostbit.Tweaker.Core
                 weakRef = new WeakReference<object>(instance);
             }
 
-            if (info.Range != null)
-            {
-                return new TweakableRange<T>(info, fieldInfo, weakRef);
-            }
-            else if (info.ToggleValues != null)
-            {
-                return new TweakableToggle<T>(info, fieldInfo, weakRef);
-            }
-            else
-            {
-                return new BaseTweakable<T>(info, fieldInfo, weakRef);
-            }
+            return new BaseTweakable<T>(info, fieldInfo, weakRef);
         }
     }
 }

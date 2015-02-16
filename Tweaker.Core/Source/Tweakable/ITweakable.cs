@@ -34,5 +34,28 @@ namespace Ghostbit.Tweaker.Core
         /// returns an object of this type.
         /// </remarks>
         Type TweakableType { get; }
+
+        bool IsSteppable { get; }
+        bool IsToggable { get; }
+        bool HasRange { get; }
+        IStepTweakable AsStep { get; }
+        IToggleTweakable AsToggle { get; }
+    }
+
+    public interface IStepTweakable
+    {
+        object StepSize { get; }
+        object StepNext();
+        object StepPrevious();
+    }
+
+    public interface IToggleTweakable : IStepTweakable
+    {
+        int CurrentIndex { get; }
+        int GetIndexOfValue(object value);
+        string GetNameByIndex(int index);
+        string GetNameByValue(object value);
+        object SetValueByName(string valueName);
+        string GetValueName();
     }
 }

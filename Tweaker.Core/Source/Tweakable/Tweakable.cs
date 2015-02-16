@@ -64,11 +64,14 @@ namespace Ghostbit.Tweaker.Core
 
     public class BaseTweakable<T> : TweakerObject, ITweakable
     {
-        protected TweakableInfo<T> TweakableInfo { get; set; }
+        public TweakableInfo<T> TweakableInfo { get; private set; }
         protected MethodInfo Setter { get; set; }
         protected MethodInfo Getter { get; set; }
-
         public Type TweakableType { get; private set; }
+
+        private IStepTweakable stepTweakable;
+        private IToggleTweakable toggleTweakable;
+
 
         public override bool IsValid
         {
@@ -121,6 +124,31 @@ namespace Ghostbit.Tweaker.Core
             return strongRef;
         }
 
+        public bool IsSteppable
+        {
+            get { return TweakableInfo.StepSize != null; }
+        }
+
+        public bool IsToggable
+        {
+            get { return TweakableInfo.ToggleValues != null; }
+        }
+
+        public bool HasRange
+        {
+            get { return TweakableInfo.Range != null; }
+        }
+
+        public IStepTweakable AsStep
+        {
+            get { return stepTweakable; }
+        }
+
+        public IToggleTweakable AsToggle
+        {
+            get { return toggleTweakable; }
+        }
+
         private TweakableVirtualProperty<T> TryGetVirtualProperty()
         {
             if(instance == null)
@@ -138,6 +166,7 @@ namespace Ghostbit.Tweaker.Core
         {
             TweakableInfo = info;
             TweakableType = typeof(T);
+            CreateComponents();
         }
 
         private BaseTweakable(TweakableInfo<T> info, MethodInfo setter, MethodInfo getter, Assembly assembly, WeakReference<object> instance, bool isPublic) :
@@ -146,6 +175,7 @@ namespace Ghostbit.Tweaker.Core
             Setter = setter;
             Getter = getter;
             ValidateTweakableType();
+            CreateComponents();
         }
 
         private BaseTweakable(TweakableInfo<T> info, TweakableVirtualProperty<T> property, Assembly assembly, bool isPublic) :
@@ -154,6 +184,7 @@ namespace Ghostbit.Tweaker.Core
             Setter = property.Setter.Method;
             Getter = property.Getter.Method;
             ValidateTweakableType();
+            CreateComponents();
         }
 
         public BaseTweakable(TweakableInfo<T> info, PropertyInfo property, WeakReference<object> instance) :
@@ -174,6 +205,19 @@ namespace Ghostbit.Tweaker.Core
             this(info, new TweakableVirtualProperty<T>(field, instance), field.ReflectedType.Assembly, field.IsPublic)
         {
 
+        }
+
+        private void CreateComponents()
+        {
+            if(IsSteppable)
+            {
+                stepTweakable = new StepTweakable<T>(this);
+            }
+
+            if(IsToggable)
+            {
+                toggleTweakable = new ToggleTweakable<T>(this);
+            }
         }
 
         private void ValidateTweakableType()
@@ -212,6 +256,8 @@ namespace Ghostbit.Tweaker.Core
         public virtual void SetValue(object value)
         {
             CheckInstanceIsValid();
+            CheckValueType(value);
+            value = CheckRange((T)value);
             try
             {
                 Setter.Invoke(GetInternalStrongInstance(), new object[] { value });
@@ -221,65 +267,111 @@ namespace Ghostbit.Tweaker.Core
                 throw new TweakableSetException(Name, value.ToString(), e);
             }
         }
-    }
 
-    public class TweakableRange<T> : BaseTweakable<T>
-    {
-        public TweakableRange(TweakableInfo<T> info, PropertyInfo property, WeakReference<object> instance) :
-            base(info, property, instance)
+        public virtual void CheckValueType(object value)
         {
-
+            if(!typeof(T).IsAssignableFrom(value.GetType()))
+            {
+                throw new TweakableGetException(Name, "Cannot assign value of incorrect type '" + value.GetType().FullName + "' to BaseTweakable<" + typeof(T).FullName + ">");
+            }
         }
 
-        public TweakableRange(TweakableInfo<T> info, MethodInfo setter, MethodInfo getter, WeakReference<object> instance) :
-            base(info, setter, getter, instance)
+        public virtual T CheckRange(T value)
         {
-
-        }
-
-        public TweakableRange(TweakableInfo<T> info, FieldInfo field, WeakReference<object> instance) :
-            base(info, field, instance)
-        {
-
-        }
-
-        public override void SetValue(object value)
-        {
-            CheckInstanceIsValid();
+            if(TweakableInfo.Range == null)
+            {
+                return value;
+            }
 
             var comparable = value as IComparable;
             if (comparable == null)
+            {
                 throw new TweakableSetException(Name, "TweakableRange<" + typeof(T).FullName + "> does not implement IComparable");
+            }
 
             if (comparable.CompareTo(TweakableInfo.Range.MinValue) < 0)
-                base.SetValue(TweakableInfo.Range.MinValue);
+            {
+                return TweakableInfo.Range.MinValue;
+            }
             else if (comparable.CompareTo(TweakableInfo.Range.MaxValue) > 0)
-                base.SetValue(TweakableInfo.Range.MaxValue);
+            {
+                return TweakableInfo.Range.MaxValue;
+            }
             else
-                base.SetValue(value);
+            {
+                return value;
+            }
         }
     }
 
-    public class TweakableToggle<T> : BaseTweakable<T>
+    public class StepTweakable<T> : IStepTweakable
     {
+        private readonly BaseTweakable<T> baseTweakable;
+        public BaseTweakable<T> BaseTweakable { get { return baseTweakable; } }
+
+        private readonly MethodInfo addMethod;
+        private readonly MethodInfo subtractMethod;
+
+        public StepTweakable(BaseTweakable<T> baseTweakable)
+        {
+            this.baseTweakable = baseTweakable;
+
+            Type type = typeof(T);
+            addMethod = type.GetMethod("op_Addition", BindingFlags.Static | BindingFlags.Public);
+            subtractMethod = type.GetMethod("op_Subtraction", BindingFlags.Static | BindingFlags.Public);
+
+            if(type.IsPrimitive)
+            {
+                addMethod = typeof(PrimitiveHelper).GetMethod("Add", BindingFlags.Static | BindingFlags.Public);
+                subtractMethod = typeof(PrimitiveHelper).GetMethod("Subtract", BindingFlags.Static | BindingFlags.Public);
+            }
+            else if(addMethod == null)
+            {
+                throw new StepTweakableInvalidException(baseTweakable.Name, "No 'operator +' could be found on type '" + type.FullName + "'");
+            }
+            else if (subtractMethod == null)
+            {
+                throw new StepTweakableInvalidException(baseTweakable.Name, "No 'operator -' could be found on type '" + type.FullName + "'");
+            }
+        }
+
+        public object StepSize
+        {
+            get { return baseTweakable.TweakableInfo.StepSize.Size; }
+        }
+
+        public object StepNext()
+        {
+            T newValue = (T)addMethod.Invoke(null, new object[] { (T)baseTweakable.GetValue(), StepSize });
+            baseTweakable.SetValue(newValue);
+            return baseTweakable.GetValue();
+        }
+
+        public object StepPrevious()
+        {
+            T newValue = (T)subtractMethod.Invoke(null, new object[] { (T)baseTweakable.GetValue(), StepSize });
+            baseTweakable.SetValue(newValue);
+            return baseTweakable.GetValue();
+        }
+    }
+
+    public class ToggleTweakable<T> : IToggleTweakable
+    {
+        private readonly BaseTweakable<T> baseTweakable;
+        public BaseTweakable<T> BaseTweakable { get { return baseTweakable; } }
+
         private int currentIndex = -1;
+        private TweakableInfo<T> tweakableInfo;
 
-        public TweakableToggle(TweakableInfo<T> info, PropertyInfo property, WeakReference<object> instance) :
-            base(info, property, instance)
+        public ToggleTweakable(BaseTweakable<T> baseTweakable)
         {
-
+            this.baseTweakable = baseTweakable;
+            tweakableInfo = baseTweakable.TweakableInfo;
         }
 
-        public TweakableToggle(TweakableInfo<T> info, MethodInfo setter, MethodInfo getter, WeakReference<object> instance) :
-            base(info, setter, getter, instance)
+        public object StepSize
         {
-
-        }
-
-        public TweakableToggle(TweakableInfo<T> info, FieldInfo field, WeakReference<object> instance) :
-            base(info, field, instance)
-        {
-
+            get { return 1; }
         }
 
         public int CurrentIndex
@@ -287,11 +379,11 @@ namespace Ghostbit.Tweaker.Core
             get { return currentIndex; }
         }
 
-        public int GetIndexOfValue(T value)
+        public int GetIndexOfValue(object value)
         {
-            for (int i = 0; i < TweakableInfo.ToggleValues.Length; ++i)
+            for (int i = 0; i < tweakableInfo.ToggleValues.Length; ++i)
             {
-                var toggleValue = TweakableInfo.ToggleValues[i];
+                var toggleValue = tweakableInfo.ToggleValues[i];
                 if (toggleValue.Value.Equals(value))
                 {
                     return i;
@@ -302,61 +394,61 @@ namespace Ghostbit.Tweaker.Core
 
         public string GetNameByIndex(int index)
         {
-            if (index >= 0 && TweakableInfo.ToggleValues.Length > index)
-                return TweakableInfo.ToggleValues[index].Name;
+            if (index >= 0 && tweakableInfo.ToggleValues.Length > index)
+                return tweakableInfo.ToggleValues[index].Name;
             else
                 return null;
         }
 
-        public string GetNameByValue(T value)
+        public string GetNameByValue(object value)
         {
             return GetNameByIndex(GetIndexOfValue(value));
         }
 
-        public void SetValueByName(string valueName)
+        public object SetValueByName(string valueName)
         {
-            for (int i = 0; i < TweakableInfo.ToggleValues.Length; ++i)
+            for (int i = 0; i < tweakableInfo.ToggleValues.Length; ++i)
             {
-                if (TweakableInfo.ToggleValues[i].Name == valueName)
+                if (tweakableInfo.ToggleValues[i].Name == valueName)
                 {
                     currentIndex = i;
-                    SetValue(TweakableInfo.ToggleValues[i].Value);
-                    return;
+                    baseTweakable.SetValue(tweakableInfo.ToggleValues[i].Value);
+                    return baseTweakable.GetValue();
                 }
             }
 
-            throw new TweakableSetException(Name, "Invalid toggle value name: '" + valueName + "'");
+            throw new TweakableSetException(baseTweakable.Name, "Invalid toggle value name: '" + valueName + "'");
         }
 
         public string GetValueName()
         {
-            if (currentIndex >= 0 && currentIndex < TweakableInfo.ToggleValues.Length)
+            if (currentIndex >= 0 && currentIndex < tweakableInfo.ToggleValues.Length)
             {
-                return TweakableInfo.ToggleValues[currentIndex].Name;
+                return tweakableInfo.ToggleValues[currentIndex].Name;
             }
             return "Unkown";
         }
 
-        public T NextValue()
+        public object StepNext()
         {
             currentIndex++;
-            if (currentIndex >= TweakableInfo.ToggleValues.Length)
+            if (currentIndex >= tweakableInfo.ToggleValues.Length)
                 currentIndex = 0;
 
-            var nextValue = TweakableInfo.ToggleValues[currentIndex].Value;
-            SetValue(nextValue);
-            return nextValue;
+            var nextValue = tweakableInfo.ToggleValues[currentIndex].Value;
+            baseTweakable.SetValue(nextValue);
+            return baseTweakable.GetValue();
         }
 
-        public T PreviousValue()
+        public object StepPrevious()
         {
             currentIndex--;
             if (currentIndex < 0)
-                currentIndex = TweakableInfo.ToggleValues.Length - 1;
+                currentIndex = tweakableInfo.ToggleValues.Length - 1;
 
-            var nextValue = TweakableInfo.ToggleValues[currentIndex].Value;
-            SetValue(nextValue);
-            return nextValue;
+            var nextValue = tweakableInfo.ToggleValues[currentIndex].Value;
+            baseTweakable.SetValue(nextValue);
+            return baseTweakable.GetValue();
         }
     }
 

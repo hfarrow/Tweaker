@@ -238,12 +238,7 @@ namespace Ghostbit.Tweaker.AssemblyScanner
             if (processors.ContainsKey(typeof(TInput)))
             {
                 var list = processors[typeof(TInput)];
-                // TODO: Can Exists be skipped and just go straight to RemoveAll?
-                // Don't have unit tests for the scanner so not changing atm.
-                if (list.Exists(wrapper => wrapper.Processor == processor))
-                {
-                    list.RemoveAll(wrapper => wrapper.Processor == processor);
-                }
+                list.RemoveAll(wrapper => wrapper.Processor == processor);
             }
 
             if (resultProviders.ContainsKey(typeof(TResult)))

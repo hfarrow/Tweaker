@@ -48,6 +48,7 @@
     <Compile Include="Source\BaseTweakerAttribute.cs" />
     <Compile Include="Source\Invokable\InvokableAttributes.cs" />
     <Compile Include="Source\Tweakable\TweakableAttributes.cs" />
+    <Compile Include="Source\Utils\PrimitiveHelper.cs" />
     <Compile Include="Source\Watchable\WatchableAttributes.cs" />
     <Compile Include="Source\BaseTweakerManager.cs" />
     <Compile Include="Source\Exceptions.cs" />
