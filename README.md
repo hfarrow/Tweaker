@@ -42,128 +42,75 @@ There are 4 ways to get annotated members registered into their respective manag
 3. You can also manually create instances of IInvokable, ITweakable, and IWatchable via the provided factory classes, InvokableFactory, TweakableFactory, and WatchableFactory. Those instance can then be manually registered into the managers without using the scanner and heavy reflection.
 4. (not implemented yet) A generic container type can wrap a member and automatically register and unregister itself with the managers. The downside to this approach is that it requires more than just annotated members. Even with functionality stripped out in release builds it still has a small perfomance hit each time the members is accessed. It also makes your code more cumbersome. For example: `TweakableContainer<int> myIntTweakable; myIntTweakable.SetValue(999); int myInt = myIntTweakable.GetValue()`. At release, you could consider converting these containers back to regular ints.
 
-The best description of the Core would simply be an example demonstrating how to use Tweaker which you can see below. The unit test source can be found here: https://github.com/Ghostbit/Tweaker/blob/master/Tweaker.Core.Tests/src/Tests/TweakableTest.cs. The tests also demonstrate how to use Tweaker.
+The unit test source can be found here: https://github.com/Ghostbit/Tweaker/blob/master/Tweaker.Core.Tests/src/Tests/TweakableTest.cs. The tests demonstrate how to use Tweaker. However, below you will see an example usage of Tweaker that is better used as an example
 
-First, lets define a class that represents something in our game and we are going to annotate some static properties, method, and fields. These annotated members are what become Invokables and Tweakables.
-
+Firstly, assume the code below is within a class called Player. We will define a static tweakable int that represents the default speed for a player. The tweakable will be constrained within a range of 0 to 100 when the value is set via Tweaker. Other parts of the game could still set DefaultSpeed to any value.
 ```C#
-public class Player
+[Tweakable("Gameplay.Player.DefaultSpeed"), Range(0, 100)]
+public static int DefaultSpeed { get; set; }
+```
+
+Next we define a static method to print the current DefaultSpeed. Invokables can have a return type and any number of arguments if desired. In this case there is no return type and no arguments.
+```C#
+[Invokable("Gameplay.Player.PrintDefaultSpeed")]
+public static void PrintDefaultSpeed()
 {
-	// Expose the player's speed to to Tweaker via a Tweakable.
-	// Note that the property can be public or private.
-    [Tweakable("Gameplay.Player.Speed")]
-    public static int Speed { get; set; }
-
-	// Expose the player's max health and provide constraints via TweakableAttributes.Range attribute.
-    [Tweakable("Gameplay.Player.MaxHealth"), 
-	Range(1, 100)]
-    public static int MaxHealth { get; set; }
-
-	// Expose the default state for a player and constrain it to 3 possible states: idle, patrol, attack
-	// Use NamedToggleValue(string displayName, object value, int index) to define the possible states.
-	// index is used for ordering the values. The order that each value is declared in may not match the order
-	// that they get returned by reflection.
-    [Tweakable("Gameplay.Player.DefaultState"),
-    NamedToggleValue("idle", 0, 0),
-    NamedToggleValue("patrol", 1, 1),
-    NamedToggleValue("attack", 2, 2)]
-    public static int DefaultState { get; set; }
-
-	// Expose a field instead of a property
-    [Tweakable("Gameplay.Player.SomeRandomField")]
-    public static int SomeRandomField;
-
-	// Expose a field with a range instead of a property
-    [Tweakable("Gameplay.Player.SomeRandomFieldWithRange"),
-	Range(0, 100)]
-    public static int SomeRandomFieldWithRange;
-
-	// Expose a field with toggle values instead of a property
-    [Tweakable("Gameplay.Player.SomeRandomFieldWithToggles"),
-    NamedToggleValue("zero", 0, 0),
-    NamedToggleValue("eleven", 11, 1),
-    NamedToggleValue("hundred", 100, 2)]
-    public static int SomeRandomFieldWithToggles;
- 
-	// Expose a command that adds adds 10 to MaxHealth
-	[Invokable("Gameplay.Player.AddTenToMaxHealth")]
-	public static void AddTenToMaxHealth()
-	{
-		MaxHealth += 10;
-	}
- 
-	// Expose an event that can be invoked by tweaker
-	// When invoked, the underlying multidelegate will be dispatched.
-	[Invokable("Gameplayer.Player.EventWithListeners")]
-	public static event Action EventWithListeners;
+    Log("DefaultSpeed = " + Player.DefaultSpeed);
 }
 ```
-Second, lets see how a console can use the Tweaker api to invoke or modify the annotated members above.
+
+Next we create an instance of Tweaker to automatically scan and register the tweakable and invokable above. Once tweaker is initialized we can retrieve instances of ITweakable and IInvokable. With those instances we can change the tweakable values or execute the invokables.
 ```C#
-public void Main()
+public static void Main()
 {
-// First we must scan assemblies for the tweaker annotations (Invokable, Tweakables, Watchables)
-// We won't dive into the details of Scanner but know that it can filter what assemblies and types you scan.
-// You should only have to scan once at the start of your application. If new assemblies are loaded you may
-// want to scan the newly loaded assemblies
-Scanner scanner = new Scanner();
-ScanOptions options = new ScanOptions();
-options.Assemblies.ScannableRefs = new Assembly[] { Assembly.GetExecutingAssembly() };
+    Tweaker tweaker = new Tweaker();
 
-// Create a manager for all Tweakables that are scanned.
-ITweakableManager tweakableManager = new TweakableManager(scanner);
+    // tweaker.Init will scan and register all static tweakables, invokables, and watchables.
+    // Passing null to Init will initialize with reasonable default settings.
+    Tweaker.Init(null);
 
+    ITweakable defaultSpeed = tweaker.Tweakables.GetTweakable("Gameplay.Player.DefaultSpeed");
+    defaultSpeed.SetValue(50);
+    Log("defaultSpeed.GetValue() = " + defaultSpeed.GetValue());
 
-// Create a manager for all Invokables that are scanned.
-IInvokableManager invokableManager = new InvokabkeManager(scanner);
- 
-// Once the managers are created, scan! The managers will have added processors to the scanner that will convert
-// our annotated members into intermediate objects that can be accessed and manipulated through the managers.
-scanner.Scan(options); // WARNING: expensive because it enumerates all types and members allowed by the ScanOptions
- 
-// Optionally, all the above can be done using the Tweaker convenience class
-/*
-	Tweaker tweaker = new Tweaker();
-	tweaker.Init(null);
-	// Init takes TweakerOptions which contains flags controlling how tweaker initializes.
-	// Passing null will result in using default options. By default all non "system" assemblies will
-	// be scanned which is probably undesirable. Using the options you can limit the scan to specific
-	// assemblies (recommended) in order to speed up the scan duration.
- 
-	invokableManager = tweaker.Invokables;
-	tweakableManager = tweaker.Tweakables;
-*/
- 
-// Lets get some Tweakable objects and set their values to something new...
- 
-// The line below would get all tweakables so that they can be displayed in a console or gui.
-// For the example we will fetch individual objects.
-//var tweakables = tweakableManager.GetTweakables(null);
- 
-// Lets get and set the player Speed property that we annotated.
-ITweakable tweakable = tweakableManager.GetTweakable("Gameplay.Player.Speed");
-Log("Value = " + tweakable.GetValue());
-tweakable.SetValue(10000);
- 
-// Lets get and set the player DefaultState property toggle that we annotated.
-TweakableToggle tweakableToggle = tweakableManager.GetTweakable("Gameplay.Player.DefaultState") as TweakableToggle;
-Log("Value = " + tweakableToggle.GetValueName());
-tweakable.NextValue();
-tweakable.SetValueByName("patrol"); // Player.DefaultState will equal 1;
-// There are several other TweakableToggle methods to make working with toggles in a console easy.
- 
-// Lets invoke the AddTenToMaxHealth method that we annotated.
-IInvokable invokable = invokableManager.GetInvokable("Gameplay.Player.AddTenToMaxHealth");
-invokable.Invoke(); // Overloaded to take an Object[] argument but our invokable takes no arguments.
+    IInvokable printDefaultSpeed = tweaker.Invokables.GetInvokable("Gameplay.Player.PrintDefaultSpeed");
+    printDefaultSpeed.Invoke();
 }
 ```
-Hopefully this paints a clear picture about how a console would interface with Tweaker.
-The library is a working proof of concept at this point and is deserving a of a little polish. It would also be nice to flesh out and implement Watchables.
+
+Static tweakables and invokable can be convenient but there are also times you will want to register non static members. Tweaker cannot automatically scan and register non static objects. It is up to the user to call Scanner.ScanInstance(object). Usually, it would be best to wrap object creation in a factory that calls ScanInstance for you. There is an example factory included in Tweaker called TweakerFactory. Below you will see how to define non static tweakables. Please note that the name of non static tweaker objects will have an instance id appended to the name. For example: Gameplay.Player.Nickname#1 and Gameplay.Player.Nickname#2.
+
+First define a tweakable string for the player nickname. Note how even private members can be exposed.
+```C#
+[Tweakable("Gameplay.Player.Nickname")]
+private string Nickname = "No-Name";
+```
+
+Now we create an instance of player and scan it in order to have the tweakable registered.
+```C#
+Tweaker tweaker = new Tweaker();
+tweaker.Init(null);
+
+Player player = new Player();
+tweaker.Scanner.ScanInstance(player);
+
+// Alternatively, if you use the example factory:
+ITweakerFactory factory = new TweakerFactory(tweaker.Scanner);
+Player player2 = factory.Create<Player>();
+
+// We registered 2 instances of Player. By using search options we can return the first tweakable found.
+ITweakable nickname = tweaker.Tweakables.GetTweakable(new SearchOptions("Gameplay.Player.Nickname"));
+nickname.SetValue("Rooster");
+Log(nickname.Name + " = " + nickname.GetValue());
+```
+
+Internally, all references to the scanned object are stored as weak references. Tweaker will try to prune dead
+weak references at certain points. You can also manually unregister a dead tweakable.
 
 ## Assembly Scanner
 The Scanner is supplemental to the Core and is not integral to the concept of Tweaker. The Scanner's responsibility is to locate and process the attributes that Invokables, Tweakables, and Watchables are annotated with. Once processed, the Tweaker API exposes methods for retrieving intermediate objects that represent the data collected and processed by the Scanner. This is demonstrated in the examples in the Core section of this page.
 
-The source for the Scanner can be found here: https://github.com/Ghostbit/Tweaker/tree/master/Tweaker.Core/src/AssemblyScanner 
+The source for the Scanner can be found here: https://github.com/Ghostbit/Tweaker/tree/master/Tweaker.AssemblyScanner/Source/AssemblyScanner 
 
 Please note that the Processors that convert annotated types and members into Invokables, Tweakables, and Watchables are located in the Core. They extend a base processor interface defined by the Scanner. The Scanner API has no dependencies on Core.
 
