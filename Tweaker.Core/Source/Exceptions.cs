@@ -78,6 +78,12 @@ namespace Ghostbit.Tweaker.Core
         {
             
         }
+
+        public StepTweakableInvalidException(string name, string message, Exception inner)
+            : base("The step tweakable named '" + name + "' is invalid: " + message, inner)
+        {
+
+        }
     }
 
     public class ProcessorException : Exception, ISerializable

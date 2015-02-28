@@ -48,8 +48,28 @@ namespace Ghostbit.Tweaker.Core
                 }
                 else
                 {
-                    var custom = Activator.CreateInstance(type, new object[] { stepSizeAttribute.Size });
-                    stepSize = Activator.CreateInstance(stepSizeType, new object[] { custom });
+                    object customTypeInstance = null;
+                    try
+                    {
+                        customTypeInstance = Activator.CreateInstance(type, new object[] { stepSizeAttribute.Size });
+                    }
+                    catch(MissingMethodException ex)
+                    {
+                        throw new StepTweakableInvalidException(attribute.Name, "The type '" + type.FullName +
+                            "' must have a constructor that takes a single argument of type '" + 
+                            stepSizeAttribute.Size.GetType().FullName + "'", ex);
+                    }
+                    catch(MethodAccessException ex)
+                    {
+                        throw new StepTweakableInvalidException(attribute.Name, "The type '" + type.FullName +
+                            "' has the a constructor that takes a single argument of type '" +
+                            stepSizeAttribute.Size.GetType().FullName + " but it is not public.", ex);
+                    }
+
+                    if (customTypeInstance != null)
+                    {
+                        stepSize = Activator.CreateInstance(stepSizeType, new object[] { customTypeInstance });
+                    }
                 }
             }
 

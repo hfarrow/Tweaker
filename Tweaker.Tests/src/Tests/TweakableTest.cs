@@ -103,7 +103,7 @@ namespace Ghostbit.Tweaker.Core.Tests
                 }
             }
         }
-#pragma warning restore 0067,0649
+#pragma warning restore 0067,0649,0659,0661
 
         private TestClass testClass;
 
@@ -166,8 +166,8 @@ namespace Ghostbit.Tweaker.Core.Tests
 
         public void ValidateTweakableStep<T>(ITweakable tweakable, Func<T> getter)
         {
-            Assert.IsTrue(tweakable.IsSteppable);
-            IStepTweakable stepInterface = tweakable.AsStep;
+            Assert.IsTrue(tweakable.HasStep);
+            IStepTweakable stepInterface = tweakable.Step;
             Assert.IsNotNull(stepInterface);
             StepTweakable<T> step = stepInterface as StepTweakable<T>;
             Assert.IsNotNull(step);
@@ -205,8 +205,8 @@ namespace Ghostbit.Tweaker.Core.Tests
 
         public void ValidateTweakableToggle(BaseTweakable<int> tweakable, Func<int> getter)
         {
-            Assert.IsTrue(tweakable.IsToggable);
-            IToggleTweakable toggleInterface = tweakable.AsToggle;
+            Assert.IsTrue(tweakable.HasToggle);
+            IToggleTweakable toggleInterface = tweakable.Toggle;
             Assert.IsNotNull(toggleInterface);
             Assert.AreEqual(typeof(int), tweakable.TweakableType);
             ToggleTweakable<int> toggle = toggleInterface as ToggleTweakable<int>;
