@@ -88,17 +88,19 @@ namespace Ghostbit.Tweaker.AssemblyScanner
             ScanAttribute(attribute, reflectedObject, null, options);
         }
 
-        public void ScanInstance(object instance)
+        public IBoundInstance ScanInstance(object instance)
         {
             if(instance == null)
             {
                 throw new ArgumentNullException("instance", "Cannot scan null instance.");
             }
 
-            ScanType(instance.GetType(), BoundInstanceFactory.Create(instance));
+            IBoundInstance boundInstance = BoundInstanceFactory.Create(instance);
+            ScanType(instance.GetType(), boundInstance);
+            return boundInstance;
         }
 
-        private void ScanType(Type type, IBoundInstance instance, ScanOptions options = null)
+        public void ScanType(Type type, IBoundInstance instance, ScanOptions options = null)
         {
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic;
             if(instance == null)
@@ -135,12 +137,12 @@ namespace Ghostbit.Tweaker.AssemblyScanner
             }
         }
 
-        private void ScanGenericType(Type type, IBoundInstance instance, ScanOptions options = null)
+        public void ScanGenericType(Type type, IBoundInstance instance, ScanOptions options = null)
         {
             //throw new NotImplementedException("Not currently supported.");
         }
 
-        private void ScanMember(MemberInfo member, IBoundInstance instance, ScanOptions options = null)
+        public void ScanMember(MemberInfo member, IBoundInstance instance, ScanOptions options = null)
         {
             foreach (var attribute in Attribute.GetCustomAttributes(member, false))
             {
@@ -166,7 +168,7 @@ namespace Ghostbit.Tweaker.AssemblyScanner
             }
         }
 
-        private void ScanAttribute(Attribute attribute, object reflectedObject, IBoundInstance instance, ScanOptions options = null)
+        public void ScanAttribute(Attribute attribute, object reflectedObject, IBoundInstance instance, ScanOptions options = null)
         {
             Type type = attribute.GetType();
             if (processors.ContainsKey(type))

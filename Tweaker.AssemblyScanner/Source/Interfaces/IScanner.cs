@@ -80,7 +80,13 @@ namespace Ghostbit.Tweaker.AssemblyScanner
         /// Only instance members will be processed. Static members will be ignored.
         /// </summary>
         /// <param name="instance">The object to scan.</param>
-        void ScanInstance(object instance);
+        /// <rereturns>The bound instance that was created as a result of the scan.</rereturns>
+        IBoundInstance ScanInstance(object instance);
+
+        void ScanType(Type type, IBoundInstance instance, ScanOptions options = null);
+        void ScanGenericType(Type type, IBoundInstance instance, ScanOptions options = null);
+        void ScanMember(MemberInfo member, IBoundInstance instance, ScanOptions options = null);
+        void ScanAttribute(Attribute attribute, object reflectedObject, IBoundInstance instance, ScanOptions options = null);
 
         /// <summary>
         /// Get the result provider for the provided result type.
