@@ -10,18 +10,18 @@ namespace Ghostbit.Tweaker.Core
 {
     public static class InvokableFactory
     {
-        private static Dictionary<string, uint> nextIdMap = new Dictionary<string,uint>();
-
         public static IInvokable MakeInvokable(Invokable attribute, MethodInfo methodInfo, IBoundInstance instance)
         {
             string name = GetFinalName(attribute.Name, instance);
-            return MakeInvokable(new InvokableInfo(name), methodInfo, instance != null ? instance.Instance : null);
+            uint instanceId = instance != null ? instance.UniqueId : 0;
+            return MakeInvokable(new InvokableInfo(name, instanceId), methodInfo, instance != null ? instance.Instance : null);
         }
 
         public static IInvokable MakeInvokable(Invokable attribute, EventInfo eventInfo, IBoundInstance instance)
         {
             string name = GetFinalName(attribute.Name, instance);
-            return MakeInvokable(new InvokableInfo(name), eventInfo, instance != null ? instance.Instance : null);
+            uint instanceId = instance != null ? instance.UniqueId : 0;
+            return MakeInvokable(new InvokableInfo(name, instanceId), eventInfo, instance != null ? instance.Instance : null);
         }
 
         public static IInvokable MakeInvokable(InvokableInfo info, Delegate del)

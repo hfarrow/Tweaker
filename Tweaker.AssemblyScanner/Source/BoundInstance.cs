@@ -39,6 +39,11 @@ namespace Ghostbit.Tweaker.AssemblyScanner
             uniqueId = s_nextId;
             s_nextId++;
         }
+
+        //public static void ResetNextId()
+        //{
+        //    s_nextId = 1;
+        //}
     }
 
     public class BoundInstanceFactory

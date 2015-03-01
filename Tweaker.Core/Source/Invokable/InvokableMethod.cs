@@ -1,0 +1,38 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Ghostbit.Tweaker.Core
+{
+    public class InvokableMethod : BaseInvokable
+    {
+        private readonly MethodInfo methodInfo;
+
+        public MethodInfo MethodInfo
+        {
+            get { return methodInfo; }
+        }
+
+        public InvokableMethod(InvokableInfo info, MethodInfo methodInfo, WeakReference<object> instance)
+            : base(info, methodInfo.ReflectedType.Assembly, instance, methodInfo.IsPublic)
+        {
+            this.methodInfo = methodInfo;
+        }
+
+        public InvokableMethod(InvokableInfo info, Delegate methodDelegate)
+            : base(info, methodDelegate.Method.ReflectedType.Assembly,
+                    methodDelegate.Target == null ? null : new WeakReference<object>(methodDelegate.Target),
+                    methodDelegate.Method.IsPublic)
+        {
+            this.methodInfo = methodDelegate.Method;
+        }
+
+        protected override object DoInvoke(object[] args)
+        {
+            return MethodInfo.Invoke(StrongInstance, args);
+        }
+    }
+}

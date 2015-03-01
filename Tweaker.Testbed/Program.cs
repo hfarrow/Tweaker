@@ -34,6 +34,9 @@ namespace Ghostbit.Tweaker.Core.Testbed
 
             [Tweakable("TestPropertyStatic")]
             public static int TestPropertyStatic { get; set; }
+
+            [Tweakable("InstanceProperty")]
+            public int InstanceProperty { get; set; }
         }
 #pragma warning restore 0067,0649
 
@@ -41,13 +44,31 @@ namespace Ghostbit.Tweaker.Core.Testbed
         {
 
             //////////////////////////////////////////
-            Tweaker tweaker = new Tweaker();
-            tweaker.Init();
+            IScanner scanner = Scanner.Global;
 
-            var tweakable = tweaker.Tweakables.GetTweakable("TestPropertyStatic");
-            var t1 = tweakable.IsValid;
-            var t2 = tweakable.WeakInstance;
-            var t3 = tweakable.StrongInstance;
+            var name = "InstanceProperty";
+            uint currentId = 1;
+            var found = false;
+            scanner.AddProcessor(new TweakableProcessor());
+            scanner.GetResultProvider<ITweakable>().ResultProvided +=
+                (s, a) =>
+                {
+                    if (a.result.Name.StartsWith(name) &&
+                        a.result.Name.EndsWith("#" + currentId))
+                    {
+                        found = true;
+                    }
+                };
+
+            TestClass instance = new TestClass();
+            scanner.ScanInstance(instance);
+            currentId++;
+            scanner.ScanInstance(instance);
+
+            //var tweakable = tweaker.Tweakables.GetTweakable("TestPropertyStatic");
+            //var t1 = tweakable.IsValid;
+            //var t2 = tweakable.WeakInstance;
+            //var t3 = tweakable.StrongInstance;
 
             //Assert.AreEqual(name, invokable.Name);
             //Assert.AreEqual(assembly, invokable.Assembly);

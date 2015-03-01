@@ -23,6 +23,7 @@ namespace Ghostbit.Tweaker.Core
         public static ITweakable MakeTweakable(Tweakable attribute, Type type, MemberInfo memberInfo, IBoundInstance instance)
         {
             Type infoType = typeof(TweakableInfo<>).MakeGenericType(new Type[] { type });
+            uint instanceId = instance != null ? instance.UniqueId : 0;
 
             var rangeAttribute = memberInfo.GetCustomAttributes(typeof(Range), false).ElementAtOrDefault(0) as Range;
             var stepSizeAttribute = memberInfo.GetCustomAttributes(typeof(StepSize), false).ElementAtOrDefault(0) as StepSize;
@@ -91,7 +92,8 @@ namespace Ghostbit.Tweaker.Core
                 weakRef = new WeakReference<object>(instance.Instance);
             }
 
-            object info = Activator.CreateInstance(infoType, new object[] { attribute.Name, range, stepSize, toggleValues });
+            string name = GetFinalName(attribute.Name, instance);
+            object info = Activator.CreateInstance(infoType, new object[] { name, range, stepSize, toggleValues, instanceId });
             Type tweakableType = typeof(BaseTweakable<>).MakeGenericType(new Type[] { type });
             return Activator.CreateInstance(tweakableType, new object[] { info, memberInfo, weakRef }) as ITweakable;
         }
@@ -130,6 +132,18 @@ namespace Ghostbit.Tweaker.Core
             }
 
             return new BaseTweakable<T>(info, fieldInfo, weakRef);
+        }
+
+        private static string GetFinalName(string name, IBoundInstance instance)
+        {
+            if (instance == null)
+            {
+                return name;
+            }
+            else
+            {
+                return string.Format("{0}#{1}", name, instance.UniqueId);
+            }
         }
     }
 }

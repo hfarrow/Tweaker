@@ -16,9 +16,16 @@ namespace Ghostbit.Tweaker.Core
         /// </summary>
         public string Name { get; private set; }
 
-        public TweakerObjectInfo(string name)
+        /// <summary>
+        /// A unique identifier for all tweakables belonging to the same instance.
+        /// Zero if tweakable is a bound to a static member.
+        /// </summary>
+        public uint InstanceId { get; private set; }
+
+        public TweakerObjectInfo(string name, uint instanceId = 0)
         {
             Name = name;
+            InstanceId = instanceId;
         }
     }
 

@@ -51,6 +51,10 @@ namespace Ghostbit.Tweaker.Core.Tests
 
             [PlaceHolderAttribute(Name = "TestClass.IntFieldInstance")]
             public int IntFieldInstance;
+
+            [Tweakable("Tweakable")]
+            public int Tweakable;
+
         }
 
         private class SubTestClass : TestClass
@@ -329,6 +333,37 @@ namespace Ghostbit.Tweaker.Core.Tests
         public void ScanForInstanceFieldAttribute()
         {
             ScanForInstanceMember("TestClass.IntFieldInstance");
+        }
+
+        [Test]
+        public void ScanMultipleInstancesAndValidateIdIncremented()
+        {
+            var name = "Tweakable";
+            var found = false;
+            var instance = new TestClass();
+            Scanner scanner = new Scanner();
+            scanner.AddProcessor(new TweakableProcessor());
+            uint currentId = 0;
+            uint previousId = 0;
+            scanner.GetResultProvider<ITweakable>().ResultProvided +=
+                (s, a) =>
+                {
+                   if(a.result.Name.StartsWith(name) &&
+                       a.result.Name.Contains("#"))
+                   {
+                       currentId = uint.Parse(a.result.Name.Split('#')[1]);
+                       found = true;
+                   }
+                };
+
+            scanner.ScanInstance(instance);
+            Assert.IsTrue(found);
+            previousId = currentId;
+            found = false;
+
+            scanner.ScanInstance(instance);
+            Assert.IsTrue(found);
+            Assert.AreEqual(currentId, previousId + 1);
         }
 
         private void ScanForInstanceMember(string name)
