@@ -68,7 +68,7 @@ namespace Ghostbit.Tweaker.Core
                 }
                 else if(obj is ITweakable)
                 {
-                    AutoTweakableBase.Manager.UnregisterTweakable(obj as ITweakable);
+                    AutoTweakable.Manager.UnregisterTweakable(obj as ITweakable);
                 }
                 else if(obj is IWatchable)
                 {

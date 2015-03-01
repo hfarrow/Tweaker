@@ -48,7 +48,7 @@ namespace Ghostbit.Tweaker.Core
             }
             else
             {
-                throw new ProcessorException("TweakableProcessor cannot process non MethodInfo or EventInfo types");
+                throw new ProcessorException("TweakableProcessor cannot process non PropertyInfo or FieldInfo types");
             }
 
             if(tweakable != null)

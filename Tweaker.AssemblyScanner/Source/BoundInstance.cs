@@ -33,11 +33,16 @@ namespace Ghostbit.Tweaker.AssemblyScanner
 
         private static uint s_nextId = 1;
 
-        public BoundInstance(T instance)
+        public BoundInstance(T instance) :
+            this(instance, s_nextId)
+        {
+            s_nextId++;
+        }
+
+        public BoundInstance(T instance, uint id)
         {
             weakReference = new WeakReference<T>(instance);
-            uniqueId = s_nextId;
-            s_nextId++;
+            uniqueId = id;
         }
 
         //public static void ResetNextId()
@@ -54,5 +59,10 @@ namespace Ghostbit.Tweaker.AssemblyScanner
             return (IBoundInstance)Activator.CreateInstance(genericType, instance);
         }
 
+        public static IBoundInstance Create(object instance, uint id)
+        {
+            Type genericType = typeof(BoundInstance<>).MakeGenericType(instance.GetType());
+            return (IBoundInstance)Activator.CreateInstance(genericType, instance, id);
+        }
     }
 }

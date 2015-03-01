@@ -10,24 +10,25 @@ namespace Ghostbit.Tweaker.Core
     public static class TweakableFactory
     {
 
-        public static ITweakable MakeTweakable(Tweakable attribute, PropertyInfo propertyInfo, IBoundInstance instance)
+        public static ITweakable MakeTweakable(Tweakable attribute, PropertyInfo propertyInfo, IBoundInstance instance, MemberInfo containerMemberInfo = null)
         {
-            return MakeTweakable(attribute, propertyInfo.PropertyType, propertyInfo, instance);
+            return MakeTweakable(attribute, propertyInfo.PropertyType, propertyInfo, instance, containerMemberInfo);
         }
 
-        public static ITweakable MakeTweakable(Tweakable attribute, FieldInfo fieldInfo, IBoundInstance instance)
+        public static ITweakable MakeTweakable(Tweakable attribute, FieldInfo fieldInfo, IBoundInstance instance, MemberInfo containerMemberInfo = null)
         {
-            return MakeTweakable(attribute, fieldInfo.FieldType, fieldInfo, instance);
+            return MakeTweakable(attribute, fieldInfo.FieldType, fieldInfo, instance, containerMemberInfo);
         }
 
-        public static ITweakable MakeTweakable(Tweakable attribute, Type type, MemberInfo memberInfo, IBoundInstance instance)
+        public static ITweakable MakeTweakable(Tweakable attribute, Type type, MemberInfo memberInfo, IBoundInstance instance, MemberInfo containerMemberInfo = null)
         {
             Type infoType = typeof(TweakableInfo<>).MakeGenericType(new Type[] { type });
             uint instanceId = instance != null ? instance.UniqueId : 0;
 
-            var rangeAttribute = memberInfo.GetCustomAttributes(typeof(Range), false).ElementAtOrDefault(0) as Range;
-            var stepSizeAttribute = memberInfo.GetCustomAttributes(typeof(StepSize), false).ElementAtOrDefault(0) as StepSize;
-            var toggleValueAttributes = memberInfo.GetCustomAttributes(typeof(NamedToggleValue), false) as NamedToggleValue[];
+            MemberInfo memberInfoWithAttributes = containerMemberInfo != null ? containerMemberInfo : memberInfo;
+            var rangeAttribute = memberInfoWithAttributes.GetCustomAttributes(typeof(Range), false).ElementAtOrDefault(0) as Range;
+            var stepSizeAttribute = memberInfoWithAttributes.GetCustomAttributes(typeof(StepSize), false).ElementAtOrDefault(0) as StepSize;
+            var toggleValueAttributes = memberInfoWithAttributes.GetCustomAttributes(typeof(NamedToggleValue), false) as NamedToggleValue[];
             toggleValueAttributes = toggleValueAttributes.OrderBy(toggle => toggle.Order).ToArray();
 
             object range = null;

@@ -18,7 +18,7 @@ namespace Ghostbit.Tweaker.Core
     {
         public IInvokable invokable;
 
-        public AutoInvokable(string methodName, IBoundInstance instance)
+        public AutoInvokable(string invokableName, string methodName, IBoundInstance instance)
         {
             if (CheckForManager())
             {
@@ -31,7 +31,8 @@ namespace Ghostbit.Tweaker.Core
                     if (method.Name == methodName)
                     {
                         uint id = instance.UniqueId;
-                        invokable = Manager.RegisterInvokable(new InvokableInfo(methodName, id),
+                        string finalName = string.Format("{0}#{1}", invokableName, id);
+                        invokable = Manager.RegisterInvokable(new InvokableInfo(finalName, id),
                             method, instance.Instance);
                     }
                 }
@@ -43,7 +44,8 @@ namespace Ghostbit.Tweaker.Core
             if (CheckForManager())
             {
                 uint id = instance != null ? instance.UniqueId : 0;
-                invokable = Manager.RegisterInvokable(new InvokableInfo(name, id), del);
+                string finalName = string.Format("{0}#{1}", name, id);
+                invokable = Manager.RegisterInvokable(new InvokableInfo(finalName, id), del);
             }
         }
 

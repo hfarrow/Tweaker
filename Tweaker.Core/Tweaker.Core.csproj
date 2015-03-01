@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\BaseTweakerAttribute.cs" />
+    <Compile Include="Source\Tweakable\AutoTweakableProcessor.cs" />
     <Compile Include="Source\Utils\AutoInvokable.cs" />
     <Compile Include="Source\Invokable\InvokableAttributes.cs" />
     <Compile Include="Source\Invokable\InvokableEvent.cs" />
