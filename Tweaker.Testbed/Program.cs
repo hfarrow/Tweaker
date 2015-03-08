@@ -74,7 +74,7 @@ namespace Ghostbit.Tweaker.Core.Testbed
             }
         }
 
-        public class AutoTweakableTest
+        public class AutoTweakableTest : IDisposable
         {
             [Tweakable("AutoTweakableTest.int"),
             Range(0, 10)]
@@ -83,6 +83,16 @@ namespace Ghostbit.Tweaker.Core.Testbed
             public AutoTweakableTest()
             {
                 AutoTweakable.Bind(this);
+            }
+
+            ~AutoTweakableTest()
+            {
+                
+            }
+
+            public void Dispose()
+            {
+                tweakable = null;
             }
         }
 #pragma warning restore 0067,0649,0219
@@ -96,10 +106,31 @@ namespace Ghostbit.Tweaker.Core.Testbed
             IScanner scanner = tweaker.Scanner;
             AutoTweakable.Manager = tweaker.Tweakables;
 
-            AutoTweakableTest test = new AutoTweakableTest();
-            var tweakable = tweaker.Tweakables.GetTweakable("AutoTweakableTest.int#1");
-            tweakable.SetValue(100);
+            //AutoTweakableTest test = new AutoTweakableTest();
+            //var tweakable = tweaker.Tweakables.GetTweakable("AutoTweakableTest.int#1");
+            //tweakable.SetValue(9);
 
+            //while (true)
+            //{
+            //    ITweakable tweakable = null;
+            //    using (AutoTweakableTest obj = new AutoTweakableTest())
+            //    {
+            //        tweakable = tweaker.Tweakables.GetTweakable(new SearchOptions("AutoTweakableTest.int#"));
+            //        tweakable = null;
+            //    }
+
+            //    GC.Collect(100, GCCollectionMode.Forced, true);
+            //}
+
+            using(AutoTweakableTest obj = new AutoTweakableTest())
+            {
+
+            }
+
+            while(true)
+            {
+                GC.Collect();
+            }
         }
 
         //static void Main(string[] args)

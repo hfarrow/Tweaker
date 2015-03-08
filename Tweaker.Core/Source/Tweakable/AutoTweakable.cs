@@ -14,11 +14,19 @@ namespace Ghostbit.Tweaker.Core
         public static ITweakableManager Manager { get; set; }
         private static AutoTweakableProcessor s_processor;
 
-        public ITweakable tweakable;       
+        public ITweakable tweakable;
 
         static AutoTweakable()
         {
             s_processor = new AutoTweakableProcessor();
+        }
+
+        ~AutoTweakable()
+        {
+            if (tweakable != null)
+            {
+                Dispose();
+            }
         }
 
         public static void Bind<TContainer>(TContainer container)
@@ -46,13 +54,27 @@ namespace Ghostbit.Tweaker.Core
 
         public void Dispose()
         {
-            if (CheckForManager())
+            if (CheckForManager() && CheckValidTweakable())
             {
-                Manager.UnregisterTweakable(tweakable);
+                if (tweakable != null)
+                {
+                    Manager.UnregisterTweakable(tweakable);
+                }
             }
+            tweakable = null;
         }
 
-        private static bool CheckForManager()
+        protected bool CheckValidTweakable()
+        {
+            if(tweakable == null)
+            {
+                throw new AutoTweakableException("AutoTweakable has been disposed and can no longer be used.");
+            }
+
+            return true;
+        }
+
+        protected static bool CheckForManager()
         {
             if (Manager == null)
             {
@@ -73,7 +95,13 @@ namespace Ghostbit.Tweaker.Core
         /// </summary>
         public T Value
         {
-            set { tweakable.SetValue(value); }
+            set 
+            {
+                if (CheckValidTweakable())
+                {
+                    tweakable.SetValue(value);
+                }
+            }
         }
 
         public Tweakable(T value)

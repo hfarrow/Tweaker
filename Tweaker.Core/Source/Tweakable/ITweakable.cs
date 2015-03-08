@@ -6,7 +6,7 @@ using System.Text;
 namespace Ghostbit.Tweaker.Core
 {
     /// <summary>
-    /// All tweakble tweaker objects implement this interface.
+    /// All tweakable tweaker objects implement this interface.
     /// </summary>
     public interface ITweakable : ITweakerObject
     {

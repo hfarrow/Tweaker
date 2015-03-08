@@ -12,15 +12,30 @@ namespace Ghostbit.Tweaker.Core.Tests
     public class AutoTweakableTest
     {
 #pragma warning disable 0067,0649,0219
-        public class TestClass
+        public class TestClass : IDisposable
         {
             [Tweakable("TestClass.AutoInt"),
             @Range(0, 10)]
             public Tweakable<int> AutoInt = new Tweakable<int>();
 
-            public TestClass()
+            private bool disposeTweakable;
+
+            public TestClass(bool disposeTweakable)
             {
+                this.disposeTweakable = disposeTweakable;
                 AutoTweakable.Bind(this);
+            }
+
+            public void Dispose()
+            {
+                if (disposeTweakable && AutoInt != null)
+                {
+                    AutoInt.Dispose();
+                }
+                else
+                {
+                    AutoInt = null;
+                }
             }
         }
 #pragma warning restore 0067,0649,0219
@@ -39,7 +54,7 @@ namespace Ghostbit.Tweaker.Core.Tests
         [Test]
         public void CreateAutoTweakableWithRangeAndValidate()
         {
-            TestClass obj = new TestClass();
+            TestClass obj = new TestClass(false);
             ITweakable tweakable = tweaker.Tweakables.GetTweakable(new SearchOptions("TestClass.AutoInt#"));
             Assert.IsNotNull(tweakable);
             tweakable.SetValue(5);
@@ -54,6 +69,48 @@ namespace Ghostbit.Tweaker.Core.Tests
             // Using the value setter should contrain according to the range.
             obj.AutoInt.Value = 200;
             Assert.AreEqual(10, obj.AutoInt.value);
+        }
+
+        [Test]
+        public void CreateAutoTweakableAndDispose()
+        {
+            ITweakable tweakable = null;
+            using (TestClass obj = new TestClass(true))
+            {
+                tweakable = tweaker.Tweakables.GetTweakable(new SearchOptions("TestClass.AutoInt#"));
+                Assert.IsNotNull(tweakable);
+                tweakable = null;
+            }
+
+            tweakable = tweaker.Tweakables.GetTweakable(new SearchOptions("TestClass.AutoInt#"));
+            Assert.IsNull(tweakable);
+        }
+
+        [Test]
+        public void CreateAutoTweakableAndFinalize()
+        {
+            ITweakable tweakable = null;
+            TestClass obj = new TestClass(false);
+
+            tweakable = tweaker.Tweakables.GetTweakable(new SearchOptions("TestClass.AutoInt#"));
+            Assert.IsNotNull(tweakable);
+            tweakable = null;
+            obj = null;
+
+            uint count = 0;
+            while (tweaker.Tweakables.GetTweakable(new SearchOptions("TestClass.AutoInt#")) != null)
+            {
+                GC.Collect();
+                count++;
+                // It is difficult to know when the finalizer will run (on a different thread) so wait for a while.
+                // On the computer this test was written, this test would pass with less than 50 loops so 1000
+                // should be more than enough?
+                if (count > 1000)
+                {
+                    Assert.Fail("Failed to finalize AutoTweakable");
+                }
+            }
+            Assert.Pass();
         }
     }
 }

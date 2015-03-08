@@ -49,6 +49,11 @@ namespace Ghostbit.Tweaker.Core
             }
         }
 
+        ~AutoInvokable()
+        {
+            Dispose();
+        }
+
         private bool CheckForManager()
         {
             if (Manager == null)
@@ -60,10 +65,11 @@ namespace Ghostbit.Tweaker.Core
 
         public void Dispose()
         {
-            if(CheckForManager())
+            if(CheckForManager() && invokable != null)
             {
                 Manager.UnregisterInvokable(invokable);
             }
+            invokable = null;
         }
     }
 

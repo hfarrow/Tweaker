@@ -6,8 +6,11 @@ using System.Text;
 namespace Ghostbit.Tweaker.AssemblyScanner
 {
     /// <summary>
-    /// A scanner enumarates all assemblies, types, and members.
-    /// What assemblies, types and members that get scanned can be controlled
+    /// A scanner enumarates all assemblies, types, and members. Processors are added to capture
+    /// and return results to listeners.
+    /// </summary>
+    /// <remarks>
+    /// Which assemblies, types, and members that get scanned can be controlled
     /// or filtered by the ScanOptions param that the scanning methods define.
     /// Scanning a large number of objects is expensive so it is recommended that
     /// ScanOptions are used to filter only to Assemblies or types that will contain
@@ -38,7 +41,7 @@ namespace Ghostbit.Tweaker.AssemblyScanner
     /// does not exist in the CLR. This means you must manually call ScanInstance on
     /// objects as needed. If your objects are created via a factory, the factory can
     /// call ScanInstance on the object before returning it.
-    /// </summary>
+    /// </remarks>
     public interface IScanner
     {
         /// <summary>
