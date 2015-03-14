@@ -53,8 +53,8 @@ namespace Ghostbit.Tweaker.Core
         public TweakableStepSize StepSize;
         public TweakableNamedToggleValue[] ToggleValues;
 
-        public TweakableInfo(string name, TweakableRange range, TweakableStepSize stepSize, TweakableNamedToggleValue[] toggleValues, uint instanceId = 0) :
-            base(name, instanceId)
+        public TweakableInfo(string name, TweakableRange range, TweakableStepSize stepSize, TweakableNamedToggleValue[] toggleValues, uint instanceId = 0, string description = "") :
+            base(name, instanceId, description)
         {
             Range = range;
             StepSize = stepSize;

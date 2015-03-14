@@ -5,24 +5,22 @@ using System.Text;
 
 namespace Ghostbit.Tweaker.Core
 {
-    
-
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Class, AllowMultiple = false)]
-    public class Tweakable : BaseTweakerAttribute
+    public class TweakableAttribute : BaseTweakerAttribute
     {
-        public Tweakable(string name) :
+		public TweakableAttribute(string name) :
             base(name)
         {
         }
     }
 
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Class, AllowMultiple = false)]
-    public class Range : Attribute
+    public class RangeAttribute : Attribute
     {
         public object MinValue;
         public object MaxValue;
 
-        public Range(object minValue, object maxValue)
+		public RangeAttribute(object minValue, object maxValue)
         {
             MinValue = minValue;
             MaxValue = maxValue;
@@ -30,24 +28,24 @@ namespace Ghostbit.Tweaker.Core
     }
 
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Class, AllowMultiple = false)]
-    public class StepSize : Attribute
+    public class StepSizeAttribute : Attribute
     {
         public object Size;
 
-        public StepSize(object size)
+		public StepSizeAttribute(object size)
         {
             Size = size;
         }
     }
 
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Class, AllowMultiple = true)]
-    public class NamedToggleValue : Attribute
+    public class NamedToggleValueAttribute : Attribute
     {
         public string Name;
         public object Value;
         public uint Order;
 
-        public NamedToggleValue(string name, object value, uint order = 0)
+		public NamedToggleValueAttribute(string name, object value, uint order = 0)
         {
             Name = name;
             Value = value;
@@ -56,9 +54,9 @@ namespace Ghostbit.Tweaker.Core
     }
 
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Class, AllowMultiple = true)]
-    public class ToggleValue : NamedToggleValue
+	public class ToggleValueAttribute : NamedToggleValueAttribute
     {
-        public ToggleValue(object value, uint order = 0) :
+		public ToggleValueAttribute(object value, uint order = 0) :
             base(value.ToString(), value, order)
         {
         }

@@ -358,9 +358,9 @@ namespace Ghostbit.Tweaker.Core.Tests
         public void MakeBaseTweakableFromReflectionFactoryAndValidate()
         {
             PropertyInfo property = typeof(TestClass).GetProperty("IntProperty", BindingFlags.Static | BindingFlags.Public);
-            Tweakable propertyAttribute = property.GetCustomAttributes(typeof(Tweakable), false)[0] as Tweakable;
+			TweakableAttribute propertyAttribute = property.GetCustomAttributes(typeof(TweakableAttribute), false)[0] as TweakableAttribute;
             FieldInfo field = typeof(TestClass).GetField("intField", BindingFlags.Static | BindingFlags.Public);
-            Tweakable fieldAttribute = field.GetCustomAttributes(typeof(Tweakable), false)[0] as Tweakable;
+			TweakableAttribute fieldAttribute = field.GetCustomAttributes(typeof(TweakableAttribute), false)[0] as TweakableAttribute;
 
             ITweakable tweakable = TweakableFactory.MakeTweakable(propertyAttribute, property, null);
             ValidateBaseTweakable(tweakable, () => { return TestClass.IntProperty; });
@@ -373,9 +373,9 @@ namespace Ghostbit.Tweaker.Core.Tests
         public void MakeTweakableRangeFromReflectionFactoryAndValidate()
         {
             PropertyInfo property = typeof(TestClass).GetProperty("IntPropertyRange", BindingFlags.Static | BindingFlags.Public);
-            Tweakable propertyAttribute = property.GetCustomAttributes(typeof(Tweakable), false)[0] as Tweakable;
+			TweakableAttribute propertyAttribute = property.GetCustomAttributes(typeof(TweakableAttribute), false)[0] as TweakableAttribute;
             FieldInfo field = typeof(TestClass).GetField("intFieldRange", BindingFlags.Static | BindingFlags.Public);
-            Tweakable fieldAttribute = field.GetCustomAttributes(typeof(Tweakable), false)[0] as Tweakable;
+			TweakableAttribute fieldAttribute = field.GetCustomAttributes(typeof(TweakableAttribute), false)[0] as TweakableAttribute;
 
             ITweakable tweakable = TweakableFactory.MakeTweakable(propertyAttribute, property, null);
             ValidateTweakableRange(tweakable, () => { return TestClass.IntPropertyRange; });
@@ -388,9 +388,9 @@ namespace Ghostbit.Tweaker.Core.Tests
         public void MakeTweakableToggleFromReflectionFactoryAndValidate()
         {
             PropertyInfo property = typeof(TestClass).GetProperty("IntPropertyToggle", BindingFlags.Static | BindingFlags.Public);
-            Tweakable propertyAttribute = property.GetCustomAttributes(typeof(Tweakable), false)[0] as Tweakable;
+			TweakableAttribute propertyAttribute = property.GetCustomAttributes(typeof(TweakableAttribute), false)[0] as TweakableAttribute;
             FieldInfo field = typeof(TestClass).GetField("intFieldToggle", BindingFlags.Static | BindingFlags.Public);
-            Tweakable fieldAttribute = field.GetCustomAttributes(typeof(Tweakable), false)[0] as Tweakable;
+			TweakableAttribute fieldAttribute = field.GetCustomAttributes(typeof(TweakableAttribute), false)[0] as TweakableAttribute;
 
             ITweakable tweakable = TweakableFactory.MakeTweakable(propertyAttribute, property, null);
             ValidateTweakableToggle(tweakable as BaseTweakable<int>, () => { return TestClass.IntPropertyToggle; });

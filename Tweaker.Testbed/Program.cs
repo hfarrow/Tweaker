@@ -29,6 +29,19 @@ namespace Ghostbit.Tweaker.Core.Testbed
                 Debug.WriteLine("TestMethodStatic");
             }
 
+			[Invokable("TestMethodStaticWithDescription", Description="This is a test!")]
+			public static void TestMethodStaticWithDescription(
+				[ArgDescription("int arg1")]int arg1, 
+				[ArgDescription("string arg2")] string arg2)
+			{
+
+			}
+
+			public delegate void MyAction([ArgDescription("aasdas")]int i);
+
+			[Invokable("TestEventStaticWithDescription", Description="This is a test event!")]
+			public static event MyAction TestEventStaticWithDescription;
+
             [Tweakable("TestFieldStatic")]
             public static int TestFieldStatic;
 
@@ -99,39 +112,47 @@ namespace Ghostbit.Tweaker.Core.Testbed
 
         //private static AutoScan<TestClass> testClass;
 
-        static void Main(string[] args)
-        {
-            Tweaker tweaker = new Tweaker();
-            tweaker.Init();
-            IScanner scanner = tweaker.Scanner;
-            AutoTweakable.Manager = tweaker.Tweakables;
+		static void Main(string[] args)
+		{
+			EventInfo eventInfo = typeof(TestClass).GetEvent("TestEventStaticWithDescription");
+			Type eventHandlerType = eventInfo.EventHandlerType;
+			MethodInfo invokeMethod = eventHandlerType.GetMethod("Invoke");
+			ParameterInfo[] parameters = invokeMethod.GetParameters();
+		}
 
-            //AutoTweakableTest test = new AutoTweakableTest();
-            //var tweakable = tweaker.Tweakables.GetTweakable("AutoTweakableTest.int#1");
-            //tweakable.SetValue(9);
+		//static void Main(string[] args)
+		//{
+		//	Tweaker tweaker = new Tweaker();
+		//	tweaker.Init();
+		//	IScanner scanner = tweaker.Scanner;
+		//	AutoTweakable.Manager = tweaker.Tweakables;
 
-            //while (true)
-            //{
-            //    ITweakable tweakable = null;
-            //    using (AutoTweakableTest obj = new AutoTweakableTest())
-            //    {
-            //        tweakable = tweaker.Tweakables.GetTweakable(new SearchOptions("AutoTweakableTest.int#"));
-            //        tweakable = null;
-            //    }
+		//	//AutoTweakableTest test = new AutoTweakableTest();
+		//	//var tweakable = tweaker.Tweakables.GetTweakable("AutoTweakableTest.int#1");
+		//	//tweakable.SetValue(9);
 
-            //    GC.Collect(100, GCCollectionMode.Forced, true);
-            //}
+		//	//while (true)
+		//	//{
+		//	//    ITweakable tweakable = null;
+		//	//    using (AutoTweakableTest obj = new AutoTweakableTest())
+		//	//    {
+		//	//        tweakable = tweaker.Tweakables.GetTweakable(new SearchOptions("AutoTweakableTest.int#"));
+		//	//        tweakable = null;
+		//	//    }
 
-            using(AutoTweakableTest obj = new AutoTweakableTest())
-            {
+		//	//    GC.Collect(100, GCCollectionMode.Forced, true);
+		//	//}
 
-            }
+		//	using(AutoTweakableTest obj = new AutoTweakableTest())
+		//	{
 
-            while(true)
-            {
-                GC.Collect();
-            }
-        }
+		//	}
+
+		//	while(true)
+		//	{
+		//		GC.Collect();
+		//	}
+		//}
 
         //static void Main(string[] args)
         //{

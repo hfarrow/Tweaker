@@ -10,25 +10,25 @@ namespace Ghostbit.Tweaker.Core
     public static class TweakableFactory
     {
 
-        public static ITweakable MakeTweakable(Tweakable attribute, PropertyInfo propertyInfo, IBoundInstance instance, MemberInfo containerMemberInfo = null)
+		public static ITweakable MakeTweakable(TweakableAttribute attribute, PropertyInfo propertyInfo, IBoundInstance instance, MemberInfo containerMemberInfo = null)
         {
             return MakeTweakable(attribute, propertyInfo.PropertyType, propertyInfo, instance, containerMemberInfo);
         }
 
-        public static ITweakable MakeTweakable(Tweakable attribute, FieldInfo fieldInfo, IBoundInstance instance, MemberInfo containerMemberInfo = null)
+		public static ITweakable MakeTweakable(TweakableAttribute attribute, FieldInfo fieldInfo, IBoundInstance instance, MemberInfo containerMemberInfo = null)
         {
             return MakeTweakable(attribute, fieldInfo.FieldType, fieldInfo, instance, containerMemberInfo);
         }
 
-        public static ITweakable MakeTweakable(Tweakable attribute, Type type, MemberInfo memberInfo, IBoundInstance instance, MemberInfo containerMemberInfo = null)
+		public static ITweakable MakeTweakable(TweakableAttribute attribute, Type type, MemberInfo memberInfo, IBoundInstance instance, MemberInfo containerMemberInfo = null)
         {
             Type infoType = typeof(TweakableInfo<>).MakeGenericType(new Type[] { type });
             uint instanceId = instance != null ? instance.UniqueId : 0;
 
             MemberInfo memberInfoWithAttributes = containerMemberInfo != null ? containerMemberInfo : memberInfo;
-            var rangeAttribute = memberInfoWithAttributes.GetCustomAttributes(typeof(Range), false).ElementAtOrDefault(0) as Range;
-            var stepSizeAttribute = memberInfoWithAttributes.GetCustomAttributes(typeof(StepSize), false).ElementAtOrDefault(0) as StepSize;
-            var toggleValueAttributes = memberInfoWithAttributes.GetCustomAttributes(typeof(NamedToggleValue), false) as NamedToggleValue[];
+			var rangeAttribute = memberInfoWithAttributes.GetCustomAttributes(typeof(RangeAttribute), false).ElementAtOrDefault(0) as RangeAttribute;
+			var stepSizeAttribute = memberInfoWithAttributes.GetCustomAttributes(typeof(StepSizeAttribute), false).ElementAtOrDefault(0) as StepSizeAttribute;
+			var toggleValueAttributes = memberInfoWithAttributes.GetCustomAttributes(typeof(NamedToggleValueAttribute), false) as NamedToggleValueAttribute[];
             toggleValueAttributes = toggleValueAttributes.OrderBy(toggle => toggle.Order).ToArray();
 
             object range = null;
@@ -94,7 +94,7 @@ namespace Ghostbit.Tweaker.Core
             }
 
             string name = GetFinalName(attribute.Name, instance);
-            object info = Activator.CreateInstance(infoType, new object[] { name, range, stepSize, toggleValues, instanceId });
+            object info = Activator.CreateInstance(infoType, new object[] { name, range, stepSize, toggleValues, instanceId, attribute.Description });
             Type tweakableType = typeof(BaseTweakable<>).MakeGenericType(new Type[] { type });
             return Activator.CreateInstance(tweakableType, new object[] { info, memberInfo, weakRef }) as ITweakable;
         }

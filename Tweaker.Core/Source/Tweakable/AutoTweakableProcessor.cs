@@ -12,14 +12,14 @@ namespace Ghostbit.Tweaker.Core
         public AutoTweakable autoTweakable;
     }
 
-    public class AutoTweakableProcessor : IAttributeScanProcessor<Tweakable, AutoTweakableResult>
+	public class AutoTweakableProcessor : IAttributeScanProcessor<TweakableAttribute, AutoTweakableResult>
     {
-        public void ProcessAttribute(Tweakable input, Type type, IBoundInstance instance = null)
+		public void ProcessAttribute(TweakableAttribute input, Type type, IBoundInstance instance = null)
         {
             
         }
 
-        public void ProcessAttribute(Tweakable input, MemberInfo memberInfo, IBoundInstance instance = null)
+		public void ProcessAttribute(TweakableAttribute input, MemberInfo memberInfo, IBoundInstance instance = null)
         {
             ITweakable tweakable = null;
             AutoTweakableResult result = null;

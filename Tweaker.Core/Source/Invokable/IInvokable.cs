@@ -10,8 +10,14 @@ namespace Ghostbit.Tweaker.Core
     /// </summary>
     public interface IInvokable : ITweakerObject
     {
+		/// <summary>
+		/// Get Info about this invokable such as description strings.
+		/// </summary>
+		InvokableInfo InvokableInfo { get; }
+
         /// <summary>
         /// Invoke the invokable object with the provided arguments.
+		/// Throws InvokeException, InvokeArgNumberException, InvokeArgTypeException
         /// </summary>
         /// <param name="args">Arguments to invoke with. Pass null for no arguments.</param>
         /// <returns>The return value of the invokable.</returns>

@@ -17,7 +17,8 @@ namespace Ghostbit.Tweaker.Core
         }
 
         public InvokableMethod(InvokableInfo info, MethodInfo methodInfo, WeakReference<object> instance)
-            : base(info, methodInfo.ReflectedType.Assembly, instance, methodInfo.IsPublic)
+            : base(info, methodInfo.ReflectedType.Assembly, instance, methodInfo.IsPublic,
+					methodInfo.GetParameters())
         {
             this.methodInfo = methodInfo;
         }
@@ -25,7 +26,8 @@ namespace Ghostbit.Tweaker.Core
         public InvokableMethod(InvokableInfo info, Delegate methodDelegate)
             : base(info, methodDelegate.Method.ReflectedType.Assembly,
                     methodDelegate.Target == null ? null : new WeakReference<object>(methodDelegate.Target),
-                    methodDelegate.Method.IsPublic)
+                    methodDelegate.Method.IsPublic,
+					methodDelegate.Method.GetParameters())
         {
             this.methodInfo = methodDelegate.Method;
         }

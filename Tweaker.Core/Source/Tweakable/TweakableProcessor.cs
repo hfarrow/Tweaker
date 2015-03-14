@@ -15,25 +15,25 @@ namespace Ghostbit.Tweaker.Core
     /// but if a Type is annotated with Tweakable a period will be used to separate the provided
     /// group name with the name of the tweakable members.
     /// </remarks>
-    public class TweakableProcessor : IAttributeScanProcessor<Tweakable, ITweakable>
+	public class TweakableProcessor : IAttributeScanProcessor<TweakableAttribute, ITweakable>
     {
-        public void ProcessAttribute(Tweakable input, Type type, IBoundInstance instance = null)
+		public void ProcessAttribute(TweakableAttribute input, Type type, IBoundInstance instance = null)
         {
             foreach (MemberInfo memberInfo in type.GetMembers(ReflectionUtil.GetBindingFlags(instance)))
             {
                 if (memberInfo.MemberType == MemberTypes.Property ||
                     memberInfo.MemberType == MemberTypes.Field)
                 {
-                    if (memberInfo.GetCustomAttributes(typeof(Tweakable), false).Length == 0)
+					if (memberInfo.GetCustomAttributes(typeof(TweakableAttribute), false).Length == 0)
                     {
-                        Tweakable inner = new Tweakable(input.Name + "." + memberInfo.Name);
+						TweakableAttribute inner = new TweakableAttribute(input.Name + "." + memberInfo.Name);
                         ProcessAttribute(inner, memberInfo, instance);
                     }
                 }
             }
         }
 
-        public void ProcessAttribute(Tweakable input, MemberInfo memberInfo, IBoundInstance instance = null)
+		public void ProcessAttribute(TweakableAttribute input, MemberInfo memberInfo, IBoundInstance instance = null)
         {
             ITweakable tweakable = null;
             if (memberInfo.MemberType == MemberTypes.Property)

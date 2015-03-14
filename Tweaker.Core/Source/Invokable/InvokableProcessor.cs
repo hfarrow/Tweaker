@@ -15,25 +15,25 @@ namespace Ghostbit.Tweaker.Core
     /// but if a Type is annotated with Invokable a period will be used to separate the provided
     /// group name with the name of the invokable members.
     /// </remarks>
-    public class InvokableProcessor : IAttributeScanProcessor<Invokable, IInvokable>
+	public class InvokableProcessor : IAttributeScanProcessor<InvokableAttribute, IInvokable>
     {
-        public void ProcessAttribute(Invokable input, Type type, IBoundInstance instance = null)
+		public void ProcessAttribute(InvokableAttribute input, Type type, IBoundInstance instance = null)
         {
             foreach (MemberInfo memberInfo in type.GetMembers(ReflectionUtil.GetBindingFlags(instance)))
             {
                 if (memberInfo.MemberType == MemberTypes.Method ||
                     memberInfo.MemberType == MemberTypes.Event)
                 {
-                    if (memberInfo.GetCustomAttributes(typeof(Invokable), false).Length == 0)
+					if (memberInfo.GetCustomAttributes(typeof(InvokableAttribute), false).Length == 0)
                     {
-                        Invokable inner = new Invokable(input.Name + "." + memberInfo.Name);
+						InvokableAttribute inner = new InvokableAttribute(input.Name + "." + memberInfo.Name);
                         ProcessAttribute(inner, memberInfo, instance);
                     }
                 }
             }
         }
 
-        public void ProcessAttribute(Invokable input, MemberInfo memberInfo, IBoundInstance instance = null)
+		public void ProcessAttribute(InvokableAttribute input, MemberInfo memberInfo, IBoundInstance instance = null)
         {
             IInvokable invokable = null;
             if (memberInfo.MemberType == MemberTypes.Method)
