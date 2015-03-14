@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Ghostbit.Tweaker.Core
 {
@@ -31,7 +30,7 @@ namespace Ghostbit.Tweaker.Core
             }
         }
 
-        public override WeakReference<object> WeakInstance
+        public override WeakReference WeakInstance
         {
             get
             {
@@ -106,7 +105,7 @@ namespace Ghostbit.Tweaker.Core
             return strongRef as VirtualProperty<T>;
         }
 
-        private BaseTweakable(TweakableInfo<T> info, Assembly assembly, WeakReference<object> instance, bool isPublic) :
+        private BaseTweakable(TweakableInfo<T> info, Assembly assembly, WeakReference instance, bool isPublic) :
             base(info, assembly, instance, isPublic)
         {
             TweakableInfo = info;
@@ -114,7 +113,7 @@ namespace Ghostbit.Tweaker.Core
             CreateComponents();
         }
 
-        private BaseTweakable(TweakableInfo<T> info, MethodInfo setter, MethodInfo getter, Assembly assembly, WeakReference<object> instance, bool isPublic) :
+        private BaseTweakable(TweakableInfo<T> info, MethodInfo setter, MethodInfo getter, Assembly assembly, WeakReference instance, bool isPublic) :
             this(info, assembly, instance, isPublic)
         {
             Setter = setter;
@@ -124,7 +123,7 @@ namespace Ghostbit.Tweaker.Core
         }
 
         private BaseTweakable(TweakableInfo<T> info, VirtualProperty<T> property, Assembly assembly, bool isPublic) :
-            this(info, assembly, new WeakReference<object>(property), isPublic)
+            this(info, assembly, new WeakReference(property), isPublic)
         {
             Setter = property.Setter.Method;
             Getter = property.Getter.Method;
@@ -132,21 +131,21 @@ namespace Ghostbit.Tweaker.Core
             CreateComponents();
         }
 
-        public BaseTweakable(TweakableInfo<T> info, PropertyInfo property, WeakReference<object> instance) :
+        public BaseTweakable(TweakableInfo<T> info, PropertyInfo property, WeakReference instance) :
             this(info, property.GetSetMethod(true), property.GetGetMethod(true),
                  property.ReflectedType.Assembly, instance, property.GetAccessors().Length > 0)
         {
 
         }
 
-        public BaseTweakable(TweakableInfo<T> info, MethodInfo setter, MethodInfo getter, WeakReference<object> instance) :
+        public BaseTweakable(TweakableInfo<T> info, MethodInfo setter, MethodInfo getter, WeakReference instance) :
             this(info, setter, getter,
                  setter.ReflectedType.Assembly, instance, setter.IsPublic || getter.IsPublic)
         {
 
         }
 
-        public BaseTweakable(TweakableInfo<T> info, FieldInfo field, WeakReference<object> instance) :
+        public BaseTweakable(TweakableInfo<T> info, FieldInfo field, WeakReference instance) :
             this(info, new VirtualProperty<T>(field, instance), field.ReflectedType.Assembly, field.IsPublic)
         {
 

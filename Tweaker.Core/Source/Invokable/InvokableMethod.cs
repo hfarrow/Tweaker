@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Ghostbit.Tweaker.Core
 {
@@ -16,7 +15,7 @@ namespace Ghostbit.Tweaker.Core
             get { return methodInfo; }
         }
 
-        public InvokableMethod(InvokableInfo info, MethodInfo methodInfo, WeakReference<object> instance)
+        public InvokableMethod(InvokableInfo info, MethodInfo methodInfo, WeakReference instance)
             : base(info, methodInfo.ReflectedType.Assembly, instance, methodInfo.IsPublic,
 					methodInfo.GetParameters())
         {
@@ -25,7 +24,7 @@ namespace Ghostbit.Tweaker.Core
 
         public InvokableMethod(InvokableInfo info, Delegate methodDelegate)
             : base(info, methodDelegate.Method.ReflectedType.Assembly,
-                    methodDelegate.Target == null ? null : new WeakReference<object>(methodDelegate.Target),
+                    methodDelegate.Target == null ? null : new WeakReference(methodDelegate.Target),
                     methodDelegate.Method.IsPublic,
 					methodDelegate.Method.GetParameters())
         {

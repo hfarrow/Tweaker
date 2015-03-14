@@ -43,7 +43,7 @@ namespace Ghostbit.Tweaker.Core
         protected TweakerObjectInfo Info { get; set; }
 
         protected readonly bool isPublic;
-        protected readonly WeakReference<object> instance;
+        protected readonly WeakReference instance;
         protected readonly Assembly assembly;
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Ghostbit.Tweaker.Core
         /// The weak reference to the instance this tweaker object is bound to.
         /// Null if bound to a static tweaker object.
         /// </summary>
-        public virtual WeakReference<object> WeakInstance
+        public virtual WeakReference WeakInstance
         {
             get
             {
@@ -115,7 +115,7 @@ namespace Ghostbit.Tweaker.Core
             }
         }
 
-        public TweakerObject(TweakerObjectInfo info, Assembly assembly, WeakReference<object> instance, bool isPublic)
+        public TweakerObject(TweakerObjectInfo info, Assembly assembly, WeakReference instance, bool isPublic)
         {
             Info = info;
             this.assembly = assembly;

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Ghostbit.Tweaker.Core
 {
@@ -43,7 +42,7 @@ namespace Ghostbit.Tweaker.Core
 			var invokable = new InvokableMethod(
 				info,
 				methodInfo,
-				instance == null ? null : new WeakReference<object>(instance));
+				instance == null ? null : new WeakReference(instance));
 			return invokable;
 		}
 
@@ -58,7 +57,7 @@ namespace Ghostbit.Tweaker.Core
 			return new InvokableEvent(
 				info,
 				fieldInfo,
-				instance == null ? null : new WeakReference<object>(instance));
+				instance == null ? null : new WeakReference(instance));
 		}
 
 		public static string[] GetArgDescriptions(ParameterInfo[] parameters)
@@ -66,10 +65,10 @@ namespace Ghostbit.Tweaker.Core
 			string[] argDescriptions = new string[parameters.Length];
 			for (var i = 0; i < parameters.Length; ++i)
 			{
-				var argDescription = parameters[i].GetCustomAttribute<ArgDescriptionAttribute>();
-				if (argDescription != null)
+				object[] argAttributes = parameters[i].GetCustomAttributes(typeof(ArgDescriptionAttribute), true);
+				if (argAttributes != null && argAttributes.Length > 0)
 				{
-					argDescriptions[i] = argDescription.Description;
+					argDescriptions[i] = (argAttributes[0] as ArgDescriptionAttribute).Description;
 				}
 				else
 				{
@@ -83,7 +82,7 @@ namespace Ghostbit.Tweaker.Core
 		public static string GetReturnDescription(MethodInfo methodInfo)
 		{
 			object[] attributes = methodInfo.ReturnTypeCustomAttributes.GetCustomAttributes(typeof(ReturnDescriptionAttribute), true);
-			if(attributes.Length > 0)
+			if (attributes.Length > 0)
 			{
 				return (attributes[0] as ReturnDescriptionAttribute).Description;
 			}

@@ -16,13 +16,13 @@ namespace Ghostbit.Tweaker.Core
 			}
 		}
 
-		public BaseInvokable(InvokableInfo info, Assembly assembly, WeakReference<object> instance, bool isPublic, ParameterInfo[] parameters) :
+		public BaseInvokable(InvokableInfo info, Assembly assembly, WeakReference instance, bool isPublic, ParameterInfo[] parameters) :
 			this(info, assembly, instance, isPublic)
 		{
 			SetParameters(parameters);
 		}
 
-		public BaseInvokable(InvokableInfo info, Assembly assembly, WeakReference<object> instance, bool isPublic) :
+		public BaseInvokable(InvokableInfo info, Assembly assembly, WeakReference instance, bool isPublic) :
 			base(info, assembly, instance, isPublic)
 		{
 			InvokableInfo = info;

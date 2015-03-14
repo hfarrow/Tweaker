@@ -316,7 +316,7 @@ namespace Ghostbit.Tweaker.AssemblyScanner
 
             public void ProcessMember(MemberInfo memberInfo, Type type, IBoundInstance instance = null)
             {
-                if (!CheckAlreadyProcessed(memberInfo.ReflectedType.FullName, instance))
+                if (!CheckAlreadyProcessed(memberInfo.ReflectedType.FullName + memberInfo.Name, instance))
                     DoProcessMember(memberInfo, type, instance);
             }
 

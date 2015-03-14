@@ -29,7 +29,7 @@ namespace Ghostbit.Tweaker.Core
         /// The weak reference to the instance this tweaker object is bound to.
         /// Null if bound to a static tweaker object.
         /// </summary>
-        WeakReference<object> WeakInstance { get; }
+        WeakReference WeakInstance { get; }
 
         /// <summary>
         /// The strong reference to the instance this tweaker object is bound to.

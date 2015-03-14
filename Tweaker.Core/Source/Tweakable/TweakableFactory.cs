@@ -87,10 +87,10 @@ namespace Ghostbit.Tweaker.Core
                 }
             }
 
-            WeakReference<object> weakRef = null;
+            WeakReference weakRef = null;
             if(instance != null)
             {
-                weakRef = new WeakReference<object>(instance.Instance);
+                weakRef = new WeakReference(instance.Instance);
             }
 
             string name = GetFinalName(attribute.Name, instance);
@@ -104,14 +104,14 @@ namespace Ghostbit.Tweaker.Core
             if (typeof(T) != propertyInfo.PropertyType)
                 return null; // T must match type of property
 
-            WeakReference<object> weakRef;
+            WeakReference weakRef;
             if(instance == null)
             {
                 weakRef = null;
             }
             else
             {
-                weakRef = new WeakReference<object>(instance);
+                weakRef = new WeakReference(instance);
             }
 
             return new BaseTweakable<T>(info, propertyInfo, weakRef);
@@ -122,14 +122,14 @@ namespace Ghostbit.Tweaker.Core
             if (typeof(T) != fieldInfo.FieldType)
                 return null; // T must match type of property
 
-            WeakReference<object> weakRef;
+            WeakReference weakRef;
             if (instance == null)
             {
                 weakRef = null;
             }
             else
             {
-                weakRef = new WeakReference<object>(instance);
+                weakRef = new WeakReference(instance);
             }
 
             return new BaseTweakable<T>(info, fieldInfo, weakRef);

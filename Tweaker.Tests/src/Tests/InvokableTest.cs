@@ -90,7 +90,7 @@ namespace Ghostbit.Tweaker.Core.Tests
 			var name = "TestClass." + methodName;
 			var methodInfo = instance.GetType().GetMethod(methodName);
 			var assembly = methodInfo.GetType().Assembly;
-			var weakRef = instance == null ? null : new WeakReference<object>(instance);
+			var weakRef = instance == null ? null : new WeakReference(instance);
 			return new InvokableMethod(new InvokableInfo(name), methodInfo, weakRef);
 		}
 
@@ -147,7 +147,7 @@ namespace Ghostbit.Tweaker.Core.Tests
 			var name = "TestClass.VoidVoid";
 			var assembly = typeof(TestClass).Assembly;
 			var methodInfo = typeof(TestClass).GetMethod("TestMethodVoidVoid");
-			var invokable = new InvokableMethod(new InvokableInfo(name), methodInfo, new WeakReference<object>(testClass));
+			var invokable = new InvokableMethod(new InvokableInfo(name), methodInfo, new WeakReference(testClass));
 
 			Assert.AreEqual(name, invokable.Name);
 			Assert.AreEqual(assembly, invokable.Assembly);
@@ -192,7 +192,7 @@ namespace Ghostbit.Tweaker.Core.Tests
 			var assembly = testClass.GetType().Assembly;
 			var fieldInfo = testClass.GetType().GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 			Assert.IsNotNull(fieldInfo);
-			var invokable = new InvokableEvent(new InvokableInfo(name), fieldInfo, new WeakReference<object>(testClass));
+			var invokable = new InvokableEvent(new InvokableInfo(name), fieldInfo, new WeakReference(testClass));
 
 			Assert.AreEqual(name, invokable.Name);
 			Assert.AreEqual(assembly, invokable.Assembly);
@@ -210,7 +210,7 @@ namespace Ghostbit.Tweaker.Core.Tests
 			var name = "TestEventVoidVoid";
 			var assembly = testClass.GetType().Assembly;
 			var fieldInfo = testClass.GetType().GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-			var invokable = new InvokableEvent(new InvokableInfo(name), fieldInfo, new WeakReference<object>(testClass));
+			var invokable = new InvokableEvent(new InvokableInfo(name), fieldInfo, new WeakReference(testClass));
 
 			invokable.Invoke(null);
 			Assert.IsTrue(lambdaDidRun);

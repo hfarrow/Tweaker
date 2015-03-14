@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Ghostbit.Tweaker.Core
 {
@@ -17,7 +16,7 @@ namespace Ghostbit.Tweaker.Core
 			get { return fieldInfo; }
 		}
 
-		public InvokableEvent(InvokableInfo info, FieldInfo fieldInfo, WeakReference<object> instance)
+		public InvokableEvent(InvokableInfo info, FieldInfo fieldInfo, WeakReference instance)
 			: base(info, fieldInfo.ReflectedType.Assembly, instance, fieldInfo.IsPublic)
 		{
 			this.fieldInfo = fieldInfo;

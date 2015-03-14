@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Ghostbit.Tweaker.AssemblyScanner
 {
@@ -21,7 +20,10 @@ namespace Ghostbit.Tweaker.AssemblyScanner
             get 
             {
                 T instance = default(T);
-                weakReference.TryGetTarget(out instance);
+                if(weakReference.IsAlive)
+				{
+					instance = weakReference.Target as T;
+				}
                 return instance;
             }
         }
@@ -29,7 +31,7 @@ namespace Ghostbit.Tweaker.AssemblyScanner
         public Type Type { get { return typeof(T); } }
 
         private readonly uint uniqueId;
-        private readonly WeakReference<T> weakReference;
+        private readonly WeakReference weakReference;
 
         private static uint s_nextId = 1;
 
@@ -41,7 +43,7 @@ namespace Ghostbit.Tweaker.AssemblyScanner
 
         public BoundInstance(T instance, uint id)
         {
-            weakReference = new WeakReference<T>(instance);
+            weakReference = new WeakReference(instance);
             uniqueId = id;
         }
 

@@ -25,7 +25,7 @@ namespace Ghostbit.Tweaker.Core
 		public Regex AssemblyRegex { get; set; }
 		public ScopeType Scope { get; set; }
 		public BindingType Binding { get; set; }
-		public WeakReference<object> weakInstance;
+		public WeakReference weakInstance;
 
 		public SearchOptions(
 			string nameRegex = null,
@@ -38,7 +38,7 @@ namespace Ghostbit.Tweaker.Core
 			AssemblyRegex = assemblyRegex == null ? null : new Regex(assemblyRegex);
 			Scope = scope;
 			Binding = binding;
-			weakInstance = instance != null ? new WeakReference<object>(instance) : null;
+			weakInstance = instance != null ? new WeakReference(instance) : null;
 		}
 
 		public bool CheckMatch(string name, MethodInfo info)
@@ -69,7 +69,7 @@ namespace Ghostbit.Tweaker.Core
 				obj.WeakInstance);
 		}
 
-		public bool CheckMatch(string name, Assembly assembly, ScopeType scope, BindingType binding, WeakReference<object> weakInstance = null)
+		public bool CheckMatch(string name, Assembly assembly, ScopeType scope, BindingType binding, WeakReference weakInstance = null)
 		{
 			if (Scope != ScopeType.All && Scope != scope)
 			{
