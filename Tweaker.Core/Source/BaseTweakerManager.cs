@@ -42,10 +42,10 @@ namespace Ghostbit.Tweaker.Core
 
 				if (t.StrongInstance != null)
 				{
-					T existingObj = GetObject(new SearchOptions(t.Name.Split('#')[0], 
+					T existingObj = GetObject(new SearchOptions(t.Name.Split('#')[0],
 						null, SearchOptions.ScopeType.All, SearchOptions.BindingType.Instance, t.StrongInstance));
 
-					if(existingObj != null)
+					if (existingObj != null)
 					{
 						throw new InstanceAlreadyRegisteredException(existingObj);
 					}
@@ -98,7 +98,7 @@ namespace Ghostbit.Tweaker.Core
 				{
 					if (options != null && options.CheckMatch(obj))
 					{
-						return obj;
+						return ValidateObjectToReturn(obj);
 					}
 				}
 				return default(T);
@@ -111,7 +111,7 @@ namespace Ghostbit.Tweaker.Core
 			{
 				T obj = default(T);
 				objects.TryGetValue(name, out obj);
-				return obj;
+				return ValidateObjectToReturn(obj);
 			}
 		}
 
@@ -132,6 +132,21 @@ namespace Ghostbit.Tweaker.Core
 				{
 					objects.Remove(name);
 				}
+			}
+		}
+
+		// If the instance that a tweakable is bound to is garbage collected
+		// it will no longer be valid and should be unregistered.
+		private T ValidateObjectToReturn(T obj)
+		{
+			if(obj != null && !obj.IsValid)
+			{
+				UnregisterObject(obj);
+				return default(T);
+			}
+			else
+			{
+				return obj;
 			}
 		}
 	}

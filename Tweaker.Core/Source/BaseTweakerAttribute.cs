@@ -4,16 +4,16 @@ using System.Text;
 
 namespace Ghostbit.Tweaker.Core
 {
-    public abstract class BaseTweakerAttribute : Attribute, ITweakerAttribute
-    {
+	public abstract class BaseTweakerAttribute : Attribute, ITweakerAttribute
+	{
 		public string Description = "";
-        public string Name { get; private set; }
-        public Guid Guid { get; private set; }
+		public string Name { get; private set; }
+		public Guid Guid { get; private set; }
 
-        public BaseTweakerAttribute(string name)
-        {
-            Name = name;
-            Guid = Guid.NewGuid();
-        }
-    }
+		public BaseTweakerAttribute(string name)
+		{
+			Name = name;
+			Guid = Guid.NewGuid();
+		}
+	}
 }

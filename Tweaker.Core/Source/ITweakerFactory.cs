@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Ghostbit.Tweaker.Core
 {
-    public interface ITweakerFactory
-    {
-        T Create<T>(params object[] constructorArgs);
-    }
+	public interface ITweakerFactory
+	{
+		T Create<T>(params object[] constructorArgs);
+	}
 }

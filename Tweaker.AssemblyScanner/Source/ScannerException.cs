@@ -5,11 +5,11 @@ using System.Text;
 
 namespace Ghostbit.Tweaker.AssemblyScanner
 {
-    public class ScannerException : Exception, ISerializable
-    {
-        public ScannerException(string msg)
-            : base(msg)
-        {
-        }
-    }
+	public class ScannerException : Exception, ISerializable
+	{
+		public ScannerException(string msg)
+			: base(msg)
+		{
+		}
+	}
 }

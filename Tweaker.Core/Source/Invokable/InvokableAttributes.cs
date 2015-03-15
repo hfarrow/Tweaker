@@ -5,15 +5,15 @@ using System.Text;
 
 namespace Ghostbit.Tweaker.Core
 {
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Event | AttributeTargets.Class, AllowMultiple = false)]
-    public class InvokableAttribute : BaseTweakerAttribute
-    {
+	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Event | AttributeTargets.Class, AllowMultiple = false)]
+	public class InvokableAttribute : BaseTweakerAttribute
+	{
 		public InvokableAttribute(string name) :
-            base(name)
-        {
+			base(name)
+		{
 
-        }
-    }
+		}
+	}
 
 	[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
 	public class ArgDescriptionAttribute : Attribute

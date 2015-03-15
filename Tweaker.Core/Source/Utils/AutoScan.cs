@@ -12,6 +12,11 @@ namespace Ghostbit.Tweaker.Core
 		public static IScanner Scanner { get; set; }
 	}
 
+	/// <summary>
+	/// Objects wrapped with this type will automatically be scanned and added to managers.
+	/// When the wrapper is finalized, the tweaker objects will be automatically unregistered.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
 	public class AutoScan<T> : AutoScanBase, IDisposable
 		where T : new()
 	{
@@ -71,17 +76,26 @@ namespace Ghostbit.Tweaker.Core
 				{
 					if (obj is IInvokable)
 					{
-						AutoInvokableBase.Manager.UnregisterInvokable(obj as IInvokable);
+						if (AutoInvokable.Manager != null)
+						{
+							AutoInvokableBase.Manager.UnregisterInvokable(obj as IInvokable);
+						}
 					}
 					else if (obj is ITweakable)
 					{
-						AutoTweakable.Manager.UnregisterTweakable(obj as ITweakable);
+						if (AutoTweakable.Manager != null)
+						{
+							AutoTweakable.Manager.UnregisterTweakable(obj as ITweakable);
+						}
 					}
 					else if (obj is IWatchable)
 					{
 						// TODO: implement
 						throw new NotImplementedException();
-						//AutoWatchableBase.Manager.UnregisterWatchable(obj as IWatchable);
+						//if (AutoWatchable.Manager != null)
+						//{
+						//	AutoWatchable.Manager.UnregisterWatchable(obj as IWatchable);
+						//}
 					}
 					else
 					{

@@ -5,5 +5,5 @@ using System.Text;
 
 namespace Ghostbit.Tweaker.Core
 {
-    
+
 }

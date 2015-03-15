@@ -6,20 +6,20 @@ using System.Text;
 
 namespace Ghostbit.Tweaker.Core
 {
-    public static class ReflectionUtil
-    {
-        public static BindingFlags GetBindingFlags(object instance)
-        {
-            BindingFlags flags = BindingFlags.Public;
-            if (instance == null)
-            {
-                flags |= BindingFlags.Static;
-            }
-            else
-            {
-                flags |= BindingFlags.Instance;
-            }
-            return flags;
-        }
-    }
+	public static class ReflectionUtil
+	{
+		public static BindingFlags GetBindingFlags(object instance)
+		{
+			BindingFlags flags = BindingFlags.Public;
+			if (instance == null)
+			{
+				flags |= BindingFlags.Static;
+			}
+			else
+			{
+				flags |= BindingFlags.Instance;
+			}
+			return flags;
+		}
+	}
 }

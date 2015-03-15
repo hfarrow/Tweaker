@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Ghostbit.Tweaker.Core
 {
-    public interface IWatchable : ITweakerObject
-    {
-    }
+	public interface IWatchable : ITweakerObject
+	{
+	}
 }

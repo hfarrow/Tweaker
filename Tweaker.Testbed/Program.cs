@@ -10,26 +10,26 @@ using System.Reflection;
 
 namespace Ghostbit.Tweaker.Core.Testbed
 {
-    class Program
-    {
+	class Program
+	{
 #pragma warning disable 0067,0649,0219
-        public class TestClass
-        {
-            [Invokable("TestMethod")]
-            public void TestMethod()
-            {
-                Debug.WriteLine("TestMethod");
-            }
+		public class TestClass
+		{
+			[Invokable("TestMethod")]
+			public void TestMethod()
+			{
+				Debug.WriteLine("TestMethod");
+			}
 
-            [Invokable("TestMethodStatic")]
-            public static void TestMethodStatic()
-            {
-                Debug.WriteLine("TestMethodStatic");
-            }
+			[Invokable("TestMethodStatic")]
+			public static void TestMethodStatic()
+			{
+				Debug.WriteLine("TestMethodStatic");
+			}
 
-			[Invokable("TestMethodStaticWithDescription", Description="This is a test!")]
+			[Invokable("TestMethodStaticWithDescription", Description = "This is a test!")]
 			public static void TestMethodStaticWithDescription(
-				[ArgDescription("int arg1")]int arg1, 
+				[ArgDescription("int arg1")]int arg1,
 				[ArgDescription("string arg2")] string arg2)
 			{
 
@@ -37,78 +37,79 @@ namespace Ghostbit.Tweaker.Core.Testbed
 
 			public delegate void MyAction([ArgDescription("aasdas")]int i);
 
-			[Invokable("TestEventStaticWithDescription", Description="This is a test event!")]
+			[Invokable("TestEventStaticWithDescription", Description = "This is a test event!")]
 			public static event MyAction TestEventStaticWithDescription;
 
-            [Tweakable("TestFieldStatic")]
-            public static int TestFieldStatic;
+			[Tweakable("TestFieldStatic")]
+			public static int TestFieldStatic;
 
-            [Tweakable("TestPropertyStatic")]
-            public static int TestPropertyStatic { get; set; }
+			[Tweakable("TestPropertyStatic")]
+			public static int TestPropertyStatic { get; set; }
 
-            [Tweakable("InstanceProperty")]
-            public int InstanceProperty { get; set; }
-        }
+			[Tweakable("InstanceProperty")]
+			public int InstanceProperty { get; set; }
+		}
 
-        public class AutoIvokableTest : IDisposable
-        {
-            private AutoInvokable invokable;
-            private void Invokable()
-            {
+		public class AutoIvokableTest : IDisposable
+		{
+			private AutoInvokable invokable;
+			private void Invokable()
+			{
 
-            }
+			}
 
-            private AutoInvokable invokableDel = new AutoInvokable("InvokableDel",
-                new Action(delegate {
-                    int i = 0;
-                }
-                ));
+			private AutoInvokable invokableDel = new AutoInvokable("InvokableDel",
+				new Action(delegate
+			{
+				int i = 0;
+			}
+				));
 
-            public AutoIvokableTest()
-            {
-                invokable = new AutoInvokable("Invokable", "Invokable", BoundInstanceFactory.Create(this));
+			public AutoIvokableTest()
+			{
+				invokable = new AutoInvokable("Invokable", "Invokable", BoundInstanceFactory.Create(this));
 
-                //invokableDel = new AutoInvokable("InvokableDel",
-                //     new Action(
-                //         delegate
-                //         {
-                //             int i = 0; 
-                //         }
-                //         ),
-                //    boundSelf);
-            }
+				//invokableDel = new AutoInvokable("InvokableDel",
+				//     new Action(
+				//         delegate
+				//         {
+				//             int i = 0; 
+				//         }
+				//         ),
+				//    boundSelf);
+			}
 
-            public void Dispose()
-            {
-                invokable.Dispose();
-                invokableDel.Dispose();
-            }
-        }
+			public void Dispose()
+			{
+				invokable.Dispose();
+				invokableDel.Dispose();
+			}
+		}
 
-        public class AutoTweakableTest : IDisposable
-        {
-            [Tweakable("AutoTweakableTest.int"),
-            Range(0, 10)]
-            private Tweakable<int> tweakable = new Tweakable<int>();
+		public class AutoTweakableTest : IDisposable
+		{
+			[Tweakable("AutoTweakableTest.int"),
+			Range(0, 10)]
+			private Tweakable<int> tweakable = new Tweakable<int>();
 
-            public AutoTweakableTest()
-            {
-                AutoTweakable.Bind(this);
-            }
+			public AutoTweakableTest()
+			{
+				AutoTweakable.Bind(this);
+			}
 
-            ~AutoTweakableTest()
-            {
-                
-            }
+			~AutoTweakableTest()
+			{
 
-            public void Dispose()
-            {
-                tweakable = null;
-            }
-        }
+			}
+
+			public void Dispose()
+			{
+				tweakable = null;
+			}
+		}
 #pragma warning restore 0067,0649,0219
 
-        //private static AutoScan<TestClass> testClass;
+		//private static AutoScan<TestClass> testClass;
 
 		static void Main(string[] args)
 		{
@@ -152,59 +153,59 @@ namespace Ghostbit.Tweaker.Core.Testbed
 		//	}
 		//}
 
-        //static void Main(string[] args)
-        //{
-        //    Tweaker tweaker = new Tweaker();
-        //    tweaker.Init();
-        //    IScanner scanner = tweaker.Scanner;
-        //    AutoScanBase.Scanner = scanner;
-        //    AutoInvokableBase.Manager = tweaker.Invokables;
+		//static void Main(string[] args)
+		//{
+		//    Tweaker tweaker = new Tweaker();
+		//    tweaker.Init();
+		//    IScanner scanner = tweaker.Scanner;
+		//    AutoScanBase.Scanner = scanner;
+		//    AutoInvokableBase.Manager = tweaker.Invokables;
 
-        //    testClass = new AutoScan<TestClass>();
-        //    IInvokable invokable = null;
-        //    using (AutoIvokableTest autoInvokableTest = new AutoIvokableTest())
-        //    {
-        //        invokable = tweaker.Invokables.GetInvokable("Invokable");
-        //        invokable.Invoke();
+		//    testClass = new AutoScan<TestClass>();
+		//    IInvokable invokable = null;
+		//    using (AutoIvokableTest autoInvokableTest = new AutoIvokableTest())
+		//    {
+		//        invokable = tweaker.Invokables.GetInvokable("Invokable");
+		//        invokable.Invoke();
 
-        //        invokable = tweaker.Invokables.GetInvokable("InvokableDel");
-        //        invokable.Invoke();
-        //    }
+		//        invokable = tweaker.Invokables.GetInvokable("InvokableDel");
+		//        invokable.Invoke();
+		//    }
 
-        //    invokable = tweaker.Invokables.GetInvokable("Invokable");
+		//    invokable = tweaker.Invokables.GetInvokable("Invokable");
 
-        //    //////////////////////////////////////////
-        //    //IScanner scanner = Scanner.Global;
+		//    //////////////////////////////////////////
+		//    //IScanner scanner = Scanner.Global;
 
-        //    //var name = "InstanceProperty";
-        //    //uint currentId = 1;
-        //    //var found = false;
-        //    //scanner.AddProcessor(new TweakableProcessor());
-        //    //scanner.GetResultProvider<ITweakable>().ResultProvided +=
-        //    //    (s, a) =>
-        //    //    {
-        //    //        if (a.result.Name.StartsWith(name) &&
-        //    //            a.result.Name.EndsWith("#" + currentId))
-        //    //        {
-        //    //            found = true;
-        //    //        }
-        //    //    };
+		//    //var name = "InstanceProperty";
+		//    //uint currentId = 1;
+		//    //var found = false;
+		//    //scanner.AddProcessor(new TweakableProcessor());
+		//    //scanner.GetResultProvider<ITweakable>().ResultProvided +=
+		//    //    (s, a) =>
+		//    //    {
+		//    //        if (a.result.Name.StartsWith(name) &&
+		//    //            a.result.Name.EndsWith("#" + currentId))
+		//    //        {
+		//    //            found = true;
+		//    //        }
+		//    //    };
 
-        //    //TestClass instance = new TestClass();
-        //    //scanner.ScanInstance(instance);
-        //    //currentId++;
-        //    //scanner.ScanInstance(instance);
+		//    //TestClass instance = new TestClass();
+		//    //scanner.ScanInstance(instance);
+		//    //currentId++;
+		//    //scanner.ScanInstance(instance);
 
-        //    //var tweakable = tweaker.Tweakables.GetTweakable("TestPropertyStatic");
-        //    //var t1 = tweakable.IsValid;
-        //    //var t2 = tweakable.WeakInstance;
-        //    //var t3 = tweakable.StrongInstance;
+		//    //var tweakable = tweaker.Tweakables.GetTweakable("TestPropertyStatic");
+		//    //var t1 = tweakable.IsValid;
+		//    //var t2 = tweakable.WeakInstance;
+		//    //var t3 = tweakable.StrongInstance;
 
-        //    //Assert.AreEqual(name, invokable.Name);
-        //    //Assert.AreEqual(assembly, invokable.Assembly);
-        //    //Assert.AreEqual(methodInfo, invokable.MethodInfo);
-        //    //Assert.AreEqual(testClass, invokable.Instance);
+		//    //Assert.AreEqual(name, invokable.Name);
+		//    //Assert.AreEqual(assembly, invokable.Assembly);
+		//    //Assert.AreEqual(methodInfo, invokable.MethodInfo);
+		//    //Assert.AreEqual(testClass, invokable.Instance);
 
-        //}
-    }
+		//}
+	}
 }

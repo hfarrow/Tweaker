@@ -6,34 +6,34 @@ using System.Text;
 
 namespace Ghostbit.Tweaker.Core
 {
-    public class InvokableMethod : BaseInvokable
-    {
-        private readonly MethodInfo methodInfo;
+	public class InvokableMethod : BaseInvokable
+	{
+		private readonly MethodInfo methodInfo;
 
-        public MethodInfo MethodInfo
-        {
-            get { return methodInfo; }
-        }
+		public MethodInfo MethodInfo
+		{
+			get { return methodInfo; }
+		}
 
-        public InvokableMethod(InvokableInfo info, MethodInfo methodInfo, WeakReference instance)
-            : base(info, methodInfo.ReflectedType.Assembly, instance, methodInfo.IsPublic,
+		public InvokableMethod(InvokableInfo info, MethodInfo methodInfo, WeakReference instance)
+			: base(info, methodInfo.ReflectedType.Assembly, instance, methodInfo.IsPublic,
 					methodInfo.GetParameters())
-        {
-            this.methodInfo = methodInfo;
-        }
+		{
+			this.methodInfo = methodInfo;
+		}
 
-        public InvokableMethod(InvokableInfo info, Delegate methodDelegate)
-            : base(info, methodDelegate.Method.ReflectedType.Assembly,
-                    methodDelegate.Target == null ? null : new WeakReference(methodDelegate.Target),
-                    methodDelegate.Method.IsPublic,
+		public InvokableMethod(InvokableInfo info, Delegate methodDelegate)
+			: base(info, methodDelegate.Method.ReflectedType.Assembly,
+					methodDelegate.Target == null ? null : new WeakReference(methodDelegate.Target),
+					methodDelegate.Method.IsPublic,
 					methodDelegate.Method.GetParameters())
-        {
-            this.methodInfo = methodDelegate.Method;
-        }
+		{
+			this.methodInfo = methodDelegate.Method;
+		}
 
-        protected override object DoInvoke(object[] args)
-        {
-            return MethodInfo.Invoke(StrongInstance, args);
-        }
-    }
+		protected override object DoInvoke(object[] args)
+		{
+			return MethodInfo.Invoke(StrongInstance, args);
+		}
+	}
 }

@@ -6,7 +6,10 @@ namespace Ghostbit.Tweaker.Core
 {
 	public abstract class BaseInvokable : TweakerObject, IInvokable
 	{
-		public  InvokableInfo InvokableInfo { get; private set; }
+		public InvokableInfo InvokableInfo { get; private set; }
+
+		public IInvokableManager Manager { get; set; }
+
 		private Type[] argTypes;
 		public Type[] ArgTypes
 		{
@@ -39,15 +42,21 @@ namespace Ghostbit.Tweaker.Core
 
 		public object Invoke(object[] args = null)
 		{
-			CheckInstanceIsValid();
-			CheckArgsAreValid(args);
-			try
+			if (CheckInstanceIsValid())
 			{
-				return DoInvoke(args);
+				CheckArgsAreValid(args);
+				try
+				{
+					return DoInvoke(args);
+				}
+				catch (Exception e)
+				{
+					throw new InvokeException(Name, args, e);
+				}
 			}
-			catch (Exception e)
+			else
 			{
-				throw new InvokeException(Name, args, e);
+				return null;
 			}
 		}
 
@@ -55,7 +64,7 @@ namespace Ghostbit.Tweaker.Core
 
 		private void CheckArgsAreValid(object[] args)
 		{
-			if(args == null)
+			if (args == null)
 			{
 				args = new object[0];
 			}
@@ -77,6 +86,19 @@ namespace Ghostbit.Tweaker.Core
 				{
 					throw new InvokeArgTypeException(Name, args, providedArgTypes, argTypes);
 				}
+			}
+		}
+
+		protected override bool CheckInstanceIsValid()
+		{
+			if (!base.CheckInstanceIsValid())
+			{
+				Manager.UnregisterInvokable(this);
+				return false;
+			}
+			else
+			{
+				return true;
 			}
 		}
 	}
