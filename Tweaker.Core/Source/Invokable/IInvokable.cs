@@ -19,9 +19,9 @@ namespace Ghostbit.Tweaker.Core
 		/// Invoke the invokable object with the provided arguments.
 		/// Throws InvokeException, InvokeArgNumberException, InvokeArgTypeException
 		/// </summary>
-		/// <param name="args">Arguments to invoke with. Pass null for no arguments.</param>
+		/// <param name="args">Arguments to invoke with.</param>
 		/// <returns>The return value of the invokable.</returns>
-		object Invoke(object[] args = null);
+		object Invoke(params object[] args);
 
 		/// <summary>
 		/// The manager that this invokable is registered to.

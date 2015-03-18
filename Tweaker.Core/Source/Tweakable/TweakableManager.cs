@@ -55,12 +55,12 @@ namespace Ghostbit.Tweaker.Core
 			baseManager.UnregisterObject(name);
 		}
 
-		public TweakerDictionary<ITweakable> GetTweakables(SearchOptions options)
+		public TweakerDictionary<ITweakable> GetTweakables(SearchOptions options = null)
 		{
 			return baseManager.GetObjects(options);
 		}
 
-		public ITweakable GetTweakable(SearchOptions options)
+		public ITweakable GetTweakable(SearchOptions options = null)
 		{
 			return baseManager.GetObject(options);
 		}

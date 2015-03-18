@@ -56,14 +56,14 @@ namespace Ghostbit.Tweaker.Core
 		/// </summary>
 		/// <param name="options">Options to search with. null options will retreive all tweakables.</param>
 		/// <returns>A dictionary of matching tweakables.</returns>
-		TweakerDictionary<ITweakable> GetTweakables(SearchOptions options);
+		TweakerDictionary<ITweakable> GetTweakables(SearchOptions options = null);
 
 		/// <summary>
 		/// Retreive the first tweakable matched using the provided search options.
 		/// </summary>
 		/// <param name="options">Options to search with.</param>
 		/// <returns>The matching tweakable or null if none found.</returns>
-		ITweakable GetTweakable(SearchOptions options);
+		ITweakable GetTweakable(SearchOptions options  = null);
 
 		/// <summary>
 		/// Retreive an tweakable by the name it was registered with.

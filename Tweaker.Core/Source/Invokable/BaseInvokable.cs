@@ -40,7 +40,7 @@ namespace Ghostbit.Tweaker.Core
 			}
 		}
 
-		public object Invoke(object[] args = null)
+		public object Invoke(params object[] args)
 		{
 			if (CheckInstanceIsValid())
 			{

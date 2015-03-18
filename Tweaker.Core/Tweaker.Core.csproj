@@ -69,7 +69,7 @@
     <Compile Include="Source\Tweakable\ITweakable.cs" />
     <Compile Include="Source\Tweakable\ITweakableManager.cs" />
     <Compile Include="Source\ITweakerAttribute.cs" />
-    <Compile Include="Source\ITweakerFactory.cs" />
+    <Compile Include="Source\Utils\ITweakerFactory.cs" />
     <Compile Include="Source\ITweakerObject.cs" />
     <Compile Include="Source\Watchable\IWatchable.cs" />
     <Compile Include="Source\Watchable\IWatchableManager.cs" />

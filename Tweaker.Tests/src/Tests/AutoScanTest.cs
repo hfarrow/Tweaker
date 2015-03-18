@@ -100,13 +100,13 @@ namespace Ghostbit.Tweaker.Core.Tests
 			TestClass obj = new TestClass();
 			IInvokable invokable = tweaker.Invokables.GetInvokable("TestClass.Invokable#0");
 			Assert.IsNotNull(invokable);
-			invokable.Invoke(new object[] { obj, 11 });
+			invokable.Invoke(obj, 11);
 			Assert.AreEqual(11, obj.IntField);
 
 			TestClass2 obj2 = new TestClass2();
 			invokable = tweaker.Invokables.GetInvokable(new SearchOptions("TestClass2.Invokable#"));
 			Assert.IsNotNull(invokable);
-			invokable.Invoke(new object[] { 12 });
+			invokable.Invoke(12);
 			Assert.AreEqual(12, obj2.IntField);
 		}
 

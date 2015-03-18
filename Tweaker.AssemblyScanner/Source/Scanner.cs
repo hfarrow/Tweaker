@@ -140,6 +140,8 @@ namespace Ghostbit.Tweaker.AssemblyScanner
 		public void ScanGenericType(Type type, IBoundInstance instance, ScanOptions options = null)
 		{
 			//throw new NotImplementedException("Not currently supported.");
+			// TODO: Log Warning (tweaker does not include a logger but should expose an interface that
+			// users can provide an implementation for.
 		}
 
 		public void ScanMember(MemberInfo member, IBoundInstance instance, ScanOptions options = null)

@@ -66,7 +66,7 @@ namespace Ghostbit.Tweaker.Core.Tests
 			Assert.AreEqual(100, obj.AutoInt.value);
 
 			// Using the value setter should contrain according to the range.
-			obj.AutoInt.SetTweakableValue = 200;
+			obj.AutoInt.SetTweakableValue(200);
 			Assert.AreEqual(10, obj.AutoInt.value);
 
 			GC.KeepAlive(obj);

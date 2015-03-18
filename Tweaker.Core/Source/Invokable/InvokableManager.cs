@@ -67,7 +67,7 @@ namespace Ghostbit.Tweaker.Core
 			return baseManager.GetObjects(options);
 		}
 
-		public IInvokable GetInvokable(SearchOptions options)
+		public IInvokable GetInvokable(SearchOptions options = null)
 		{
 			return baseManager.GetObject(options);
 		}
@@ -77,12 +77,12 @@ namespace Ghostbit.Tweaker.Core
 			return baseManager.GetObject(name);
 		}
 
-		public object Invoke(IInvokable invokable, object[] args)
+		public object Invoke(IInvokable invokable, params object[] args)
 		{
 			return invokable.Invoke(args);
 		}
 
-		public object Invoke(string name, object[] args)
+		public object Invoke(string name, params object[] args)
 		{
 			IInvokable invokable = baseManager.GetObject(name);
 			if (invokable == null)

@@ -86,9 +86,45 @@ namespace Ghostbit.Tweaker.AssemblyScanner
 		/// <rereturns>The bound instance that was created as a result of the scan.</rereturns>
 		IBoundInstance ScanInstance(object instance);
 
+		/// <summary>
+		/// Scan the instance members of the provided type with the provided options.
+		/// Only instance members will be processed if the provides instance is not null.
+		/// Otherwise, only static members will be processed.
+		/// </summary>
+		/// <param name="type">The type to be scanned.</param>
+		/// <param name="instance">The instance of the provided type.</param>
+		/// <param name="options">The options for performing the scan.</param>
 		void ScanType(Type type, IBoundInstance instance, ScanOptions options = null);
+
+		/// <summary>
+		/// Scan the instance members of the provided generic type with the provided options.
+		/// Only instance members will be processed if the provides instance is not null.
+		/// Otherwise, only static members will be processed.
+		/// </summary>
+		/// <param name="type">The type to be scanned.</param>
+		/// <param name="instance">The instance of the provided type.</param>
+		/// <param name="options">The options for performing the scan.</param>
 		void ScanGenericType(Type type, IBoundInstance instance, ScanOptions options = null);
+
+		/// <summary>
+		/// Scan the member of belonging to the provided instance with the provided options.
+		/// Only instance members will be processed if the provides instance is not null.
+		/// Otherwise, only static members will be processed.
+		/// </summary>
+		/// <param name="member">The member to be scanned.</param>
+		/// <param name="instance">The instance of the provided object containing the provided member.</param>
+		/// <param name="options">The options for performing the scan.</param>
 		void ScanMember(MemberInfo member, IBoundInstance instance, ScanOptions options = null);
+
+		/// <summary>
+		/// Scan the attribute annotating to the provided object and instance with the provided options.
+		/// Only instance members will be processed if the provides instance is not null.
+		/// Otherwise, only static members will be processed.
+		/// </summary>
+		/// <param name="attribute">The attribute to scan.</param>
+		/// <param name="reflectedObject">The object the attribute annotates. Must be an instance of MemberInfo or Type.</param>
+		/// <param name="instance">The instance of the provided object containing the provided member.</param>
+		/// <param name="options">The options for performing the scan.</param>
 		void ScanAttribute(Attribute attribute, object reflectedObject, IBoundInstance instance, ScanOptions options = null);
 
 		/// <summary>

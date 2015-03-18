@@ -62,14 +62,14 @@ namespace Ghostbit.Tweaker.Core
 		/// </summary>
 		/// <param name="options">Options to search with. null options will retreive all invokables.</param>
 		/// <returns>A dictionary of matching invokables.</returns>
-		TweakerDictionary<IInvokable> GetInvokables(SearchOptions options);
+		TweakerDictionary<IInvokable> GetInvokables(SearchOptions options = null);
 
 		/// <summary>
 		/// Retreive the first invokable matched using the provided search options.
 		/// </summary>
 		/// <param name="options">Options to search with.</param>
 		/// <returns>The matching invokable or null if none found.</returns>
-		IInvokable GetInvokable(SearchOptions options);
+		IInvokable GetInvokable(SearchOptions options = null);
 
 		/// <summary>
 		/// Retreive an invokable by the name it was registered with.
@@ -84,7 +84,7 @@ namespace Ghostbit.Tweaker.Core
 		/// <param name="invokable">The invokable to invoke.</param>
 		/// <param name="args">The args passed to the invocation. Pass null if no arguments.</param>
 		/// <returns>The return value of the invokable.</returns>
-		object Invoke(IInvokable invokable, object[] args);
+		object Invoke(IInvokable invokable, params object[] args);
 
 		/// <summary>
 		/// Invoke the invokable registered with the provided name and provided args if it exists.
@@ -92,6 +92,6 @@ namespace Ghostbit.Tweaker.Core
 		/// <param name="name">The name of the registered invokable.</param>
 		/// <param name="args">The args passed to the invocation. Pass null if no arguments.</param>
 		/// <returns>The return value of the invokable.</returns>
-		object Invoke(string name, object[] args);
+		object Invoke(string name, params object[] args);
 	}
 }

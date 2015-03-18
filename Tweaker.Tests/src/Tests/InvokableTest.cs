@@ -36,6 +36,11 @@ namespace Ghostbit.Tweaker.Core.Tests
 				return 99;
 			}
 
+			public void TestMethodVoidIntString(int arg1, string arg2)
+			{
+				didRunMethod = true;
+			}
+
 			[Invokable("TestMethodStaticVoidVoid")]
 			public static void TestMethodStaticVoidVoid()
 			{
@@ -117,19 +122,25 @@ namespace Ghostbit.Tweaker.Core.Tests
 
 			var invokableVoidVoid = factory("TestMethodVoidVoid", testClass, new Action(testClass.TestMethodVoidVoid));
 			Assert.IsFalse(testClass.didRunMethod);
-			Assert.IsNull(invokableVoidVoid.Invoke(null));
+			Assert.IsNull(invokableVoidVoid.Invoke());
 			Assert.IsTrue(testClass.didRunMethod);
 			testClass.Reset();
 
 			var invokableStaticVoidVoid = factory("TestMethodStaticVoidVoid", testClass, new Action(TestClass.TestMethodStaticVoidVoid));
 			Assert.IsFalse(TestClass.didRunStaticMethod);
-			Assert.IsNull(invokableStaticVoidVoid.Invoke(null));
+			Assert.IsNull(invokableStaticVoidVoid.Invoke());
 			Assert.IsTrue(TestClass.didRunStaticMethod);
 			TestClass.ResetStatic();
 
 			var invokableIntObject = factory("TestMethodIntObject", testClass, new Func<object, int>(testClass.TestMethodIntObject));
 			Assert.IsFalse(testClass.didRunMethod);
-			Assert.AreEqual(99, invokableIntObject.Invoke(new object[] { "Test Object" }));
+			Assert.AreEqual(99, invokableIntObject.Invoke("Test Object" ));
+			Assert.IsTrue(testClass.didRunMethod);
+			testClass.Reset();
+
+			var invokableVoidIntString = factory("TestMethodVoidIntString", testClass, new Action<int, string>(testClass.TestMethodVoidIntString));
+			Assert.IsFalse(testClass.didRunMethod);
+			invokableVoidIntString.Invoke(100, "test");
 			Assert.IsTrue(testClass.didRunMethod);
 			testClass.Reset();
 		}
@@ -212,7 +223,7 @@ namespace Ghostbit.Tweaker.Core.Tests
 			var fieldInfo = testClass.GetType().GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 			var invokable = new InvokableEvent(new InvokableInfo(name), fieldInfo, new WeakReference(testClass));
 
-			invokable.Invoke(null);
+			invokable.Invoke();
 			Assert.IsTrue(lambdaDidRun);
 		}
 
