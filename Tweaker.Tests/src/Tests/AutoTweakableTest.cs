@@ -103,8 +103,8 @@ namespace Ghostbit.Tweaker.Core.Tests
 			obj = null;
 
 #if UNITY_EDITOR
-			// TODO: write integration test for this and keep checking back each frame to see if finalizer was called.
-			Assert.Ignore("Finalize does not work in unity editor... objects no collected on same frame?");
+			// This is covered by an integration test for unity because I could not get the test passing in unity mono.
+			Assert.Ignore("Finalize does not work in unity editor... objects not collected on same frame?");
 #else
 			uint count = 0;
 			while (tweaker.Tweakables.GetTweakable("TestClass.AutoInt#" + uniqueId) != null)
