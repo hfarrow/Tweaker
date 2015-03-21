@@ -50,7 +50,7 @@ namespace Ghostbit.Tweaker.Core.Tests
 			tweaker = new Tweaker();
 			var options = new TweakerOptions();
 			options.Flags =
-				TweakerOptionFlags.DoNotScan |
+				TweakerOptionFlags.DoNotAutoScan |
 				TweakerOptionFlags.ScanForInvokables |
 				TweakerOptionFlags.ScanForTweakables |
 				TweakerOptionFlags.ScanForWatchables;

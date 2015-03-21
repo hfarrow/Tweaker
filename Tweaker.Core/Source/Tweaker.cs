@@ -50,13 +50,13 @@ namespace Ghostbit.Tweaker
 			{
 				flags = (TweakerOptionFlags)int.MaxValue;
 				flags &= ~TweakerOptionFlags.ScanInEverything;
-				flags &= ~TweakerOptionFlags.DoNotScan;
+				flags &= ~TweakerOptionFlags.DoNotAutoScan;
 				Options.Flags = flags;
 			}
 
 			CreateManagers();
 
-			if ((flags & TweakerOptionFlags.DoNotScan) == 0)
+			if ((flags & TweakerOptionFlags.DoNotAutoScan) == 0)
 			{
 				PerformScan();
 			}
@@ -206,10 +206,10 @@ namespace Ghostbit.Tweaker
 		ScanInNonSystemAssemblies = 128,
 
 		/// <summary>
-		/// Do not perform a scan. All tweaker objects must be registered manually.
+		/// Do not perform a scan. All tweaker objects must be registered or scanned manually.
 		/// </summary>
 		/// <remarks>Takes precedence oper ScanInEntryAssembly and ScanInExecutingAssembly</remarks>
-		DoNotScan = 256
+		DoNotAutoScan = 256
 	}
 
 	/// <summary>
