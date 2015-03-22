@@ -56,6 +56,7 @@
     <Compile Include="Source\Tweakable\VirtualProperty.cs" />
     <Compile Include="Source\Utils\AutoScan.cs" />
     <Compile Include="Source\Tweakable\AutoTweakable.cs" />
+    <Compile Include="Source\Utils\ILogger.cs" />
     <Compile Include="Source\Utils\PrimitiveHelper.cs" />
     <Compile Include="Source\Utils\WeakReferenceExtensions.cs" />
     <Compile Include="Source\Watchable\WatchableAttributes.cs" />

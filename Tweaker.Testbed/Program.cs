@@ -111,13 +111,24 @@ namespace Ghostbit.Tweaker.Core.Testbed
 
 		//private static AutoScan<TestClass> testClass;
 
-		static void Main(string[] args)
-		{
-			EventInfo eventInfo = typeof(TestClass).GetEvent("TestEventStaticWithDescription");
-			Type eventHandlerType = eventInfo.EventHandlerType;
-			MethodInfo invokeMethod = eventHandlerType.GetMethod("Invoke");
-			ParameterInfo[] parameters = invokeMethod.GetParameters();
-		}
+		//static void Main(string[] args)
+		//{
+		//	ITweakerLogger logger = LogManager.Instance.GetLogger();
+		//	logger.Trace("Trace {0}", 1);
+		//	logger.Debug("Debug {0}", 2);
+		//	logger.Info("Info {0}", 3);
+		//	logger.Warn("Warn {0}", 4);
+		//	logger.Error("Error {0}", 5);
+		//	logger.Fatal("Fatal {0}", 6);
+		//}
+
+		//static void Main(string[] args)
+		//{
+		//	EventInfo eventInfo = typeof(TestClass).GetEvent("TestEventStaticWithDescription");
+		//	Type eventHandlerType = eventInfo.EventHandlerType;
+		//	MethodInfo invokeMethod = eventHandlerType.GetMethod("Invoke");
+		//	ParameterInfo[] parameters = invokeMethod.GetParameters();
+		//}
 
 		//static void Main(string[] args)
 		//{
