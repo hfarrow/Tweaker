@@ -16,6 +16,11 @@ namespace Ghostbit.Tweaker.Core
 		string Name { get; }
 
 		/// <summary>
+		/// The name of this tweaker without groups included.
+		/// </summary>
+		string ShortName { get; }
+
+		/// <summary>
 		/// Does this tweaker object bind a public member or type?
 		/// </summary>
 		bool IsPublic { get; }

@@ -11,7 +11,6 @@ namespace Ghostbit.Tweaker.UI
 		public enum NodeType
 		{
 			Unknown,
-			Root,
 			Group,
 			Invokable,
 			Tweakable,
@@ -26,20 +25,6 @@ namespace Ghostbit.Tweaker.UI
 			{
 				throw new Exception("NodeType must be overriden in parent and must not be Unknown.");
 			}
-		}
-	}
-
-	public class RootNode : BaseNode
-	{
-		public RootNode()
-		{
-		}
-
-		public override NodeType Type { get { return NodeType.Root; } }
-
-		public void Init()
-		{
-
 		}
 	}
 
@@ -89,14 +74,14 @@ namespace Ghostbit.Tweaker.UI
 		}
 	}
 
-	public class TreeView
+	public class TweakerTree
 	{
-		public ITweakerLogger logger = LogManager.Instance.GetCurrentClassLogger();
+		public ITweakerLogger logger = LogManager.GetCurrentClassLogger();
 		public Tree<BaseNode> Tree { get; private set; }
 		public Tweaker Tweaker { get; private set; }
 		private Dictionary<string, GroupNode> GroupNodes { get; set; }
 
-		public TreeView(Tweaker tweaker)
+		public TweakerTree(Tweaker tweaker)
 		{
 			Tweaker = tweaker;
 		}
@@ -105,7 +90,7 @@ namespace Ghostbit.Tweaker.UI
 		{
 			logger.Debug("BuildTree({0})", searchOptions);
 
-			Tree = new Tree<BaseNode>(new RootNode());
+			Tree = new Tree<BaseNode>(new GroupNode("Root", "Root"));
 			GroupNodes = new Dictionary<string, GroupNode>();
 
 			var invokables = Tweaker.Invokables.GetInvokables(searchOptions);
@@ -114,24 +99,18 @@ namespace Ghostbit.Tweaker.UI
 
 			// Merge objects into a single temporary list
 			List<ITweakerObject> objects = new List<ITweakerObject>();
-			objects.AddRange(invokables.Values);
-			objects.AddRange(tweakables.Values);
+			objects.AddRange(invokables.Values.ToArray());
+			objects.AddRange(tweakables.Values.ToArray());
 			//objects.AddRange(watchables.Values);
 
 			foreach (ITweakerObject tweakerObj in objects)
 			{
 				string fullName = tweakerObj.Name;
 				string groupPath = "";
-				string nodeName;
 				int indexOfNodeName = fullName.LastIndexOf('.');
-				if (indexOfNodeName < 0)
-				{
-					nodeName = fullName;
-				}
-				else
+				if (indexOfNodeName >= 0)
 				{
 					groupPath = fullName.Substring(0, indexOfNodeName);
-					nodeName = fullName.Substring(indexOfNodeName + 1);
 				}
 
 				TreeNode<BaseNode> parent = Tree.Root;
@@ -141,11 +120,73 @@ namespace Ghostbit.Tweaker.UI
 				}
 				CreateTweakerNode(parent, tweakerObj);
 			}
+
+			SortGroupChildren();
+		}
+
+		private void SortGroupChildren()
+		{
+			logger.Debug("SortGroupChildren");
+
+			// GetBranchNodes is an enumerator so we need to cache all nodes before we start
+			// moving children around.
+			List<BaseNode> branchNodes = new List<BaseNode>() { Tree.Root.Value };
+			foreach(var node in Tree.Root.GetBranchNodes())
+			{
+				logger.Debug("Found branchNode: {0}", node);
+				branchNodes.Add(node.Value);
+			}
+
+			foreach(var node in branchNodes)
+			{
+				// Create a list for each type of node
+				// TODO: decide on a more generic way to do this.
+				// What if the number of node types explodes?
+				// Dictionary<Type, List<Type>> or add sorting mechanism directory to Tree data structure
+				List<GroupNode> groups = new List<GroupNode>();
+				List<InvokableNode> invokables = new List<InvokableNode>();
+				List<TweakableNode> tweakables = new List<TweakableNode>();
+				List<WatchableNode> watchables = new List<WatchableNode>();
+				List<BaseNode> other = new List<BaseNode>();
+
+				foreach (var childNode in node.Children)
+				{
+					switch (childNode.Value.Type)
+					{
+						case BaseNode.NodeType.Group:
+							groups.Add(childNode.Value as GroupNode);
+							break;
+						case BaseNode.NodeType.Invokable:
+							invokables.Add(childNode.Value as InvokableNode);
+							break;
+						case BaseNode.NodeType.Tweakable:
+							tweakables.Add(childNode.Value as TweakableNode);
+							break;
+						case BaseNode.NodeType.Watchable:
+							watchables.Add(childNode.Value as WatchableNode);
+							break;
+						default:
+							other.Add(childNode.Value);
+							break;
+					}
+				}
+
+				List<BaseNode> sortedNodes = new List<BaseNode>(node.Children.Count);
+				groups.ForEach(n => sortedNodes.Add(n));
+				invokables.ForEach(n => sortedNodes.Add(n));
+				tweakables.ForEach(n => sortedNodes.Add(n));
+				watchables.ForEach(n => sortedNodes.Add(n));
+				other.ForEach(n => sortedNodes.Add(n));
+				for (int i = 0; i < node.Children.Count; ++i)
+				{
+					node.Children[i] = sortedNodes[i];
+				}
+			}
 		}
 
 		private TreeNode<BaseNode> EnsureGroupExists(string groupPath)
 		{
-			logger.Debug("EnsureGroupExists({0})", groupPath);
+			//logger.Trace("EnsureGroupExists({0})", groupPath);
 
 			string[] groups = groupPath.Split('.');
 			string currentGroupPath = "";
@@ -184,7 +225,7 @@ namespace Ghostbit.Tweaker.UI
 
 		private GroupNode CreateGroupNode(string fullName, string shortName, TreeNode<BaseNode> parent)
 		{
-			logger.Debug("CreateGroupNode({0}, {1}, {2})", fullName, shortName, parent);
+			logger.Trace("CreateGroupNode({0}, {1}, {2})", fullName, shortName, parent);
 
 			var newNode = new GroupNode(fullName, shortName);
 			GroupNodes.Add(fullName, newNode);
@@ -194,7 +235,7 @@ namespace Ghostbit.Tweaker.UI
 
 		private TreeNode<BaseNode> CreateTweakerNode(TreeNode<BaseNode> parent, ITweakerObject obj)
 		{
-			logger.Debug("CreateTweakerNode({0}, {1})", parent, obj.Name);
+			logger.Trace("CreateTweakerNode({0}, {1})", parent, obj.Name);
 
 			BaseNode newNode = null;
 			if (obj is IInvokable)

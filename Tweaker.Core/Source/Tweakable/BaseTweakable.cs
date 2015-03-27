@@ -10,18 +10,19 @@ namespace Ghostbit.Tweaker.Core
 	{
 		public TweakableInfo<T> TweakableInfo { get; private set; }
 		public Type TweakableType { get; private set; }
+		public ITweakableManager Manager { get; set; }
+
 		protected MethodInfo Setter { get; set; }
 		protected MethodInfo Getter { get; set; }
+		protected VirtualProperty<T> virtualProperty;
 
 		private IStepTweakable stepTweakable;
 		private IToggleTweakable toggleTweakable;
-		public ITweakableManager Manager { get; set; }
 
 		public override bool IsValid
 		{
 			get
 			{
-				var virtualProperty = TryGetVirtualProperty();
 				if (virtualProperty != null)
 				{
 					return virtualProperty.IsValid;
@@ -34,7 +35,6 @@ namespace Ghostbit.Tweaker.Core
 		{
 			get
 			{
-				var virtualProperty = TryGetVirtualProperty();
 				if (virtualProperty != null)
 				{
 					return virtualProperty.WeakInstance;
@@ -47,7 +47,6 @@ namespace Ghostbit.Tweaker.Core
 		{
 			get
 			{
-				var virtualProperty = TryGetVirtualProperty();
 				if (virtualProperty != null)
 				{
 					return virtualProperty.StrongInstance;
@@ -93,18 +92,6 @@ namespace Ghostbit.Tweaker.Core
 			get { return toggleTweakable; }
 		}
 
-		private VirtualProperty<T> TryGetVirtualProperty()
-		{
-			if (instance == null)
-			{
-				return null;
-			}
-
-			object strongRef = null;
-			instance.TryGetTarget(out strongRef);
-			return strongRef as VirtualProperty<T>;
-		}
-
 		private BaseTweakable(TweakableInfo<T> info, Assembly assembly, WeakReference instance, bool isPublic) :
 			base(info, assembly, instance, isPublic)
 		{
@@ -125,6 +112,7 @@ namespace Ghostbit.Tweaker.Core
 		private BaseTweakable(TweakableInfo<T> info, VirtualProperty<T> property, Assembly assembly, bool isPublic) :
 			this(info, assembly, new WeakReference(property), isPublic)
 		{
+			virtualProperty = property;
 			Setter = property.Setter.Method;
 			Getter = property.Getter.Method;
 			ValidateTweakableType();

@@ -40,7 +40,7 @@ namespace Ghostbit.Tweaker.UI
 					parent.Children.Remove(Value);
 				}
 
-				if (value != null && !value.Children.Contains(this))
+				if (value != null && !value.Children.Contains(this.Value))
 				{
 					value.Children.Add(Value);
 				}
@@ -106,6 +106,32 @@ namespace Ghostbit.Tweaker.UI
 				foreach (var _child in child.TraverseDepthFirst())
 				{
 					yield return _child;
+				}
+			}
+		}
+
+		// Enumerate all node (in undefined order) and return nodes that have at
+		// least one child.
+		public IEnumerable<TreeNode<TValue>> GetBranchNodes()
+		{
+			foreach(var node in TraverseBreadthFirst())
+			{
+				if(node.Children.Count > 0)
+				{
+					yield return node;
+				}
+			}
+		}
+
+		// Enumerate all node (in undefined order) and return nodes that have no
+		// children
+		public IEnumerable<TreeNode<TValue>> GetLeafNodes()
+		{
+			foreach (var node in TraverseBreadthFirst())
+			{
+				if (node.Children.Count == 0)
+				{
+					yield return node;
 				}
 			}
 		}

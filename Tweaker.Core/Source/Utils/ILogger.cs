@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Ghostbit.Tweaker.Core
 {
@@ -20,7 +21,6 @@ namespace Ghostbit.Tweaker.Core
 	public interface ITweakerLogManager
 	{
 		ITweakerLogger GetLogger(string name);
-		ITweakerLogger GetCurrentClassLogger();
 	}
 
 	internal class DummyLogger : ITweakerLogger
@@ -66,16 +66,12 @@ namespace Ghostbit.Tweaker.Core
 		{
 			return new DummyLogger();
 		}
-
-		public ITweakerLogger GetCurrentClassLogger()
-		{
-			return new DummyLogger();
-		}
 	}
 
 	public static class LogManager
 	{
 		public static ITweakerLogManager Instance { get; private set; }
+
 		public static void Set(ITweakerLogManager instance)
 		{
 			Instance = instance;
@@ -84,6 +80,53 @@ namespace Ghostbit.Tweaker.Core
 		static LogManager()
 		{
 			Set(new DummyLogManager());
+		}
+
+		public static ITweakerLogger GetLogger(string name)
+		{
+			return Instance.GetLogger(name);
+		}
+
+		// Attributes copied form NLog to ensure callstack is not optimized away resulting
+		// in incorrect logger names
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		public static ITweakerLogger GetCurrentClassLogger()
+		{
+			return Instance.GetLogger(GetClassFullName());
+		}
+
+		public static ITweakerLogger GetClassLogger<T>()
+		{
+			return Instance.GetLogger(typeof(T).FullName);
+		}
+
+		/// <summary>
+		/// Gets the fully qualified name of the class invoking the LogManager, including the 
+		/// namespace but not the assembly.
+		/// <remarks>Method copied from NLog: "https://github.com/NLog/NLog/blob/master/src/NLog/LogManager.cs"</remarks>
+		/// </summary>
+		private static string GetClassFullName()
+		{
+			string className;
+			Type declaringType;
+			int framesToSkip = 2;
+
+			do
+			{
+				StackFrame frame = new StackFrame(framesToSkip, false);
+				MethodBase method = frame.GetMethod();
+				declaringType = method.DeclaringType;
+				if (declaringType == null)
+				{
+					className = method.Name;
+					break;
+				}
+
+				framesToSkip++;
+				className = declaringType.FullName;
+			} while (declaringType.Module.Name.Equals("mscorlib.dll", StringComparison.OrdinalIgnoreCase));
+
+			return className;
 		}
 	}
 }

@@ -65,7 +65,7 @@ namespace Ghostbit.Tweaker.UI.Tests
 		[Test]
 		public void BuildTreeAndVerify()
 		{
-			TreeView view = new TreeView(tweaker);
+			TweakerTree view = new TweakerTree(tweaker);
 			view.BuildTree();
 
 			Tree<BaseNode> tree = view.Tree;

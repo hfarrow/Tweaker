@@ -46,13 +46,22 @@ namespace Ghostbit.Tweaker.Core
 		protected readonly WeakReference instance;
 		protected readonly Assembly assembly;
 
+		private string shortName;
+
 		/// <summary>
-		/// The name of the tweaker object. This name is used to register
-		/// with managers.
+		/// The name that this tweaker object registers with.
 		/// </summary>
 		public string Name
 		{
 			get { return Info.Name; }
+		}
+
+		/// <summary>
+		/// The name of this tweaker without groups included.
+		/// </summary>
+		public string ShortName 
+		{ 
+			get { return shortName; } 
 		}
 
 		/// <summary>
@@ -121,6 +130,16 @@ namespace Ghostbit.Tweaker.Core
 			this.assembly = assembly;
 			this.instance = instance;
 			this.isPublic = isPublic;
+
+			int index = Name.LastIndexOf('.');
+			if(index < 0)
+			{
+				shortName = Name;
+			}
+			else
+			{
+				shortName = Name.Substring(index + 1);
+			}
 		}
 
 		protected virtual bool CheckInstanceIsValid()
