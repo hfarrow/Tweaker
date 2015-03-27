@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+#if UNITY
 using UnityEngine;
+#endif
 
 namespace Ghostbit.Tweaker.UI
 {
@@ -176,6 +178,7 @@ namespace Ghostbit.Tweaker.UI
 			return new CubeCoord(coord.q, -coord.q - coord.r, coord.r);
 		}
 
+#if UNITY
 		public static Vector2 AxialToPixel(CubeCoord coord, float size)
 		{
 			AxialCoord axialCoord = CubeToAxial(coord);
@@ -189,6 +192,7 @@ namespace Ghostbit.Tweaker.UI
 			y *= -1;
 			return new Vector2(x, y);
 		}
+#endif
 
 		public static CubeCoord GetNeighbour(CubeCoord coord, uint direction)
 		{

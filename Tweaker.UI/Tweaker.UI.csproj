@@ -40,7 +40,11 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\Collections\Tree.cs" />
-    <Compile Include="Source\Views\TreeView.cs" />
+    <Compile Include="Source\Models\HexGrid\GridCell.cs" />
+    <Compile Include="Source\Models\HexGrid\HexCoord.cs" />
+    <Compile Include="Source\Models\HexGrid\HexGrid.cs" />
+    <Compile Include="Source\Models\HexGrid\HexGridFactory.cs" />
+    <Compile Include="Source\Models\TweakerTree.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tweaker.Core\Tweaker.Core.csproj">

@@ -57,7 +57,7 @@ namespace Ghostbit.Tweaker.Core.Testbed
 			tweaker.Init(tweakerOptions, scanner);
 			tweaker.Scanner.Scan(scanOptions);
 
-			TreeView view = new TreeView(tweaker);
+			TweakerTree view = new TweakerTree(tweaker);
 			view.BuildTree();
 		}
 	}	

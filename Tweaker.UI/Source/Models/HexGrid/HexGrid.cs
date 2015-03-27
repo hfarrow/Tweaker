@@ -1,7 +1,6 @@
 ﻿using Ghostbit.Tweaker.Core;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Ghostbit.Tweaker.UI
 {
