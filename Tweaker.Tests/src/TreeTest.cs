@@ -25,7 +25,7 @@ namespace Tweaker.UI.Tests
 		[Test]
 		public void ValidateEmptyTree()
 		{
-			Tree<TestNode> tree = new Tree<TestNode>(new TestNode("Root"));
+			TreeGraph<TestNode> tree = new TreeGraph<TestNode>(new TestNode("Root"));
 			TestNode root = tree.Root;
 			Assert.IsNotNull(root.Children);
 			Assert.AreEqual(0, root.Children.Count);
@@ -56,7 +56,7 @@ namespace Tweaker.UI.Tests
 		[Test]
 		public void AddNodeToRoot()
 		{
-			Tree<TestNode> tree = new Tree<TestNode>(new TestNode("Root"));
+			TreeGraph<TestNode> tree = new TreeGraph<TestNode>(new TestNode("Root"));
 			TestNode root = tree.Root;
 
 			TestNode child1 = root.Children.Add(new TestNode("child1"));
@@ -79,7 +79,7 @@ namespace Tweaker.UI.Tests
 		[Test]
 		public void TraverseSingleDepthTree()
 		{
-			Tree<TestNode> tree = new Tree<TestNode>(new TestNode("Root"));
+			TreeGraph<TestNode> tree = new TreeGraph<TestNode>(new TestNode("Root"));
 			TestNode root = tree.Root;
 
 			TestNode child1 = root.Children.Add(new TestNode("child1"));
@@ -104,7 +104,7 @@ namespace Tweaker.UI.Tests
 		[Test]
 		public void ValidateTraverseDepthAndBreadth()
 		{
-			Tree<TestNode> tree = new Tree<TestNode>(new TestNode("Root"));
+			TreeGraph<TestNode> tree = new TreeGraph<TestNode>(new TestNode("Root"));
 			TestNode root = tree.Root;
 
 			TestNode child_0 = root.Children.Add(new TestNode("child_0"));
@@ -137,7 +137,7 @@ namespace Tweaker.UI.Tests
 		[Test]
 		public void ValidateMultiDepths()
 		{
-			Tree<TestNode> tree = new Tree<TestNode>(new TestNode("Root"));
+			TreeGraph<TestNode> tree = new TreeGraph<TestNode>(new TestNode("Root"));
 			TestNode root = tree.Root;
 			TestNode child_0 = root.Children.Add(new TestNode("child_0"));
 			TestNode child_0_0 = child_0.Children.Add(new TestNode("child_0_0"));

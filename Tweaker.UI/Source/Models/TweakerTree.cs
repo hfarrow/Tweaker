@@ -127,7 +127,7 @@ namespace Tweaker.UI
 	public class TweakerTree
 	{
 		public ITweakerLogger logger = LogManager.GetCurrentClassLogger();
-		public Tree<BaseNode> Tree { get; private set; }
+		public TreeGraph<BaseNode> Tree { get; private set; }
 		public Tweaker Tweaker { get; private set; }
 		private Dictionary<string, GroupNode> GroupNodes { get; set; }
 
@@ -140,7 +140,7 @@ namespace Tweaker.UI
 		{
 			logger.Debug("BuildTree({0})", searchOptions);
 
-			Tree = new Tree<BaseNode>(new GroupNode("Root", "Root"));
+			Tree = new TreeGraph<BaseNode>(new GroupNode("Root", "Root"));
 			GroupNodes = new Dictionary<string, GroupNode>();
 
 			var invokables = Tweaker.Invokables.GetInvokables(searchOptions);

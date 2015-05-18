@@ -5,11 +5,11 @@ using System.Text;
 
 namespace Tweaker.UI
 {
-	public class Tree<TValue>
+	public class TreeGraph<TValue>
 	{
 		public TValue Root { get; private set; }
 
-		public Tree(TValue root)
+		public TreeGraph(TValue root)
 		{
 			Root = root;
 		}

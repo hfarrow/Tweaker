@@ -66,7 +66,7 @@ namespace Tweaker.UI.Tests
 			TweakerTree view = new TweakerTree(tweaker);
 			view.BuildTree();
 
-			Tree<BaseNode> tree = view.Tree;
+			TreeGraph<BaseNode> tree = view.Tree;
 			Assert.IsNotNull(tree);
 			Assert.IsNotNull(tree.Root);
 
