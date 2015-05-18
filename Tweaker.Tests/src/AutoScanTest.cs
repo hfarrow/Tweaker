@@ -26,12 +26,15 @@ namespace Ghostbit.Tweaker.Core.Tests
 
 			public TestClass()
 			{
+				Assert.NotNull(autoInvokable);
+
 				autoInvokable2 = new AutoInvokable("TestClass.Invokable2",
 					new Action<TestClass, int>((TestClass obj, int i)
 						=>
 						{
 							obj.IntField = i;
 						}), BoundInstanceFactory.Create(this));
+				Assert.NotNull(autoInvokable2);
 			}
 		}
 
@@ -48,6 +51,7 @@ namespace Ghostbit.Tweaker.Core.Tests
 					{
 						IntField = i;
 					}), BoundInstanceFactory.Create(this));
+				Assert.NotNull(autoInvokable);
 			}
 		}
 
@@ -65,6 +69,7 @@ namespace Ghostbit.Tweaker.Core.Tests
 			{
 				autoInvokable = new AutoInvokable("TestClass3.Invokable",
 					"InvokableMethod", BoundInstanceFactory.Create(this));
+				Assert.NotNull(autoInvokable);
 			}
 		}
 #pragma warning restore 0067,0649

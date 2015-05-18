@@ -23,13 +23,14 @@ namespace Ghostbit.Tweaker.Core.Tests
 			[Tweakable("IntProperty")]
 			public static int IntProperty { get; set; }
 
-			[Tweakable("IntPropertyRange"), Core.Range(0, 100)]
+			[Tweakable("IntPropertyRange"), TweakerRange(0, 100)]
 			public static int IntPropertyRange { get; set; }
 
 			[Tweakable("IntPropertyToggle"),
 			 NamedToggleValue("zero", 0, 0),
 			 NamedToggleValue("eleven", 11, 1),
 			 NamedToggleValue("hundred", 100, 2)]
+			[CustomTweakerAttribute]
 			public static int IntPropertyToggle { get; set; }
 
 			[Tweakable("intPropertyStep"), StepSize(10)]
@@ -41,7 +42,7 @@ namespace Ghostbit.Tweaker.Core.Tests
 			[Tweakable("intField")]
 			public static int intField;
 
-			[Tweakable("intFieldRange"), Core.Range(0, 100)]
+			[Tweakable("intFieldRange"), TweakerRange(0, 100)]
 			public static int intFieldRange;
 
 			[Tweakable("intFieldToggle"),
@@ -105,12 +106,10 @@ namespace Ghostbit.Tweaker.Core.Tests
 		}
 #pragma warning restore 0067,0649,0659,0661
 
-		private TestClass testClass;
-
 		[SetUp]
 		public void Init()
 		{
-			testClass = new TestClass();
+
 		}
 
 		public const int MIN_VALUE = 0;
@@ -212,9 +211,9 @@ namespace Ghostbit.Tweaker.Core.Tests
 			ToggleTweakable<int> toggle = toggleInterface as ToggleTweakable<int>;
 			Assert.IsNotNull(toggle);
 			ValidateBaseTweakable(tweakable, getter);
+			toggle.SetValueByName(toggle.GetNameByIndex(0));
 
-			Assert.AreEqual(-1, toggle.CurrentIndex);
-			Assert.AreEqual(0, toggle.StepNext());
+			Assert.AreEqual(toggle.GetIndexOfValue(getter()), toggle.CurrentIndex);
 			Assert.AreEqual(0, toggle.CurrentIndex);
 			Assert.AreEqual(0, getter());
 			Assert.AreEqual("zero", toggle.GetValueName());
@@ -423,6 +422,26 @@ namespace Ghostbit.Tweaker.Core.Tests
 		}
 
 		[Test]
+		public void ScanAndRetrieveCustomTweakerAttribute()
+		{
+			Scanner scanner = new Scanner();
+			ScanOptions options = new ScanOptions();
+			options.Assemblies.ScannableRefs = new Assembly[] { Assembly.GetExecutingAssembly() };
+			options.Types.ScannableRefs = new Type[] { typeof(TestClass) };
+
+			TweakableManager manager = new TweakableManager(scanner);
+			scanner.Scan(options);
+
+			var tweakables = manager.GetTweakables(null);
+			Assert.AreEqual(10, tweakables.Count);
+
+			var tweakable = manager.GetTweakable(new SearchOptions("IntPropertyToggle"));
+			Assert.IsNotNull(tweakable);
+			Assert.AreEqual(1, tweakable.CustomAttributes.Length);
+			Assert.AreEqual(typeof(CustomTweakerAttribute), tweakable.CustomAttributes[0].GetType());
+		}
+
+		[Test]
 		public void StaticTweakableAlwaysValid()
 		{
 			Scanner scanner = new Scanner();
@@ -439,5 +458,52 @@ namespace Ghostbit.Tweaker.Core.Tests
 			Assert.IsNull(tweakable.StrongInstance);
 		}
 
+		[Test]
+		public void TweakableValueChangedEvent()
+		{
+			Scanner scanner = new Scanner();
+			ScanOptions options = new ScanOptions();
+			options.Assemblies.ScannableRefs = new Assembly[] { Assembly.GetExecutingAssembly() };
+			options.Types.ScannableRefs = new Type[] { typeof(TestClass) };
+
+			TweakableManager manager = new TweakableManager(scanner);
+			scanner.Scan(options);
+
+			var tweakable = manager.GetTweakable("IntProperty");
+			TestClass.IntProperty = 0;
+
+			int expectedValue = 1;
+			bool wasDispatched = false;
+			tweakable.ValueChanged += (oldValue, newValue) =>
+			{
+				Assert.AreEqual(0, oldValue);
+				Assert.AreEqual(expectedValue, newValue);
+				wasDispatched = true;
+			};
+			tweakable.SetValue(expectedValue);
+			Assert.IsTrue(wasDispatched);
+		}
+
+		[Test]
+		public void MakeTweakableFromVirtualField()
+		{
+			const string fieldName = "TestVirtualField";
+			object virtualFieldRef;
+
+			TweakableInfo<int> info = new TweakableInfo<int>(fieldName, null, null, null);
+			ITweakable tweakable = TweakableFactory.MakeTweakableFromInfo(info, out virtualFieldRef);
+			Assert.IsNotNull(tweakable);
+			Assert.AreEqual(fieldName, tweakable.Name);
+			Assert.AreEqual(0, tweakable.GetValue());
+			tweakable.SetValue(1);
+			Assert.AreEqual(1, tweakable.GetValue());
+
+			tweakable = TweakableFactory.MakeTweakable(typeof(int), fieldName, "waka waka", out virtualFieldRef);
+			Assert.IsNotNull(tweakable);
+			Assert.AreEqual(fieldName, tweakable.Name);
+			Assert.AreEqual(0, tweakable.GetValue());
+			tweakable.SetValue(1);
+			Assert.AreEqual(1, tweakable.GetValue());
+		}
 	}
 }

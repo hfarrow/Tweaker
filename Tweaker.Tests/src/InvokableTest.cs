@@ -42,6 +42,7 @@ namespace Ghostbit.Tweaker.Core.Tests
 			}
 
 			[Invokable("TestMethodStaticVoidVoid")]
+			[CustomTweakerAttribute]
 			public static void TestMethodStaticVoidVoid()
 			{
 				didRunStaticMethod = true;
@@ -94,7 +95,6 @@ namespace Ghostbit.Tweaker.Core.Tests
 		{
 			var name = "TestClass." + methodName;
 			var methodInfo = instance.GetType().GetMethod(methodName);
-			var assembly = methodInfo.GetType().Assembly;
 			var weakRef = instance == null ? null : new WeakReference(instance);
 			return new InvokableMethod(new InvokableInfo(name), methodInfo, weakRef);
 		}
@@ -102,7 +102,6 @@ namespace Ghostbit.Tweaker.Core.Tests
 		private IInvokable CreateInvokableDelegate(string methodName, Delegate del)
 		{
 			var name = "TestClass." + methodName;
-			var assembly = del.Method.GetType().Assembly;
 			return new InvokableMethod(new InvokableInfo(name), del);
 		}
 
@@ -154,7 +153,6 @@ namespace Ghostbit.Tweaker.Core.Tests
 		[Test]
 		public void BindInvokableMethodAndVerifyProperties()
 		{
-			var testClass = new TestClass();
 			var name = "TestClass.VoidVoid";
 			var assembly = typeof(TestClass).Assembly;
 			var methodInfo = typeof(TestClass).GetMethod("TestMethodVoidVoid");
@@ -169,7 +167,6 @@ namespace Ghostbit.Tweaker.Core.Tests
 		[Test]
 		public void BindInvokableDelegateAndVerifyProperties()
 		{
-			var testClass = new TestClass();
 			var name = "TestClass.VoidVoid";
 			var assembly = typeof(TestClass).Assembly;
 			Delegate del = new Action(testClass.TestMethodVoidVoid);
@@ -197,13 +194,12 @@ namespace Ghostbit.Tweaker.Core.Tests
 		[Test]
 		public void BindInvokableEventAndVerifyProperties()
 		{
-			var testClass = new TestClass();
-
 			var name = "TestEventVoidVoid";
 			var assembly = testClass.GetType().Assembly;
+			var eventInfo = testClass.GetType().GetEvent(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 			var fieldInfo = testClass.GetType().GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 			Assert.IsNotNull(fieldInfo);
-			var invokable = new InvokableEvent(new InvokableInfo(name), fieldInfo, new WeakReference(testClass));
+			var invokable = new InvokableEvent(new InvokableInfo(name), eventInfo, fieldInfo, new WeakReference(testClass));
 
 			Assert.AreEqual(name, invokable.Name);
 			Assert.AreEqual(assembly, invokable.Assembly);
@@ -214,14 +210,13 @@ namespace Ghostbit.Tweaker.Core.Tests
 		[Test]
 		public void BindInvokableEventAndInvoke()
 		{
-			var testClass = new TestClass();
 			bool lambdaDidRun = false;
 			testClass.TestEventVoidVoid += () => { lambdaDidRun = true; };
 
 			var name = "TestEventVoidVoid";
-			var assembly = testClass.GetType().Assembly;
+			var eventInfo = testClass.GetType().GetEvent(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 			var fieldInfo = testClass.GetType().GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-			var invokable = new InvokableEvent(new InvokableInfo(name), fieldInfo, new WeakReference(testClass));
+			var invokable = new InvokableEvent(new InvokableInfo(name), eventInfo, fieldInfo, new WeakReference(testClass));
 
 			invokable.Invoke();
 			Assert.IsTrue(lambdaDidRun);
@@ -249,6 +244,24 @@ namespace Ghostbit.Tweaker.Core.Tests
 
 			invokable = manager.GetInvokable("TestMethodStaticVoidVoid");
 			Assert.IsNotNull(invokable);
+		}
+
+		[Test]
+		public void ScanAndRetrieveCustomTweakerAttribute()
+		{
+			Scanner scanner = new Scanner();
+			ScanOptions options = new ScanOptions();
+			options.Assemblies.ScannableRefs = new Assembly[] { Assembly.GetExecutingAssembly() };
+			options.Types.ScannableRefs = new Type[] { typeof(TestClass) };
+
+			InvokableManager manager = new InvokableManager(scanner);
+			scanner.Scan(options);
+
+			var invokable = manager.GetInvokable(new SearchOptions("TestMethodStaticVoidVoid"));
+			Assert.IsNotNull(invokable);
+
+			Assert.AreEqual(1, invokable.CustomAttributes.Length);
+			Assert.AreEqual(typeof(CustomTweakerAttribute), invokable.CustomAttributes[0].GetType());
 		}
 
 		[Test]

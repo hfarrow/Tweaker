@@ -15,8 +15,8 @@ namespace Ghostbit.Tweaker.Core
 			uint instanceId = boundInstance != null ? boundInstance.UniqueId : 0;
 			string[] argDescriptions = GetArgDescriptions(methodInfo.GetParameters());
 			string returnDescription = GetReturnDescription(methodInfo);
-			return MakeInvokable(new InvokableInfo(name, instanceId, attribute.Description, argDescriptions, returnDescription),
-				methodInfo, boundInstance != null ? boundInstance.Instance : null);
+			return MakeInvokable(new InvokableInfo(name, instanceId, CustomTweakerAttributes.Get(methodInfo), attribute.Description,
+				argDescriptions, returnDescription), methodInfo, boundInstance != null ? boundInstance.Instance : null);
 		}
 
 		public static IInvokable MakeInvokable(InvokableAttribute attribute, EventInfo eventInfo, IBoundInstance boundInstance)
@@ -27,7 +27,7 @@ namespace Ghostbit.Tweaker.Core
 			MethodInfo invokeMethod = eventInfo.EventHandlerType.GetMethod("Invoke");
 			string[] argDescriptions = GetArgDescriptions(invokeMethod.GetParameters());
 			string returnDescription = GetReturnDescription(invokeMethod);
-			return MakeInvokable(new InvokableInfo(name, instanceId, attribute.Description, argDescriptions, returnDescription),
+			return MakeInvokable(new InvokableInfo(name, instanceId, CustomTweakerAttributes.Get(eventInfo), attribute.Description, argDescriptions, returnDescription),
 				eventInfo, instance);
 		}
 
@@ -49,13 +49,14 @@ namespace Ghostbit.Tweaker.Core
 		public static IInvokable MakeInvokable(InvokableInfo info, EventInfo eventInfo, object instance)
 		{
 			FieldInfo fieldInfo = GetBackingEventField(eventInfo, instance);
-			return MakeInvokableFromBackingEventField(info, fieldInfo, instance);
+			return MakeInvokableFromBackingEventField(info, eventInfo, fieldInfo, instance);
 		}
 
-		public static IInvokable MakeInvokableFromBackingEventField(InvokableInfo info, FieldInfo fieldInfo, object instance)
+		public static IInvokable MakeInvokableFromBackingEventField(InvokableInfo info, EventInfo eventInfo, FieldInfo fieldInfo, object instance)
 		{
 			return new InvokableEvent(
 				info,
+				eventInfo,
 				fieldInfo,
 				instance == null ? null : new WeakReference(instance));
 		}

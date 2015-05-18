@@ -15,12 +15,12 @@ namespace Ghostbit.Tweaker.Core
 	}
 
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Class, AllowMultiple = false)]
-	public class RangeAttribute : Attribute
+	public class TweakerRangeAttribute : Attribute
 	{
 		public object MinValue;
 		public object MaxValue;
 
-		public RangeAttribute(object minValue, object maxValue)
+		public TweakerRangeAttribute(object minValue, object maxValue)
 		{
 			MinValue = minValue;
 			MaxValue = maxValue;

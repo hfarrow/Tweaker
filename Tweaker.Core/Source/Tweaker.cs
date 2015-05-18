@@ -60,6 +60,8 @@ namespace Ghostbit.Tweaker
 			{
 				PerformScan();
 			}
+
+			Scanner.ScanInstance(this);
 		}
 
 		private void CreateManagers()

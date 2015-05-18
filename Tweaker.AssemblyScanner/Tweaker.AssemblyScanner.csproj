@@ -39,11 +39,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\BoundInstance.cs" />
     <Compile Include="Source\Interfaces\IScanner.cs" />
     <Compile Include="Source\Interfaces\IScanProcessor.cs" />
     <Compile Include="Source\Interfaces\IScanResultProvider.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\Scanner.cs" />
     <Compile Include="Source\ScannerException.cs" />
     <Compile Include="Source\ScanOptions.cs" />

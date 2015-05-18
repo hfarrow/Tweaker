@@ -14,7 +14,7 @@ namespace Ghostbit.Tweaker.Core.Tests
 		public class TestClass : IDisposable
 		{
 			[Tweakable("TestClass.AutoInt"),
-			Range(0, 10)]
+			TweakerRange(0, 10)]
 			public Tweakable<int> AutoInt = new Tweakable<int>();
 
 			private bool disposeTweakable;

@@ -33,61 +33,25 @@ namespace Ghostbit.Tweaker.Core
 	public class InvokeException : Exception, ISerializable
 	{
 		public InvokeException(string name, object[] args, Exception inner)
-			: base("Invocation of '" + name + "(" + args + ")' failed. See inner exception.", inner)
+			: base("Invocation of '" + name + "(" + args + ")' failed. Inner Exception: " + inner.Message, inner)
 		{
 		}
-	}
-
-	// TODO: does .NET include this functionality somewhere?
-	internal class Printer
-	{
-		public static string PrintObjectArray(object[] objects)
-		{
-			if(objects == null || objects.Length == 0)
-			{
-				return "";
-			}
-
-			StringBuilder str = new StringBuilder(objects[0].ToString());
-			for(var i = 1; i < objects.Length; ++i)
-			{
-				str.Append(",");
-				str.Append(objects[i].ToString());
-			}
-			return str.ToString();
-		}
-
-		public static string PrintTypeArray(Type[] types)
-		{
-			if (types == null || types.Length == 0)
-			{
-				return "";
-			}
-
-			StringBuilder str = new StringBuilder(types[0].FullName);
-			for (var i = 1; i < types.Length; ++i)
-			{
-				str.Append(",");
-				str.Append(types[i].FullName);
-			}
-			return str.ToString();
-		}
-	}
+	}	
 
 	public class InvokeArgNumberException : Exception, ISerializable
 	{
 		public InvokeArgNumberException(string name, object[] args, Type[] expectedArgTypes)
 			: base(string.Format("Invokation of '{0}'){1}) failed. {2} args were provided but {3} args were expected. The expected types are: [{4}]",
-			name, Printer.PrintObjectArray(args), args.Length, expectedArgTypes.Length, Printer.PrintTypeArray(expectedArgTypes)))
+			name, PrettyPrinter.PrintObjectArray(args), args.Length, expectedArgTypes.Length, PrettyPrinter.PrintTypeArray(expectedArgTypes)))
 		{
 		}
 	}
 
 	public class InvokeArgTypeException : Exception, ISerializable
 	{
-		public InvokeArgTypeException(string name, object[] args, Type[] argTypes, Type[] expectedArgTypes)
-			: base(string.Format("Invokation of '{0}({1})' failed. The expected arg types are [{2}] but [{3}] was provided.",
-			name, Printer.PrintObjectArray(args), Printer.PrintTypeArray(expectedArgTypes), Printer.PrintTypeArray(argTypes)))
+		public InvokeArgTypeException(string name, object[] args, Type[] argTypes, Type[] expectedArgTypes, string extraMessage = "")
+			: base(string.Format("Invokation of '{0}({1})' failed. The expected arg types are [{2}] but [{3}] was provided. {4}",
+			name, PrettyPrinter.PrintObjectArray(args), PrettyPrinter.PrintTypeArray(expectedArgTypes), PrettyPrinter.PrintTypeArray(argTypes), extraMessage))
 		{
 
 		}

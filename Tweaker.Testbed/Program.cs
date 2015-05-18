@@ -89,7 +89,7 @@ namespace Ghostbit.Tweaker.Core.Testbed
 		public class AutoTweakableTest : IDisposable
 		{
 			[Tweakable("AutoTweakableTest.int"),
-			Range(0, 10)]
+			TweakerRange(0, 10)]
 			private Tweakable<int> tweakable = new Tweakable<int>();
 
 			public AutoTweakableTest()

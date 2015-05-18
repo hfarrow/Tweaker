@@ -38,7 +38,7 @@ namespace Ghostbit.Tweaker.Core
 					{
 						uint id = instance.UniqueId;
 						string finalName = string.Format("{0}#{1}", invokableName, id);
-						invokable = Manager.RegisterInvokable(new InvokableInfo(finalName, id, description, argDescriptions, returnDescription),
+						invokable = Manager.RegisterInvokable(new InvokableInfo(finalName, id, CustomTweakerAttributes.Get(method), description, argDescriptions, returnDescription),
 							method, instance.Instance);
 					}
 				}
@@ -52,7 +52,7 @@ namespace Ghostbit.Tweaker.Core
 			{
 				uint id = instance != null ? instance.UniqueId : 0;
 				string finalName = string.Format("{0}#{1}", name, id);
-				invokable = Manager.RegisterInvokable(new InvokableInfo(finalName, id, description, argDescriptions, returnDescription), del);
+				invokable = Manager.RegisterInvokable(new InvokableInfo(finalName, id, CustomTweakerAttributes.Get(del.Method), description, argDescriptions, returnDescription), del);
 			}
 		}
 

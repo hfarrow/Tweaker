@@ -17,6 +17,8 @@ namespace Ghostbit.Tweaker.Core
 		{
 			this.baseTweakable = baseTweakable;
 			tweakableInfo = baseTweakable.TweakableInfo;
+
+			currentIndex = GetIndexOfValue(baseTweakable.GetValue());
 		}
 
 		public object StepSize
@@ -27,6 +29,11 @@ namespace Ghostbit.Tweaker.Core
 		public int CurrentIndex
 		{
 			get { return currentIndex; }
+		}
+
+		public int ToggleCount
+		{
+			get { return tweakableInfo.ToggleValues.Length; }
 		}
 
 		public int GetIndexOfValue(object value)

@@ -9,10 +9,15 @@ namespace Ghostbit.Tweaker.Core
 	public class InvokableMethod : BaseInvokable
 	{
 		private readonly MethodInfo methodInfo;
-
 		public MethodInfo MethodInfo
 		{
 			get { return methodInfo; }
+		}
+
+		private string methodSignature;
+		public override string MethodSignature
+		{
+			get { return methodSignature; }
 		}
 
 		public InvokableMethod(InvokableInfo info, MethodInfo methodInfo, WeakReference instance)
@@ -20,6 +25,7 @@ namespace Ghostbit.Tweaker.Core
 					methodInfo.GetParameters())
 		{
 			this.methodInfo = methodInfo;
+			methodSignature = methodInfo.GetSignature();
 		}
 
 		public InvokableMethod(InvokableInfo info, Delegate methodDelegate)
@@ -28,7 +34,8 @@ namespace Ghostbit.Tweaker.Core
 					methodDelegate.Method.IsPublic,
 					methodDelegate.Method.GetParameters())
 		{
-			this.methodInfo = methodDelegate.Method;
+			methodInfo = methodDelegate.Method;
+			methodSignature = methodInfo.GetSignature();
 		}
 
 		protected override object DoInvoke(object[] args)

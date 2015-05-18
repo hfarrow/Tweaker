@@ -45,10 +45,48 @@ namespace Ghostbit.Tweaker.UI
 	{
 		public IInvokable Invokable { get; private set; }
 		public override NodeType Type { get { return NodeType.Invokable; } }
+		private ITweakable[] argTweakables;
 
 		public InvokableNode(IInvokable invokable)
 		{
 			Invokable = invokable;
+
+			if (invokable != null)
+			{
+				BindArgsToTweakables();
+			}
+		}
+
+		private void BindArgsToTweakables()
+		{
+			// Add an empy invokable node that will execute the invokable.
+			Children.Add(new InvokableNode(null));
+
+			Type[] argTypes = Invokable.ParameterTypes;
+			argTweakables = new ITweakable[argTypes.Length];
+
+			for(int i = 0; i < argTypes.Length; ++i)
+			{
+				Type argType = argTypes[i];
+				object virtualFieldRef;
+				ITweakable tweakable = TweakableFactory.MakeTweakable(argType, 
+					Invokable.Parameters[i].Name, 
+					Invokable.InvokableInfo.ArgDescriptions[i],
+					out virtualFieldRef);
+				argTweakables[i] = tweakable;
+
+				Children.Add(new TweakableNode(tweakable, virtualFieldRef));
+			}
+		}
+
+		public void Invoke()
+		{
+			object[] args = new object[argTweakables.Length];
+			for (int i = 0; i < args.Length; ++i)
+			{
+				args[i] = argTweakables[i].GetValue();
+			}
+			Invokable.Invoke(args);
 		}
 	}
 
@@ -57,9 +95,21 @@ namespace Ghostbit.Tweaker.UI
 		public ITweakable Tweakable { get; private set; }
 		public override NodeType Type { get { return NodeType.Tweakable; } }
 
+#pragma warning disable 0414 // is assigned but its value is never used
+		// Keep a reference to the virtual field (if there is one) because the only other reference
+		// to this object is a WeakReference owned by BaseTweakable.
+		private object virtualFieldRef;
+#pragma warning restore 0414
+
 		public TweakableNode(ITweakable tweakable)
 		{
 			Tweakable = tweakable;
+		}
+
+		public TweakableNode(ITweakable tweakable, object virtualFieldRef)
+			: this(tweakable)
+		{
+			this.virtualFieldRef = virtualFieldRef;
 		}
 	}
 
@@ -142,7 +192,7 @@ namespace Ghostbit.Tweaker.UI
 				// Create a list for each type of node
 				// TODO: decide on a more generic way to do this.
 				// What if the number of node types explodes?
-				// Dictionary<Type, List<Type>> or add sorting mechanism directory to Tree data structure
+				// Dictionary<Type, List<Type>> or add sorting mechanism to Tree data structure
 				List<GroupNode> groups = new List<GroupNode>();
 				List<InvokableNode> invokables = new List<InvokableNode>();
 				List<TweakableNode> tweakables = new List<TweakableNode>();

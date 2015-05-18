@@ -11,6 +11,11 @@ namespace Ghostbit.Tweaker.Core
 	public interface ITweakerObject
 	{
 		/// <summary>
+		/// Get the description for this tweakable object.
+		/// </summary>
+		string Description { get; }
+
+		/// <summary>
 		/// The name that this tweaker object registers with.
 		/// </summary>
 		string Name { get; }
@@ -48,5 +53,19 @@ namespace Ghostbit.Tweaker.Core
 		/// by objects holding a reference.
 		/// </summary>
 		bool IsValid { get; }
+
+		/// <summary>
+		/// Custom attributes that this tweaker object was annotated with. Attribute types must
+		/// extend ICustomTweakerAttribute.
+		/// </summary>
+		ICustomTweakerAttribute[] CustomAttributes { get; }
+
+		/// <summary>
+		/// Get the custom attribute of the provided generic type.
+		/// </summary>
+		/// <typeparam name="TAttribute">The type of attribute to get.</typeparam>
+		/// <returns>The custom attribute or null if there is no attribute of that type.</returns>
+		TAttribute GetCustomAttribute<TAttribute>()
+			where TAttribute : Attribute, ICustomTweakerAttribute;
 	}
 }

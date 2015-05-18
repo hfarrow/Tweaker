@@ -1,11 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-#if UNITY
-using UnityEngine;
-#endif
 
 namespace Ghostbit.Tweaker.UI
 {
+	public struct PixelCoord
+	{
+		public float x;
+		public float y;
+
+		public PixelCoord(float x, float y)
+		{
+			this.x = x;
+			this.y = y;
+		}
+	}
+
 	public struct CubeCoord
 	{
 		public static CubeCoord[] Directions = 
@@ -160,39 +169,51 @@ namespace Ghostbit.Tweaker.UI
 	{
 		public static void CubeToAxial(ref CubeCoord coord, out AxialCoord outCoord)
 		{
-			outCoord =  new AxialCoord(coord.x, coord.z);
+			outCoord =  new AxialCoord(coord.x, coord.y);
+			//outCoord = new AxialCoord(coord.x, coord.z);
+			//outCoord = new AxialCoord(coord.y, coord.z);
 		}
 
 		public static AxialCoord CubeToAxial(CubeCoord coord)
 		{
-			return new AxialCoord(coord.x, coord.z);
+			return new AxialCoord(coord.x, coord.y);
+			//return new AxialCoord(coord.x, coord.z);
+			//return new AxialCoord(coord.y, coord.z);
 		}
 
 		public static void AxialToCube(ref AxialCoord coord, out CubeCoord outCoord)
 		{
-			outCoord = new CubeCoord(coord.q, -coord.q - coord.r, coord.r);
+			outCoord = new CubeCoord(coord.q, coord.r, -coord.q - coord.r);
+			//outCoord = new CubeCoord(coord.q, -coord.q - coord.r, coord.r);
+			//outCoord = new CubeCoord(-coord.q - coord.r, coord.q, coord.r);
 		}
 
 		public static CubeCoord AxialToCube(AxialCoord coord)
 		{
-			return new CubeCoord(coord.q, -coord.q - coord.r, coord.r);
+			return new CubeCoord(coord.q, coord.r, -coord.q - coord.r);
+			//return new CubeCoord(coord.q, -coord.q - coord.r, coord.r);
+			//return new CubeCoord(-coord.q - coord.r, coord.q, coord.r);
 		}
 
-#if UNITY
-		public static Vector2 AxialToPixel(CubeCoord coord, float size)
+		public static PixelCoord AxialToPixel(CubeCoord coord, float size)
 		{
 			AxialCoord axialCoord = CubeToAxial(coord);
 			return AxialToPixel(axialCoord, size);
 		}
 
-		public static Vector2 AxialToPixel(AxialCoord coord, float size)
+		public static PixelCoord AxialToPixel(AxialCoord coord, float size)
 		{
-			float x = size * Mathf.Sqrt(3f) * ((float)coord.q + (float)coord.r / 2f);
-			float y = size * 3f / 2f * (float)coord.r;
-			y *= -1;
-			return new Vector2(x, y);
+			// Flat Top
+			float x = size * 3f / 2f * (float)coord.q;
+			float y = size * (float)Math.Sqrt(3) * (coord.r + (float)coord.q / 2f);
+
+			// Pointy Top
+			//float x = size * Mathf.Sqrt(3f) * ((float)coord.q + (float)coord.r / 2f);
+			//float y = size * 3f / 2f * (float)coord.r;
+
+			//y *= -1;
+			return new PixelCoord(x, y);
 		}
-#endif
 
 		public static CubeCoord GetNeighbour(CubeCoord coord, uint direction)
 		{

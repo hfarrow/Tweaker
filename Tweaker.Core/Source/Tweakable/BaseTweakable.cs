@@ -11,6 +11,7 @@ namespace Ghostbit.Tweaker.Core
 		public TweakableInfo<T> TweakableInfo { get; private set; }
 		public Type TweakableType { get; private set; }
 		public ITweakableManager Manager { get; set; }
+		public event Action<object, object> ValueChanged;
 
 		protected MethodInfo Setter { get; set; }
 		protected MethodInfo Getter { get; set; }
@@ -69,7 +70,7 @@ namespace Ghostbit.Tweaker.Core
 
 		public bool HasStep
 		{
-			get { return TweakableInfo.StepSize != null; }
+			get { return TweakableInfo.StepSize != null || HasToggle; }
 		}
 
 		public bool HasToggle
@@ -92,12 +93,35 @@ namespace Ghostbit.Tweaker.Core
 			get { return toggleTweakable; }
 		}
 
+		public object MinValue
+		{
+			get
+			{
+				if(HasRange)
+				{
+					return TweakableInfo.Range.MinValue;
+				}
+				return null;
+			}
+		}
+
+		public object MaxValue
+		{
+			get
+			{
+				if (HasRange)
+				{
+					return TweakableInfo.Range.MaxValue;
+				}
+				return null;
+			}
+		}
+
 		private BaseTweakable(TweakableInfo<T> info, Assembly assembly, WeakReference instance, bool isPublic) :
 			base(info, assembly, instance, isPublic)
 		{
 			TweakableInfo = info;
 			TweakableType = typeof(T);
-			CreateComponents();
 		}
 
 		private BaseTweakable(TweakableInfo<T> info, MethodInfo setter, MethodInfo getter, Assembly assembly, WeakReference instance, bool isPublic) :
@@ -139,16 +163,38 @@ namespace Ghostbit.Tweaker.Core
 
 		}
 
+		public BaseTweakable(TweakableInfo<T> info, VirtualField<T> field)
+			: this(info, Assembly.GetCallingAssembly(), new WeakReference(field), false)
+		{
+			Setter = field.Setter.Method;
+			Getter = field.Getter.Method;
+			ValidateTweakableType();
+			CreateComponents();
+		}
+
 		private void CreateComponents()
 		{
-			if (HasStep)
+			if (TweakableType.IsEnum)
+			{
+				string[] enumNames = Enum.GetNames(TweakableType);
+				Array enumValues = Enum.GetValues(TweakableType);
+				int numValues = enumNames.Length;
+				TweakableInfo.ToggleValues = new TweakableInfo<T>.TweakableNamedToggleValue[numValues];
+
+				for(int i = 0; i < numValues; ++i)
+				{
+					TweakableInfo.ToggleValues[i] = new TweakableInfo<T>.TweakableNamedToggleValue(enumNames[i], (T)enumValues.GetValue(i));
+				}
+			}
+
+			if (HasStep && !HasToggle)
 			{
 				stepTweakable = new StepTweakable<T>(this);
 			}
-
-			if (HasToggle)
+			else if (HasToggle)
 			{
 				toggleTweakable = new ToggleTweakable<T>(this);
+				stepTweakable = toggleTweakable;
 			}
 		}
 
@@ -196,10 +242,21 @@ namespace Ghostbit.Tweaker.Core
 			if (CheckInstanceIsValid())
 			{
 				CheckValueType(value);
+				object oldValue = Getter.Invoke(GetInternalStrongInstance(), null);
 				value = CheckRange((T)value);
+
+				if (oldValue == value)
+				{
+					return;
+				}
+
 				try
 				{
 					Setter.Invoke(GetInternalStrongInstance(), new object[] { value });
+					if (ValueChanged != null)
+					{
+						ValueChanged(oldValue, value);
+					}
 				}
 				catch (Exception e)
 				{
@@ -229,11 +286,11 @@ namespace Ghostbit.Tweaker.Core
 				throw new TweakableSetException(Name, "TweakableRange<" + typeof(T).FullName + "> does not implement IComparable");
 			}
 
-			if (comparable.CompareTo(TweakableInfo.Range.MinValue) < 0)
+			if (TweakableInfo.Range.MinValue != null && comparable.CompareTo(TweakableInfo.Range.MinValue) < 0)
 			{
 				return TweakableInfo.Range.MinValue;
 			}
-			else if (comparable.CompareTo(TweakableInfo.Range.MaxValue) > 0)
+			else if (TweakableInfo.Range.MaxValue != null && comparable.CompareTo(TweakableInfo.Range.MaxValue) > 0)
 			{
 				return TweakableInfo.Range.MaxValue;
 			}

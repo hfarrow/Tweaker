@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -47,6 +47,10 @@
     <Compile Include="Source\Models\TweakerTree.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Tweaker.AssemblyScanner\Tweaker.AssemblyScanner.csproj">
+      <Project>{f507dcf5-572c-415b-8eaf-9bfda1c4b960}</Project>
+      <Name>Tweaker.AssemblyScanner</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Tweaker.Core\Tweaker.Core.csproj">
       <Project>{f11a0752-126f-4904-ba1f-277ae63180b6}</Project>
       <Name>Tweaker.Core</Name>

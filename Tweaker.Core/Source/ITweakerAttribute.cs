@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Ghostbit.Tweaker.Core
@@ -19,5 +20,18 @@ namespace Ghostbit.Tweaker.Core
 		/// Globaly unique identifier for this attribute instance.
 		/// </summary>
 		Guid Guid { get; }
+	}
+
+	public interface ICustomTweakerAttribute
+	{
+
+	}
+
+	public static class CustomTweakerAttributes
+	{
+		public static ICustomTweakerAttribute[] Get(MemberInfo member)
+		{
+			return member.GetCustomAttributes(typeof(ICustomTweakerAttribute), true) as ICustomTweakerAttribute[];
+		}
 	}
 }

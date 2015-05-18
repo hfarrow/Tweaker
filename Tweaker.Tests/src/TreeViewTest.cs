@@ -39,12 +39,10 @@ namespace Ghostbit.Tweaker.UI.Tests
 		}
 #pragma warning restore 0067,0649,0219
 
-		private TestClass testClass;
 		private Tweaker tweaker;
 		[SetUp]
 		public void Init()
 		{
-			testClass = new TestClass();
 			tweaker = new Tweaker();
 
 			Scanner scanner = new Scanner();

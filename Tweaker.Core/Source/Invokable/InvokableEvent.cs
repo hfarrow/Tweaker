@@ -9,18 +9,32 @@ namespace Ghostbit.Tweaker.Core
 	public class InvokableEvent : BaseInvokable
 	{
 		private readonly FieldInfo fieldInfo;
-		private readonly MulticastDelegate eventDelegate;
+
+		private string methodSignature;
+		public override string MethodSignature
+		{
+			get { return methodSignature; }
+		}
 
 		public FieldInfo FieldInfo
 		{
 			get { return fieldInfo; }
 		}
 
-		public InvokableEvent(InvokableInfo info, FieldInfo fieldInfo, WeakReference instance)
+		public InvokableEvent(InvokableInfo info, EventInfo eventInfo, FieldInfo fieldInfo, WeakReference instance)
 			: base(info, fieldInfo.ReflectedType.Assembly, instance, fieldInfo.IsPublic)
 		{
 			this.fieldInfo = fieldInfo;
+			methodSignature = "[Unknown]";
 
+			var invokeMethod = eventInfo.EventHandlerType.GetMethod("Invoke");
+			SetParameters(invokeMethod.GetParameters());
+			methodSignature = invokeMethod.GetSignature();
+		}
+
+		private MulticastDelegate GetEventDelegate()
+		{
+			MulticastDelegate eventDelegate = null;
 			var value = fieldInfo.GetValue(StrongInstance);
 			// value will be null if no listeners added.
 			if (value != null)
@@ -28,15 +42,16 @@ namespace Ghostbit.Tweaker.Core
 				eventDelegate = (MulticastDelegate)value;
 				if (eventDelegate == null)
 				{
-					throw new Exception("Could not bind invokable '" + Name + "' to it's event Delegate.");
+					throw new Exception("Could not retrieve the event delegate for invokable '" + Name + "'.");
 				}
-				SetParameters(eventDelegate.Method.GetParameters());
 			}
+			return eventDelegate;
 		}
 
 		protected override object DoInvoke(object[] args)
 		{
 			object ret = default(object);
+			MulticastDelegate eventDelegate = GetEventDelegate();
 			if (eventDelegate != null)
 			{
 				foreach (var handler in eventDelegate.GetInvocationList())

@@ -26,9 +26,10 @@ namespace Ghostbit.Tweaker.Core
 			uint instanceId = instance != null ? instance.UniqueId : 0;
 
 			MemberInfo memberInfoWithAttributes = containerMemberInfo != null ? containerMemberInfo : memberInfo;
-			var rangeAttribute = memberInfoWithAttributes.GetCustomAttributes(typeof(RangeAttribute), false).ElementAtOrDefault(0) as RangeAttribute;
+			var rangeAttribute = memberInfoWithAttributes.GetCustomAttributes(typeof(TweakerRangeAttribute), false).ElementAtOrDefault(0) as TweakerRangeAttribute;
 			var stepSizeAttribute = memberInfoWithAttributes.GetCustomAttributes(typeof(StepSizeAttribute), false).ElementAtOrDefault(0) as StepSizeAttribute;
 			var toggleValueAttributes = memberInfoWithAttributes.GetCustomAttributes(typeof(NamedToggleValueAttribute), false) as NamedToggleValueAttribute[];
+			var customAttributes = memberInfoWithAttributes.GetCustomAttributes(typeof(ICustomTweakerAttribute), true) as ICustomTweakerAttribute[];
 			toggleValueAttributes = toggleValueAttributes.OrderBy(toggle => toggle.Order).ToArray();
 
 			object range = null;
@@ -94,7 +95,7 @@ namespace Ghostbit.Tweaker.Core
 			}
 
 			string name = GetFinalName(attribute.Name, instance);
-			object info = Activator.CreateInstance(infoType, new object[] { name, range, stepSize, toggleValues, instanceId, attribute.Description });
+			object info = Activator.CreateInstance(infoType, new object[] { name, range, stepSize, toggleValues, instanceId, customAttributes, attribute.Description });
 			Type tweakableType = typeof(BaseTweakable<>).MakeGenericType(new Type[] { type });
 			return Activator.CreateInstance(tweakableType, new object[] { info, memberInfo, weakRef }) as ITweakable;
 		}
@@ -133,6 +134,42 @@ namespace Ghostbit.Tweaker.Core
 			}
 
 			return new BaseTweakable<T>(info, fieldInfo, weakRef);
+		}
+
+		public static ITweakable MakeTweakableFromInfo<T>(TweakableInfo<T> info, out object virtualFieldRef)
+		{
+			VirtualField<T> field = new VirtualField<T>();
+			ITweakable tweakable = new BaseTweakable<T>(info, field);
+			virtualFieldRef = field;
+			return tweakable;
+		}
+
+		/// <summary>
+		/// This will create a virtual field bound to a tweakable.
+		/// TODO: allow range, step, toggles, and CustomAttributes to be passed in.
+		/// </summary>
+		/// <param name="tweakableType"></param>
+		/// <param name="name"></param>
+		/// <param name="description"></param>
+		/// <param name="virtualFieldRef">A strong reference to the internal virtual field. 
+		/// If you do not maintain a strong reference to this opaque object, the tweakable will become invalid
+		/// when the virtual field is garbage collected. The tweakable created by this method
+		/// is not bound to a class member defined in code which is the reason for this param.</param>
+		/// <returns></returns>
+		public static ITweakable MakeTweakable(Type tweakableType, string name, string description, out object virtualFieldRef)
+		{
+			Type infoType = typeof(TweakableInfo<>).MakeGenericType(tweakableType);
+			Type fieldType = typeof(VirtualField<>).MakeGenericType(tweakableType);
+			Type baseTweakableType = typeof(BaseTweakable<>).MakeGenericType(tweakableType);
+			object info = Activator.CreateInstance(infoType, name, new ICustomTweakerAttribute[0], description);
+			object field = Activator.CreateInstance(fieldType);
+			ITweakable tweakable = Activator.CreateInstance(
+				baseTweakableType,
+				Convert.ChangeType(info, infoType),
+				Convert.ChangeType(field, fieldType)) as ITweakable;
+
+			virtualFieldRef = field;
+			return tweakable;
 		}
 
 		private static string GetFinalName(string name, IBoundInstance instance)

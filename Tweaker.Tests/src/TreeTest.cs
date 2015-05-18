@@ -39,6 +39,7 @@ namespace Ghostbit.Tweaker.UI.Tests
 			int counter = 0;
 			foreach (var node in root.TraverseBreadthFirst())
 			{
+				Assert.NotNull(node);
 				counter++;
 			}
 			Assert.AreEqual(0, counter);
@@ -46,6 +47,7 @@ namespace Ghostbit.Tweaker.UI.Tests
 			counter = 0;
 			foreach (var node in root.TraverseDepthFirst())
 			{
+				Assert.NotNull(node);
 				counter++;
 			}
 			Assert.AreEqual(0, counter);

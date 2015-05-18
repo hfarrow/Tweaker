@@ -86,6 +86,8 @@ namespace Ghostbit.Tweaker.Core.Tests
 		{
 			var instance_a = factory.Create<TweakerTestClass>();
 			var instance_b = factory.Create<TweakerTestClass>();
+			Assert.NotNull(instance_a);
+			Assert.NotNull(instance_b);
 
 			var invokables = tweaker.Invokables.GetInvokables(null);
 			Assert.AreEqual(2, invokables.Count);

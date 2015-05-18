@@ -40,15 +40,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\Support\Processors.cs" />
     <Compile Include="src\AutoScanTest.cs" />
     <Compile Include="src\AutoTweakableTest.cs" />
     <Compile Include="src\InvokableTest.cs" />
     <Compile Include="src\ScannerTest.cs" />
+    <Compile Include="src\Support\CustomTweakerAttribute.cs" />
+    <Compile Include="src\Support\Processors.cs" />
     <Compile Include="src\TreeTest.cs" />
     <Compile Include="src\TreeViewTest.cs" />
     <Compile Include="src\TweakableTest.cs" />
     <Compile Include="src\TweakerTest.cs" />
+    <Compile Include="src\TypeExtensionsTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tweaker.AssemblyScanner\Tweaker.AssemblyScanner.csproj">
@@ -64,6 +66,7 @@
       <Name>Tweaker.UI</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

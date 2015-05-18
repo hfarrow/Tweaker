@@ -63,8 +63,6 @@ namespace Ghostbit.Tweaker.Core.Tests
 		}
 #pragma warning restore 0067,0649
 
-		private TestClass testClass;
-
 		private ScanOptions MakeScanOptions()
 		{
 			var options = new ScanOptions();
@@ -75,7 +73,7 @@ namespace Ghostbit.Tweaker.Core.Tests
 		[SetUp]
 		public void Init()
 		{
-			testClass = new TestClass();
+
 		}
 
 		[Test]
