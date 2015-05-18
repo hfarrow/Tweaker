@@ -39,7 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Source\Collections\Tree.cs" />
+    <Compile Include="Source\Collections\TreeGraph.cs" />
     <Compile Include="Source\Models\HexGrid\GridCell.cs" />
     <Compile Include="Source\Models\HexGrid\HexCoord.cs" />
     <Compile Include="Source\Models\HexGrid\HexGrid.cs" />
