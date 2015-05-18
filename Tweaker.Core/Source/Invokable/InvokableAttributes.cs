@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Event | AttributeTargets.Class, AllowMultiple = false)]
 	public class InvokableAttribute : BaseTweakerAttribute

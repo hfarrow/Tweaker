@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Ghostbit.Tweaker.AssemblyScanner
+namespace Tweaker.AssemblyScanner
 {
 	/// <summary>
 	/// Provides the results from a processed object.

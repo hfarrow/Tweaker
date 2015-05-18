@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Linq;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	public class NameAlreadyRegisteredException : Exception, ISerializable
 	{

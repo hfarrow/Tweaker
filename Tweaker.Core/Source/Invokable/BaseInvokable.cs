@@ -2,7 +2,7 @@
 using System.Reflection;
 using System;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	public abstract class BaseInvokable : TweakerObject, IInvokable
 	{

@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	/// <summary>
 	/// Dictionary type used to map tweaker object names to tweaker objects.

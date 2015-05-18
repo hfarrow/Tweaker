@@ -1,8 +1,8 @@
-﻿using Ghostbit.Tweaker.Core;
+﻿using Tweaker.Core;
 using System;
 using System.Collections.Generic;
 
-namespace Ghostbit.Tweaker.UI
+namespace Tweaker.UI
 {
 	/// <summary>
 	/// Factory to create hex grids of different shapes and dimensions.

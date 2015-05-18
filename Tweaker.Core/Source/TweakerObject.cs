@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	/// <summary>
 	/// Contains information about a tweaker object

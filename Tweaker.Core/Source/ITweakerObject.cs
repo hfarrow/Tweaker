@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	/// <summary>
 	/// All Tweaker objects implement this interface.

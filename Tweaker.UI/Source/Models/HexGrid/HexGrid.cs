@@ -1,8 +1,8 @@
-﻿using Ghostbit.Tweaker.Core;
+﻿using Tweaker.Core;
 using System;
 using System.Collections.Generic;
 
-namespace Ghostbit.Tweaker.UI
+namespace Tweaker.UI
 {
 	public class HexGrid<TCellValue>
 		where TCellValue : class

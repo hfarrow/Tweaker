@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ghostbit.Tweaker.AssemblyScanner;
+using Tweaker.AssemblyScanner;
 using NUnit.Framework;
 
-namespace Ghostbit.Tweaker.Core.Tests
+namespace Tweaker.Core.Tests
 {
 	[TestFixture]
 	public class AutoTweakableTest

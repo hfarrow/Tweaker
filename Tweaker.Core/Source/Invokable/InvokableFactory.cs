@@ -1,11 +1,11 @@
-﻿using Ghostbit.Tweaker.AssemblyScanner;
+﻿using Tweaker.AssemblyScanner;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	public static class InvokableFactory
 	{

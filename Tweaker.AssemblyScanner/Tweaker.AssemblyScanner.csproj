@@ -7,7 +7,7 @@
     <ProjectGuid>{F507DCF5-572C-415B-8EAF-9BFDA1C4B960}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Ghostbit.Tweaker.AssemblyScanner</RootNamespace>
+    <RootNamespace>Tweaker.AssemblyScanner</RootNamespace>
     <AssemblyName>Tweaker.AssemblyScanner</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

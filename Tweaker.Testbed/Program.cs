@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
-using Ghostbit.Tweaker.Core;
-using Ghostbit.Tweaker.AssemblyScanner;
+using Tweaker.Core;
+using Tweaker.AssemblyScanner;
 using System.Reflection;
 
 
-namespace Ghostbit.Tweaker.Core.Testbed
+namespace Tweaker.Core.Testbed
 {
 	class Program
 	{

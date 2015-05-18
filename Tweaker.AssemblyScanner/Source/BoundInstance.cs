@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Ghostbit.Tweaker.AssemblyScanner
+namespace Tweaker.AssemblyScanner
 {
 	/// <summary>
 	/// Binds an object instance to a unique identifier that can be used for displaying to the user.

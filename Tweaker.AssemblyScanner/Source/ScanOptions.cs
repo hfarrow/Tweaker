@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using System;
 
-namespace Ghostbit.Tweaker.AssemblyScanner
+namespace Tweaker.AssemblyScanner
 {
 	public class ScanOption<T>
 	{

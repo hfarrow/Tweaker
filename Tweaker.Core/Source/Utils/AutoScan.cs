@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
-using Ghostbit.Tweaker.AssemblyScanner;
+using Tweaker.AssemblyScanner;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	public class AutoScanBase
 	{

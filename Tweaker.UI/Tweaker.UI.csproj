@@ -7,7 +7,7 @@
     <ProjectGuid>{83979F19-6BFF-496D-B96B-CEF15D5CD4F7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Ghostbit.Tweaker.UI</RootNamespace>
+    <RootNamespace>Tweaker.UI</RootNamespace>
     <AssemblyName>Tweaker.UI</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

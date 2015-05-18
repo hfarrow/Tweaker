@@ -1,10 +1,10 @@
-﻿using Ghostbit.Tweaker.Core;
+﻿using Tweaker.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Ghostbit.Tweaker.UI
+namespace Tweaker.UI
 {
 	public class BaseNode : TreeNode<BaseNode>
 	{

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using Ghostbit.Tweaker.Core;
+using Tweaker.Core;
 
-namespace Ghostbit.Tweaker.Core.Tests
+namespace Tweaker.Core.Tests
 {
 	[TestFixture]
 	public class TypeExtensionsTest

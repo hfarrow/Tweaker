@@ -3,7 +3,7 @@ using System.Collections;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	public class SearchOptions
 	{

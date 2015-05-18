@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	public abstract class WatchableInfo
 	{

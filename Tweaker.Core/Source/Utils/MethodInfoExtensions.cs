@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Text;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	public static class MethodInfoExtensions
 	{

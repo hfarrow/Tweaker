@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
-using Ghostbit.Tweaker.AssemblyScanner;
+using Tweaker.AssemblyScanner;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	/// <summary>
 	/// An example factory for creating object instances and automatically scanning them.

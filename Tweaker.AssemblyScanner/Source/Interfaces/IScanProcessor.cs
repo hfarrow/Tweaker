@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Ghostbit.Tweaker.AssemblyScanner
+namespace Tweaker.AssemblyScanner
 {
 	/// <summary>
 	/// Processors operate on an object of the specified input type and produce zero,

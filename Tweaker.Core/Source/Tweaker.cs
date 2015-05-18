@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System;
-using Ghostbit.Tweaker.AssemblyScanner;
-using Ghostbit.Tweaker.Core;
+using Tweaker.AssemblyScanner;
+using Tweaker.Core;
 
-namespace Ghostbit.Tweaker
+namespace Tweaker
 {
 	public class Tweaker
 	{

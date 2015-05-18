@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System;
-using Ghostbit.Tweaker.AssemblyScanner;
+using Tweaker.AssemblyScanner;
 using System.Reflection;
 using System.Diagnostics;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	public class InvokableManager :
 		IInvokableManager

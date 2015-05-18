@@ -1,11 +1,11 @@
-﻿using Ghostbit.Tweaker.AssemblyScanner;
-using Ghostbit.Tweaker.Core;
+﻿using Tweaker.AssemblyScanner;
+using Tweaker.Core;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Ghostbit.Tweaker.UI.Tests
+namespace Tweaker.UI.Tests
 {
 	[TestFixture]
 	public class TreeViewTest

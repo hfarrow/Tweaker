@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Ghostbit.Tweaker.AssemblyScanner;
-using Ghostbit.Tweaker.Core;
-using Ghostbit.Tweaker.UI;
+using Tweaker.AssemblyScanner;
+using Tweaker.Core;
+using Tweaker.UI;
 
-namespace Ghostbit.Tweaker.Core.Testbed
+namespace Tweaker.Core.Testbed
 {
 	class TreeViewExample
 	{

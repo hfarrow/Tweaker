@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Ghostbit.Tweaker.UI.Tests
+namespace Tweaker.UI.Tests
 {
 	[TestFixture]
 	public class TreeTest

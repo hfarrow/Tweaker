@@ -9,11 +9,11 @@ using UnityEngine;
 using UnityTest;
 #endif
 
-using Ghostbit.Tweaker.Core;
+using Tweaker.Core;
 using System.Collections.Generic;
-using Ghostbit.Tweaker.AssemblyScanner;
+using Tweaker.AssemblyScanner;
 
-namespace Ghostbit.Tweaker.Core.Tests
+namespace Tweaker.Core.Tests
 {
 	[TestFixture]
 	public class ScannerTest

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Ghostbit.Tweaker.UI
+namespace Tweaker.UI
 {
 	public struct PixelCoord
 	{

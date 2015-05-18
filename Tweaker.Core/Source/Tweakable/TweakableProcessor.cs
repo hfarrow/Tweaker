@@ -1,10 +1,10 @@
-﻿using Ghostbit.Tweaker.AssemblyScanner;
+﻿using Tweaker.AssemblyScanner;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	/// <summary>
 	/// This is an IScanner processor that processes types or members annotated with Tweakable

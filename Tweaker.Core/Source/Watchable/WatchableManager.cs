@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System;
-using Ghostbit.Tweaker.AssemblyScanner;
+using Tweaker.AssemblyScanner;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	public class WatchableManager : IWatchableManager
 	{

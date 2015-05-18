@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	public abstract class BaseTweakerAttribute : Attribute, ITweakerAttribute
 	{

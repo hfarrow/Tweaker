@@ -4,15 +4,15 @@ using System;
 
 using NUnit.Framework;
 
-using Ghostbit.Tweaker.Core;
-using Ghostbit.Tweaker.AssemblyScanner;
+using Tweaker.Core;
+using Tweaker.AssemblyScanner;
 
 #if UNITY_EDITOR
 using UnityEngine;
 using UnityTest;
 #endif
 
-namespace Ghostbit.Tweaker.Core.Tests
+namespace Tweaker.Core.Tests
 {
 	[TestFixture]
 	public class TweakerTest

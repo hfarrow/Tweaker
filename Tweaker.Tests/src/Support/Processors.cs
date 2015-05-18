@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System;
-using Ghostbit.Tweaker.Core;
-using Ghostbit.Tweaker.AssemblyScanner;
+using Tweaker.Core;
+using Tweaker.AssemblyScanner;
 
-namespace Ghostbit.Tweaker.Core.Tests
+namespace Tweaker.Core.Tests
 {
 	public class PlaceHolderAttribute : Attribute
 	{

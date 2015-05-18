@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 using System;
 using System.Text.RegularExpressions;
 
-namespace Ghostbit.Tweaker.AssemblyScanner
+namespace Tweaker.AssemblyScanner
 {
 	public class Scanner : IScanner
 	{

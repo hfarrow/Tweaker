@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System;
-using Ghostbit.Tweaker.AssemblyScanner;
+using Tweaker.AssemblyScanner;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	/// <summary>
 	/// Base class for tweaker managers that wraps a thread safe collection of ITweakerObject.

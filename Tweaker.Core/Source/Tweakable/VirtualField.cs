@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Ghostbit.Tweaker.Core
+namespace Tweaker.Core
 {
 	public class VirtualField<T>
 	{
